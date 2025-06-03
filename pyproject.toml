@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PPB"
+version = "0.1.0"
+description = "This project enables you to convert battery measurement data to a standardized format"
+authors = [
+    { name = "Alexander Günter Hinrichsen" },
+    { name = "Jan Kalisch" },
+    { name = "Daniel Schröder" },
+    { name = "Cataldo De Simone" },
+]
+dependencies = [
+    "pandas",
+    "numpy",
+    "pyarrow",
+    "python-calamine"
+]
+requires-python = ">=3.12"
+
+[tool.setuptools.packages.find]
+where = ["src"]

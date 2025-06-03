@@ -1,93 +1,382 @@
-# PyDPEET
+from ppb.configs.config import DataOutputFiletype
 
+# **PPB24 - Conversion of Battery Measurement Data to a Standardized Format**
 
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.tu-berlin.de/eet_public/pydpeet.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.tu-berlin.de/eet_public/pydpeet/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
+[[_TOC_]]
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+This project enables you to convert battery measurement data to a standardized format.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Cycler output their measurement data in different formats and different file types, like for example .csv and .xslx. Each has to be handled differently which makes it difficult to work with the data and that's the reason why we created a standardized format.
+The standardized Data and Metadata can be used inside of the code and can be output as a .csv (Data), .xlsx (Data) or parquet(Data) to a output_path of your choosing.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Keeping additional data outside of our definition of the standardized columns and custom cycler handling is also possible.
+
+
+## Standardized Format
+The standardized columns are defined as follows:
+
+```python
+STANDARD_COLUMNS = [
+    "Metadata",
+    "StepID",
+    "Voltage [V]",
+    "Current [A]",
+    "Temperature [°C]",
+    "Test Time [s]",
+    "Absolute Time [yyyy-mm-dd HH:MM:SS]",
+    "EIS Frequency [Hz]",
+    "Zre [Ohm]",
+    "Zim [Ohm]",
+    "DC Current [A]"
+]
+```
+
+## Metadata
+Currently, metadata is not standardized. It contains all additional information from the provided measurement file and is stored as a string in the first row of the `Metadata` column.
+
+## Supported Cyclers
+PPB24 supports conversion from the following cyclers:
+- Arbin
+- BaSyTec
+- Digatron
+- Neware
+- Parstat
+- Safion
+- Zahner
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### For Development
+To contribute to the project, clone the repository:
+
+![Open Project](Pictures ReadMe/Open%20Project.png)
+
+Once cloned, create a new branch for your work:
+
+![New Branch](Pictures ReadMe/New%20Branch.png)
+
+### Requirements
+As a maintainer, all requirements should be installed to be able to use, develop, test, and document the project.
+
+All requirememnts can be found in:
+        
+    ./requirements.dev.txt
+
+Test first, if pip is already installed on your System or virtual environment. Open the commandline (cmd on windows or Terminal on macOS) and type in: 
+    
+    pip --version
+
+if the pip command gives an Error, try pip3 --version instead:
+
+    pip3 --version 
+
+if that didn´t help either, try installing pip now. 
+For that just put python3 get-pip.py into the command line
+
+windows:    
+
+    py -m ensurepip --upgrade
+
+any Linux or macOS: 
+
+    python -m ensurepip --upgrade
+
+It could be, that your pip didn´t get embedded into your system correctly. There are multiple reasons, why that can happen. You can read about it on this Site for Example: 
+
+    https://de.windows-office.net/?p=40510
+
+
+To install all the requirements run:
+        
+    pip install -r requirements.dev.txt
+
+To update the list of requirements, if a new lib was added, run:
+        
+    pip freeze > requirements.dev.txt
+
+### Rebuild package for `pip`
+
+Run 
+
+```shell
+  python -m build
+```
+ 
+in the project root.
+
+That rebuilds the package in the `dist` directory. Push the project then and your changes are installable via pip from gitlab.
+
+### How to renew the documentation after implementing new functions
+Windows only: 
+To avoid further complication with sphinx, you now have to add the download path to your Environment Variables. 
+Press Windows + R and type in sysdm.cpl
+
+    sysdm.cpl
+
+Go to the tab "advanced" and click on the button called "Environment Variables" at the bottom of the page. 
+In the top Window you will find a Variable called "Path". Click on that and choose Edit.
+After clicking on "New" you have to put in the Path, which leads to \Python\Scripts. It could look something like this: 
+
+    D:\Programs\Python\Scripts
+
+After you´ve done that, you can now continue with the regular use of Sphinx.
+
+In your Commandline navigate to `docs` in the root of the project
+
+First run 
+
+    make clean
+
+to clean the existing documentation
+
+Then run
+
+    make html 
+
+You'll find the documentation in
+
+    docs/build/html
+
+`index.html` is the root of the documentation
+
+
+### For Usage
+To install PPB24 in your project, run the following command in your console:
+
+```bash
+pip install git+https://oauth2:GITLAB_ACCESS_TOKEN@git.tu-berlin.de/eet/ppb/ppb24.git
+```
+
+This will install the package from the main branch.
+
+Replace GITLAB_ACCESS_TOKEN with your actual access token.
+You can find or create your token (with read_repository access!) [here](https://git.tu-berlin.de/-/user_settings/personal_access_tokens): 
+
+![img_2.png](Pictures ReadMe/Token.png)
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+To convert a battery measurement file into the standardized format, use:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```python
+from ppb.configs.config import Config
+from ppb.convert import convert
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+input_file = "data/raw_measurement.csv"
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+data_frame = convert(
+    config=Config.BaSyTec,
+    input_path=input_file,
+    keep_all_additional_data=False,
+    custom_folder_path=None
+)
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+- **`config`** – Specifies which cycler is being used.  
+  *Tip: Typing `"config = Configs."` in some IDEs will suggest a list of currently implemented cyclers.*  
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- **`input_path`** – Defines the location of the measurement file.  
+  *Only supports single files. To convert an entire folder, use `directory_standardization()` or write custom code to parse file paths and pass them to the `convert` function.*  
+
+- **`keep_all_additional_data`** – When set to `True`, retains non-standard data.  
+  *Defaults to `False`, keeping only standardized data.*  
+
+- **`custom_folder_path`** – Allows loading custom handling for new or different cyclers.  
+  *The folder must contain `reader.py`, `mapper.py`, and `formatter.py`. More details after the examples.*  
+
+- **`return_type`** – returns a `pandas.DataFrame` object.  
+
+
+Here is a visualization of the Output of this convert using PyCharm IDE:
+![alt text](Pictures%20ReadMe/Example%20for%20converting%20a%20BaSyTec%20measurement%20to%20use%20it%20inside%20of%20your%20code.png)
+
+To export a standardized data_frame, use:
+
+```python
+from ppb.export import export
+from ppb.configs.config import DataOutputFiletype
+
+data_frame = convert(...)
+output_path = "output/data/"
+output_file_name = "measurement_1"
+
+export(
+  data_frame=data_frame,
+  output_path=output_path,
+  output_file_name=output_file_name,
+  data_output_filetype=DataOutputFiletype.csv
+)
+```
+- **`dataFrame`** – The DataFrame to be exported in the specified `data_output_filetype`.
+
+- **`output_path`** – The directory where the standardized measurement file will be created and stored.
+
+- **`output_file_name`** – The name to assign to the exported file.
+
+- **`data_output_filetype`** – The file format to export the data as (e.g., CSV, Parquet, Excel).
+
+The file could look like this when viewed with a csv reader like Excel:
+![alt text](Pictures%20ReadMe/Example%20for%20converting%20a%20BaSyTec%20measurement%20and%20saving%20it%20to%20a%20output_path2.png)
+
+To standardize a directory of measurement files, use the `directory_standardization` function:
+
+```python
+from ppb.directory_standardization import directory_standardization
+from ppb.configs.config import Config, DataOutputFiletype
+
+input_path = "input/data/"
+output_path = "output/data/"
+
+directory_standardization(
+    config=Config.BaSyTec,
+    input_path=input_path,
+    output_path=output_path,
+    keep_all_additional_data=False,
+    custom_folder_path=None,
+    data_output_filetype=DataOutputFiletype.parquet
+)
+```
+
+- **`config`** – Specifies the cycler being used.  
+  *Tip: Typing `"config = Configs."` in some IDEs will show a list of implemented cyclers.*
+
+- **`input_path`** – Defines the path to the folder containing the measurement files.
+
+- **`output_path`** – Specifies where to save the standardized measurement files and how to name them.
+
+- **`keep_all_additional_data`** – When set to `True`, retains non-standard data; defaults to `False`, which only includes standardized data.
+
+- **`custom_folder_path`** – Enables loading custom handling for new or different cyclers.  
+  *The folder must contain `Reader.py`, `Mapper.py`, and `Formatter.py`.*
+
+- **`data_output_filetype`** – Defines the desired file type for the output file.  
+  *Tip: Typing `"data_output_filetype = Data_output_filetype."` will show a list of supported file types.*
+
+The output could look like this:
+
+![img.png](Pictures ReadMe/BaSyTec Folder Output.png)
+
+Naming scheme:
+
+    Originalfilename_Config_Date_Time_OutputFileType
+
+## Custom Handling of Cycler
+
+If a custom `config` is used and a `custom_folder_path` is defined, you can implement your own custom solution.
+
+### Example with the BaSyTec Handling on my local device:
+
+```python
+from ppb.convert import convert
+from ppb.configs import Config
+
+data_frame = convert(
+    config=Config.Custom,
+    input_path=r"D:\Downloads\Uni\_Data\_Data\BaSyTec\Basytec145\TC23LFP01_CU_25deg.txt",
+    custom_folder_path=r"D:\Test\BaSyTec"
+)
+
+###YOUR CODE using the DataFrame
+```
+
+The custom folder needs the following files:
+
+![alt text](Pictures%20ReadMe/Custom%20Handling%20of%20Zyklisierer2.png)
+
+The files need to implement the following functions to work with our project:
+
+### Mapper.py Example
+```python
+# Define the mapping from current names to standardized names (ALL standardized columns need to be in either one!)
+
+COLUMN_MAP = {
+    "Time[h]": "Testtime (s)",
+    "U[V]": "Voltage (V)",
+    "I[A]": "Current (A)",
+    "T1[°C]": "Temperature (°C)",
+    "Line": "StepID",
+}
+
+MISSING_REQUIRED_COLUMNS = [
+    "Absolute Time (yyyy-mm-dd hh:mm:ss)",
+    "EISFreq (Hz)",
+    "Zre (Ohm)",
+    "Zim (Ohm)",
+    "DC_Current (A)"
+]
+```
+
+It is also possible to define multiple `COLUMN_MAP`'s + `MISSING_REQUIRED_COLUMNS` in a single `Mapper.py`, but if you do you'll have to create another config and set the mapping call in column mapping accordingly. (Step 7. in "How to add a Custom Handling to the Project")
+
+
+
+### Formatter.py:
+```python
+import pandas
+
+def get_data_into_format(dataFrame: pandas.DataFrame):
+    ***YOUR CODE***
+    return
+```
+
+### Reader.py:
+```python
+import pandas as pd
+
+def to_DataFrame(input_path: str) -> (pd.DataFrame, str):
+    ***YOUR CODE***
+    return dataFrame, metadata_string
+```
+
+## How to add a Custom Handling to the Project
+0. create a Custom Handling of cycler and test it using the custom config. If you're sure that It works create a new branch from this project
+
+1. add the custom folder to the Zyklisierer folder
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project0.png)
+
+2. add this `__init__.py` in the folder
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project1.png)
+
+3. add the new `Config`
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project2.png)
+
+4. add the reader for the new `Config` to the config_maps
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project3.png)
+
+5. add the mapper for the new `Config` to the config_maps
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project4.png)
+
+6. add the formatter for the new `Config` to the config_maps
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project5.png)
+
+7. don't forget imports
+
+![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project6.png)
+
+## Roadmap + Contributing 
+You can see planned features and updates here:
+https://git.tu-berlin.de/eet/ppb/ppb24/-/issues/?sort=created_date&state=opened&first_page_size=100
 
 ## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Daniel Schröder (458278) 
 
-## License
-For open source projects, say how it is licensed.
+Cataldo De Simone (483710)
+
+Alexander Hinrichsen (457492)
+
+Jan Kalisch (455583)
+
+## Support TODO
+Support will be defined once published officially.
+
+## License TODO
+License will follow once published officially.
 
 ## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Will likely be worked on by future groups.
