@@ -1,0 +1,119 @@
+import os
+from datetime import datetime
+
+from ppb.configs.config import Config, DataOutputFiletype
+from ppb.convert import convert
+from ppb.export import export
+from ppb.utils.timing import measure_time
+from ppb.zyklisierer.neware.reader import find_main_files
+
+
+@measure_time
+def directory_standardization(
+        config: Config,
+        input_path: str,
+        output_path: str,
+        keep_all_additional_data: bool = False,
+        custom_folder_path: str = None,
+        data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet
+) -> None:
+    """
+    Standardize a directory of files according to the given configuration and outputs them to an output_path.
+
+    Parameters
+    ----------
+    config : Config
+        The configuration to use for standardizing the directory.
+    input_path : str
+        The path to the directory to standardize.
+    output_path : str
+        The path to the directory where the standardized files will be written.
+    keep_all_additional_data : bool, optional
+        Whether to keep all additional data in the output files. If False, any
+        columns not specified in the configuration will be dropped. Defaults to
+        False.
+    custom_folder_path : str, optional
+        The path to the directory containing the custom reader, mapper, and
+        formatter reference for the given configuration.
+    data_output_filetype : DataOutputFiletype, optional
+        The file type to use when exporting the data. Defaults to
+        DataOutputFiletype.parquet.
+    """
+    if config is None:
+        raise ValueError("config must be provided")
+    if input_path is None:
+        raise ValueError("input_path must be provided")
+    if output_path is None:
+        raise ValueError("output_path must be provided")
+    if not isinstance(keep_all_additional_data, bool):
+        raise ValueError("keep_all_additional_data must be a boolean if provided")
+    if custom_folder_path is not None and custom_folder_path is not str:
+        raise ValueError("custom_folder_path must be a string if provided")
+
+    os.makedirs(output_path, exist_ok=True)
+    current_date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    config_name = config.name
+
+    if config == Config.Neware:
+        files = find_main_files(input_path)
+    else:
+        files = os.listdir(input_path)
+
+    for filename in files:
+        _process_file(
+            config,
+            config_name,
+            current_date,
+            custom_folder_path,
+            data_output_filetype,
+            os.path.join(input_path, filename),
+            filename,
+            keep_all_additional_data,
+            output_path
+        )
+
+
+def _process_file(
+        config: Config,
+        config_name: str,
+        current_date: str,
+        custom_folder_path: str,
+        data_output_filetype: DataOutputFiletype,
+        file_path: str,
+        filename: str,
+        keep_all_additional_data: bool,
+        output_path: str
+) -> None:
+    """
+    Process a single file and save the standardized DataFrame to the given output_path.
+
+    Parameters
+    ----------
+    config : Config
+        The configuration to use for standardizing the file.
+    config_name : str
+        The name of the configuration.
+    current_date : str
+        The current date in the format %Y-%m-%d_%H-%M-%S.
+    custom_folder_path : str
+        The path to the directory containing the custom reader, mapper, and
+        formatter reference for the given configuration.
+    data_output_filetype : DataOutputFiletype
+        The file type to use when exporting the data.
+    file_path : str
+        The path to the file to standardize.
+    filename : str
+        The name of the file to standardize.
+    keep_all_additional_data : bool
+        Whether to keep all additional data in the output DataFrame.
+    output_path : str
+        The path to the directory where the standardized file will be written.
+    """
+    print(f"Processing file: {filename}")
+    try:
+        df = convert(config, file_path, keep_all_additional_data, custom_folder_path)
+        output_filename = f"{os.path.splitext(filename)[0]}_{config_name}_{current_date}"
+        export(df, output_path, output_filename, data_output_filetype)
+        print(f"Successfully processed and exported: {output_filename}")
+    except Exception as e:
+        print(f"Error processing file {filename}: {e}")
