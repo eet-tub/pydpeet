@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "PyDPEET"
 version = "0.1.0"
-description = "This project enables you to convert battery measurement data to a standardized format"
+description = "This project enables you to convert battery measurement data to a standardized format and process it for further analysis."
 authors = [
     { name = "Anton Schlösser", email = "a.schloesser@tu-berlin.de"},
     { name = "Martin Otto", email = "m.otto.1@tu-berlin.de"},
@@ -18,7 +18,9 @@ dependencies = [
     "pandas",
     "numpy",
     "pyarrow",
-    "python-calamine"
+    "python-calamine",
+    "numba",
+    "matplotlib"
 ]
 requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }

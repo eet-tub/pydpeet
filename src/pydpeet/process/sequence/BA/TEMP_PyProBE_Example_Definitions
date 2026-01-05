@@ -1,0 +1,13 @@
+Example_Sequence:
+  Steps:
+    1: Discharge at 2 mA until 2.8 V
+    2: Rest for 3 hours
+    3: Charge at 2 mA until 4.3 V, Hold at 4.3 V until 0.05 A
+    4: Rest for 3 hours
+  Cycle:
+    Start: 1
+    End: 4
+    Count: 10
+
+
+
