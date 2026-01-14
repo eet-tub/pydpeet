@@ -179,7 +179,6 @@ def add_soc(df, df_primitives,neware_bool = True, standard_method=None, methods=
         methods = [standard_method] if standard_method is not None else []
     if not methods:
         raise ValueError("No SOC methods supplied (methods or standard_method).")
-
     # Required columns check
     for col in ["Testtime[s]", "Current[A]", "Voltage[V]"]:
         if col not in df.columns:
