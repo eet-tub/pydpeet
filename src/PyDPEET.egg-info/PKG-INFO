@@ -14,6 +14,7 @@ Requires-Dist: pyarrow
 Requires-Dist: python-calamine
 Requires-Dist: numba
 Requires-Dist: matplotlib
+Requires-Dist: scipy
 Dynamic: license-file
 
 from ppb.configs.config import DataOutputFiletype

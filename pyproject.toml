@@ -20,7 +20,8 @@ dependencies = [
     "pyarrow",
     "python-calamine",
     "numba",
-    "matplotlib"
+    "matplotlib",
+    "scipy"
 ]
 requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -28,3 +29,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

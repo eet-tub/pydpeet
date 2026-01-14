@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Callable
 from unittest.mock import MagicMock
 
-from ppb.configs.config import Config
+from pydpeet.convert.configs.config import Config
 
 _TEST_ROOT = Path(__file__).parent
 RES_PATH = _TEST_ROOT / "res"

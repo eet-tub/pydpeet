@@ -60,6 +60,31 @@ class Config(Enum):
     Arbin_Old = auto()
     Custom = auto()
 
+    
+    @classmethod
+    def from_string(cls, value: str) -> "Config":
+        if not isinstance(value, str):
+            raise TypeError("Config must be str or Config enum")
+
+        key = value.strip().lower()
+
+        aliases = {
+            "neware": cls.Neware,
+            "arbin": cls.Arbin,
+            "arbin_old": cls.Arbin_Old,
+            "basytec": cls.BaSyTec,
+            "digatron_eis": cls.Digatron_EIS,
+            "zahner1": cls.Zahner_1,
+            "zahner2": cls.Zahner_2,
+            "zahner_new_1": cls.Zahner_new_1,
+        }
+
+        try:
+            return aliases[key]
+        except KeyError:
+            known = ", ".join(aliases.keys())
+            raise ValueError(f"Unknown config '{value}'. Known: {known}")
+    
     @staticmethod
     def exists(maybe_config: any) -> bool:
         """

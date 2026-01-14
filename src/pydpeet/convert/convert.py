@@ -8,9 +8,13 @@ from pydpeet.convert.utils.ext_path import ExtPath
 from pydpeet.convert.utils.load_custom_module import load_custom_module
 from pydpeet.convert.utils.timing import measure_time
 
+from typing import Union
+
+ConfigLike = Union[Config, str]
+
 
 @measure_time
-def convert(config: Config, input_path: str, keep_all_additional_data: bool = False,
+def convert_file(config: ConfigLike, input_path: str, keep_all_additional_data: bool = False,
             custom_folder_path: str = None) -> DataFrame:
     """
     Standardize a measurement file according to the given configuration and returns the standardized DataFrame.
@@ -34,6 +38,9 @@ def convert(config: Config, input_path: str, keep_all_additional_data: bool = Fa
     DataFrame
         The standardized DataFrame.
     """
+    
+    if isinstance(config, str):
+        config = Config.from_string(config)    
     if Config.not_exists(config):
         raise ValueError("config must be provided")
     if ExtPath.is_not_valid(input_path):
