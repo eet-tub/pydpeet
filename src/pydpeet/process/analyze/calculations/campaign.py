@@ -94,9 +94,18 @@ class CampaignBuilder:
     def add_soc(self, df_primitives,neware_bool = True, standard_method=SocMethod.WITH_RESET_WHEN_FULL_AND_EMPTY,methods=None,
                 lower_soc_for_voltage=0,upper_soc_for_voltage=1,lower_voltage_for_soc=0,upper_voltage_for_soc=0,restart_for_testindex=True):
 
-        self.df = add_soc(self.df,df_primitives,neware_bool,standard_method,methods,self.config,
-                          lower_soc_for_voltage,upper_soc_for_voltage,lower_voltage_for_soc,upper_voltage_for_soc,
-                          self.verbose, restart_for_testindex)
+        self.df = add_soc(df=self.df,
+                          df_primitives=df_primitives,
+                          neware_bool=neware_bool,
+                          standard_method=standard_method,
+                          methods=methods,
+                          config=self.config,
+                          lower_soc_for_voltage=lower_soc_for_voltage,
+                          upper_soc_for_voltage=upper_soc_for_voltage,
+                          lower_voltage_for_soc=lower_voltage_for_soc,
+                          upper_voltage_for_soc=upper_voltage_for_soc,
+                          verbose=self.verbose,
+                          restart_for_testindex=restart_for_testindex)
         return self
 
     @log_time
@@ -127,6 +136,7 @@ class CampaignBuilder:
     def add_internal_resistance(self, ignore_negative_resistance_values=True):
         self.df = add_internal_resistance(self.df, self.config, self.verbose)
         return self
+
     # -----------------------------
     # Pipeline orchestration
     # -----------------------------

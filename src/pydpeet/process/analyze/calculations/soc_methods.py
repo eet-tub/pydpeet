@@ -4,6 +4,7 @@ import warnings
 from enum import Enum
 
 import numpy as np
+import pandas as pd
 from numba import njit
 
 from pydpeet.process.analyze.calculations.capacity import add_capacity
@@ -150,7 +151,7 @@ def _compute_soc_multi_methods_out(delta_soc, current, abs_current, voltage,
     return
 
 
-def add_soc(df, df_primitives,neware_bool = True, standard_method=None, methods=None, config=None,
+def add_soc(df: pd.DataFrame, df_primitives: pd.DataFrame, neware_bool = True, standard_method=None, methods=None, config=None,
             lower_soc_for_voltage=0, upper_soc_for_voltage=1, lower_voltage_for_soc=0, upper_voltage_for_soc=0,
             verbose=True, restart_for_testindex=True):
     """
@@ -191,7 +192,7 @@ def add_soc(df, df_primitives,neware_bool = True, standard_method=None, methods=
             if df_primitives is None:
                 logging.info("df_primitives is None, please provide a valid df_primitives for add_capacity function")
             else:
-                df = add_capacity(df, neware_bool, df_primitives, config=config, verbose=verbose)
+                df = add_capacity(df, df_primitives, neware_bool, config=config, verbose=verbose)
                 st.log("added Capacity[Ah] column")
 
     # Copy df so it can be safely modified

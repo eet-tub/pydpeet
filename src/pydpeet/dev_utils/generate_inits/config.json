@@ -1,0 +1,66 @@
+{
+  "src/pydpeet/convert/convert.py": {
+    "depth": 4,
+    "exports": ["convert_file"]
+  },
+  "src/pydpeet/convert/directory_standardization.py": {
+    "depth": 4,
+    "exports": ["convert_files_in_directory"]
+  },
+  "src/pydpeet/convert/export.py": {
+    "depth": 4,
+    "exports": ["export"]
+  },
+  "src/pydpeet/convert/map.py": {
+    "depth": 4,
+    "exports": ["mapping"]
+  },
+
+  "src/pydpeet/process/sequence/step_analyzer.py": {
+    "depth": 5,
+    "exports": ["step_analyzer_primitives", "step_analyzer_seqments_and_sequences"]
+  },
+  "src/pydpeet/process/sequence/utils/postprocessing/df_primitives_correction.py": {
+    "depth": 5,
+    "exports": ["df_primitives_correction"]
+  },
+  "src/pydpeet/process/sequence/utils/postprocessing/filter_df.py": {
+    "depth": 5,
+    "exports": ["filter_and_split_df_by_blocks"]
+  },
+  "src/pydpeet/process/sequence/utils/postprocessing/generate_instructions.py": {
+    "depth": 5,
+    "exports": ["generate_instructions"]
+  },
+  "src/pydpeet/process/sequence/utils/visualize/visualize_data.py": {
+    "depth": 5,
+    "exports": ["visualize_phases"]
+  },
+
+  "src/pydpeet/process/merge/series.py": {
+    "depth": 5,
+    "exports": ["run_series"]
+  },
+
+  "src/pydpeet/process/analyze/extract/OCV/iocv_detection.py": {
+    "depth": 5,
+    "exports": ["iocv_detection"]
+  },
+  "src/pydpeet/process/analyze/calculations/soc_methods.py": {
+    "depth": 5,
+    "exports": ["add_soc", "SocMethod"]
+  },
+  "src/pydpeet/process/analyze/calculations/capacity.py": {
+    "depth": 5,
+    "exports": ["add_capacity"]
+  },
+  "src/pydpeet/process/analyze/calculations/efficiency.py": {
+    "depth": 5,
+    "exports": ["add_internal_resistance"]
+  },
+
+  "src/pydpeet/process/analyze/configs/battery_config.py": {
+    "depth": 5,
+    "exports": ["battery_default", "am23nmc", "tc23nmc"]
+  }
+}
