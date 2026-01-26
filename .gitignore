@@ -4,4 +4,5 @@
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/workspace.xml
 /.idea/inspectionProfiles/profiles_settings.xml
+**/output/*.parquet
 /docs/build/

@@ -3,10 +3,12 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "PPB"
-version = "0.1.0"
-description = "This project enables you to convert battery measurement data to a standardized format"
+name = "PyDPEET"
+version = "0.9.0"
+description = "This project enables you to convert battery measurement data to a standardized format and process it for further analysis."
 authors = [
+    { name = "Anton Schlösser", email = "a.schloesser@tu-berlin.de"},
+    { name = "Martin Otto", email = "m.otto.1@tu-berlin.de"},
     { name = "Alexander Günter Hinrichsen" },
     { name = "Jan Kalisch" },
     { name = "Daniel Schröder" },
@@ -16,9 +18,18 @@ dependencies = [
     "pandas",
     "numpy",
     "pyarrow",
-    "python-calamine"
+    "python-calamine",
+    "numba",
+    "matplotlib",
+    "scipy"
 ]
 requires-python = ">=3.12"
+readme = { file = "README.md", content-type = "text/markdown" }
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
