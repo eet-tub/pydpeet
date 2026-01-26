@@ -1,6 +1,14 @@
-from .convert.convert import convert_file
-from .convert.directory_standardization import convert_files_in_directory
-from .convert.configs.config import Config
+"""
+Auto-generated __init__ file.
+Created: 2026-01-26 15:08:14
+"""
+
+# Child packages exported by this package
+from . import convert
 from . import process
 
-__all__ = ["convert_file", "convert_files_in_directory", "Config", "process"]
+# Public API for this package
+__all__ = [
+    'convert',
+    'process',
+]

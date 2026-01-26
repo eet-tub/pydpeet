@@ -1,41 +1,37 @@
-from .calculations.add_columns import add_power, add_cumulative_energy
-from .calculations.ageing import calculate_average_temperature, calculate_average_voltage, calculate_average_loading_voltage, \
-    calculate_average_charge, calculate_average_discharge, calculate_soh_loss, calculate_soh_loss_per_cycle, \
-    calculate_soh_loss_over_charging
-from .calculations.campaign import Campaign, CampaignBuilder
-from .calculations.capacity import add_capacity, add_soh, add_equivalent_full_cycles
-from .calculations.efficiency import add_coulomb_efficiency, add_internal_resistance
-from .calculations.soc_methods import SocMethod, add_soc
-from .calculations.throughput import add_charge_throughput
-from .calculations.utils import log_time
-from .configs.battery_config import BatteryConfig, am23nmc, tc23nmc
-from .extract.OCV.iocv_detection import iocv_detection
+"""
+Auto-generated __init__ file.
+Created: 2026-01-26 15:08:14
+"""
 
+# Bind selected names from source modules into this package without leaking helper names
 
+def _pydpeet_bind():
+    import importlib, sys
+    _m = importlib.import_module('pydpeet.process.analyze.calculations.soc_methods')
+    globals()['SocMethod'] = getattr(_m, 'SocMethod')
+    globals()['add_soc'] = getattr(_m, 'add_soc')
+    _m = importlib.import_module('pydpeet.process.analyze.calculations.capacity')
+    globals()['add_capacity'] = getattr(_m, 'add_capacity')
+    _m = importlib.import_module('pydpeet.process.analyze.calculations.efficiency')
+    globals()['add_internal_resistance'] = getattr(_m, 'add_internal_resistance')
+    _m = importlib.import_module('pydpeet.process.analyze.configs.battery_config')
+    globals()['am23nmc'] = getattr(_m, 'am23nmc')
+    globals()['battery_default'] = getattr(_m, 'battery_default')
+    globals()['tc23nmc'] = getattr(_m, 'tc23nmc')
+    _m = importlib.import_module('pydpeet.process.analyze.extract.OCV.iocv_detection')
+    globals()['iocv_detection'] = getattr(_m, 'iocv_detection')
+
+_pydpeet_bind()
+del _pydpeet_bind
+
+# Public API for this package
 __all__ = [
-    "add_power",
-    "add_cumulative_energy",
-    "calculate_average_temperature",
-    "calculate_average_voltage",
-    "calculate_average_loading_voltage",
-    "calculate_average_charge",
-    "calculate_average_discharge",
-    "calculate_soh_loss",
-    "calculate_soh_loss_per_cycle",
-    "calculate_soh_loss_over_charging",
-    "Campaign",
-    "CampaignBuilder",
-    "add_capacity",
-    "add_soh",
-    "add_equivalent_full_cycles",
-    "add_coulomb_efficiency",
-    "add_internal_resistance",
-    "SocMethod",
-    "add_soc",
-    "add_charge_throughput",
-    "log_time",
-    "BatteryConfig",
-    "am23nmc",
-    "tc23nmc",
-    "iocv_detection",
+    'SocMethod',
+    'add_capacity',
+    'add_internal_resistance',
+    'add_soc',
+    'am23nmc',
+    'battery_default',
+    'iocv_detection',
+    'tc23nmc',
 ]

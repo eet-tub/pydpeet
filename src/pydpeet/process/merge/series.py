@@ -18,7 +18,7 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
     The function returns a single DataFrame with the merged test series.
 
     Parameters:
-    df_list (List[List[pandas.DataFrame]]): List of lists of DataFrames, where each DataFrame represents a single test.
+    df_list (List[List[pandas.DataFrame]]): List of DataFrames (or list of (df, filename) pairs).
     time_between_tests_seconds (float, optional): Time between tests in seconds. Defaults to 60.0.
     verbose (bool, optional): If True, log debug messages. Defaults to True.
     sort_dfs (bool, optional): If True, sort the DataFrames by their 'Absolute Time[yyyy-mm-dd hh:mm:ss]' column. Defaults to True.
@@ -47,8 +47,8 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
     if sort_dfs:
         sorted_dfs = _sort_dfs(input_pairs, verbose=verbose)
     else:
+        # Keep only the DataFrame from the pairs (df, filename)
         sorted_dfs = [df for df, _ in input_pairs]
-
 
     time_offset = 0.0
     numeric_cols, datetime_cols, object_cols = [], [], []
@@ -67,7 +67,7 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
 
             df = raw_df.copy()
 
-            # Skip battery description files
+            # Skip battery description files (existing behavior)
             if 'StepID' in df.columns:
                 first_val = df['StepID'].iloc[0]
                 if isinstance(first_val, str) and first_val.lower() == "test":
@@ -98,36 +98,40 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
 
             # Ensure Testtime[s] is numeric and safe for addition
             df['Testtime[s]'] = pd.to_numeric(df['Testtime[s]'], errors='coerce').fillna(0.0)
-            # Adjust Testtime[s] and assign sequential TestIndex
+
+            # --- Apply the current cumulative offset to this DataFrame ---
             df['Testtime[s]'] = df['Testtime[s]'] + time_offset
+
+            # Assign sequential TestIndex
             df['TestIndex'] = valid_index
             valid_index += 1
 
+            # Ensure TestIndex is tracked in numeric columns / col_order
             if 'TestIndex' not in numeric_cols:
                 numeric_cols.append('TestIndex')
             if 'TestIndex' not in col_order:
                 col_order.append('TestIndex')
 
+            # Store numeric and other columns
             numeric_storage.append(df[numeric_cols].to_numpy())
             for column in datetime_cols + object_cols:
                 other_storage[column].extend(df[column].tolist())
 
-            # last_time = df['Testtime[s]'].iloc[last_valid_idx]
-            s = df["Testtime[s]"]
-            last_time = s.dropna().iloc[-1]
-            time_offset = last_time
+            # Compute the maximum Testtime after offset (this is the basis for next offset)
+            df_max = df['Testtime[s]'].dropna().max()
 
-            # Pause row if not last DataFrame
+            # If not the last DataFrame, add a pause row placed at df_max + time_between_tests_seconds
             if i < len(sorted_dfs) - 1:
+                pause_value = float(df_max + time_between_tests_seconds)
                 pause_numeric = []
                 for column in numeric_cols:
-                    pause_value = float(last_time + time_between_tests_seconds)
                     if column == 'Testtime[s]':
                         pause_numeric.append(pause_value)
                     elif column == 'TestIndex':
                         pause_numeric.append(-1)
                     else:
                         pause_numeric.append(np.nan)
+                # ensure shape matches (1, n_numeric_cols)
                 numeric_storage.append(np.array([pause_numeric]))
 
                 for column in datetime_cols:
@@ -138,7 +142,11 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
                 if verbose:
                     st.log(f"Added pause row after DataFrame {i} at {pause_value}s")
 
-                time_offset = last_time + time_between_tests_seconds
+                # --- Set time_offset for the next DataFrame to df_max + pause ---
+                time_offset = df_max + time_between_tests_seconds
+            else:
+                # Last DataFrame: update time_offset to the end of this df (no extra pause needed)
+                time_offset = df_max
 
     # If no valid numeric data, return empty DataFrame
     if not numeric_storage:
@@ -162,6 +170,8 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
 
     dfs_merged = drop_duplicate_testtime(dfs_merged)
     return dfs_merged
+
+
 
 # def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, sort_dfs=True):
 #     if not df_list:
