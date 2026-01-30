@@ -8,6 +8,7 @@ from pydpeet.process.sequence.step_analyzer import step_analyzer_seqments_and_se
 from pydpeet.process.analyze.extract.OCV.res.CONFIG_Standard_DVA_ICA import *
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 from pydpeet.process.analyze.calculations.soc_methods import add_soc
+from pydpeet.process.analyze.calculations.soc_methods import SocMethod
 
 # plot import
 import matplotlib.pyplot as plt
@@ -18,9 +19,7 @@ def iocv_detection(min_pause_lenght: float = 120,
                    visualize: bool = True,
                    df_primitives: pandas.DataFrame = None,
                    df: pandas.DataFrame = None,
-                   soc_max_voltage: float = 4.22,
-                   soc_min_voltage: float = 2.49,
-                   soc_c_ref: float = 4.8
+                   config = None
                    )-> pandas.DataFrame:
     """
     Compute iOCV blocks from given DataFrames.
@@ -80,13 +79,15 @@ def iocv_detection(min_pause_lenght: float = 120,
             raise ValueError("Input Warning: 'Testtime[s]' is not monotonically increasing!")
 
         print("Checking if SOC exists in dataframe...")
-        # todo: put back in
-        # if 'SOC' in df_primitives.columns:
-        #     print("SOC already exists in df_primitives, skipping SOC calculation...")
-        # else:
-        #     print("SOC column does not exist in df_primitives, adding it...")
-        #     df_primitives = add_soc(df_primitives.copy(), standard_method='True',
-        #                             max_Voltage=soc_max_voltage, min_Voltage=soc_min_voltage, C_ref=soc_c_ref)
+        
+        if 'SOC' in df_primitives.columns:
+            print("SOC already exists in df_primitives, skipping SOC calculation...")
+        else:
+            print("SOC column does not exist in df_primitives, adding it...")
+            df_primitives = add_soc(df=df_primitives,
+                                    df_primitives=df_primitives,
+                                    standard_method = SocMethod.WITH_RESET_WHEN_FULL, 
+                                    config=config)
 
         df_segments_and_sequences = step_analyzer_seqments_and_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
