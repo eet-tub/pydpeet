@@ -44,7 +44,7 @@ def process_fuds_extrapolation(
     if iocv_discharge_df is None:
         raise ValueError("Please provide a Dataframe which contains the iOCV Discharge data!")
 
-    print("Applying rules and standard columns...")
+    logging.info("Applying rules and standard columns...")
     _rules = ["Pause"]
     _STANDARD_COLUMNS = ["Testtime[s]", "Voltage[V]", "Current[A]", "Power[W]"]
 

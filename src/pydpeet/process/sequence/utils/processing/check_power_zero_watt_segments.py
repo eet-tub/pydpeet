@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
@@ -42,22 +44,22 @@ def _check_power_zero_watt_segments(df_primitives,
 
         if not supress_IO_warnings:
             if zero_Watt_ids_current or zero_Watt_ids_voltage:
-                print("\033[91m    WARNING: Power Segments with 0W found.")
+                logging.warning("Power Segments with 0W found.")
             if THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK:
                 if zero_Watt_ids_current:
                     if len(zero_Watt_ids_current) > THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK:
-                        print(
-                            f"\033[91m    Replaced with current segment: {zero_Watt_ids_current[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}, ...\033[0m")
+                        logging.warning(
+                            f"Replaced with current segment: {zero_Watt_ids_current[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}, ...")
                     else:
-                        print(
-                            f"\033[91m    Replaced with current segment: {zero_Watt_ids_current[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}\033[0m")
+                        logging.warning(
+                            f"Replaced with current segment: {zero_Watt_ids_current[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}")
                 if zero_Watt_ids_voltage:
                     if len(zero_Watt_ids_voltage) > THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK:
-                        print(
-                            f"\033[91m    Replaced with voltage segment: {zero_Watt_ids_voltage[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}, ...\033[0m")
+                        logging.warning(
+                            f"Replaced with voltage segment: {zero_Watt_ids_voltage[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}, ...")
                     else:
-                        print(
-                            f"\033[91m    Replaced with voltage segment: {zero_Watt_ids_voltage[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}\033[0m")
+                        logging.warning(
+                            f"Replaced with voltage segment: {zero_Watt_ids_voltage[:THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK]}")
 
     with log_time("correcting Power segments with 0W", SHOW_RUNTIME=SHOW_RUNTIME):
         correction_config = {

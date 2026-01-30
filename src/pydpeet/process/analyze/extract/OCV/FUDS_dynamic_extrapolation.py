@@ -1,12 +1,12 @@
+import logging
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from pathlib import Path
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 
 
-def apply_variable_pause_thresholds(
-                                    time_col: str,
+def apply_variable_pause_thresholds(time_col: str,
                                     thresholds_pct_tuples=None,
                                     fuds_df: pd.DataFrame = None,
                                     df_segments_and_sequences: pd.DataFrame = None,
@@ -54,7 +54,7 @@ def apply_variable_pause_thresholds(
     if fuds_df is None:
         raise ValueError("Dataframe is Empty! please provide a Dataframe.")
 
-    print("Applying rules and standard columns...")
+    logging.info("Applying rules and standard columns...")
     _rules = [
         "Pause"
     ]
@@ -66,8 +66,8 @@ def apply_variable_pause_thresholds(
     ]
 
     dfs_per_block = filter_and_split_df_by_blocks(
-        df_segments_and_sequences=seg_1,
-        df_primitives=fuds_1,
+        df_segments_and_sequences=df_segments_and_sequences,
+        df_primitives=fuds_df,
         rules=_rules,
         standard_columns=_STANDARD_COLUMNS,
         combine_op='or',

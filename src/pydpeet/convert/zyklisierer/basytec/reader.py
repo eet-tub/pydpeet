@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 from io import StringIO
 
@@ -27,7 +29,7 @@ def to_DataFrame(input_path: str) -> (pd.DataFrame, str):
             break
 
     if not metadata_lines:
-        print("The file does not contain expected metadata lines starting with '~'.")
+        logging.warning("The file does not contain expected metadata lines starting with '~'.")
 
     # The last metadata line is used as the header; remove it from metadata_lines.
     header_line = metadata_lines.pop().lstrip('~').strip()

@@ -1,3 +1,4 @@
+import logging
 from time import perf_counter
 import pandas
 import numpy as np
@@ -52,7 +53,7 @@ def iocv_detection(min_pause_lenght: float = 120,
 
     # Sanity Checks for Input
     if df is not None and df_primitives is not None:
-        raise ValueError("Input Error: Please provide either df or df_primitives, not both!")
+        raise ValueError("Please provide either df or df_primitives, not both!")
 
 
     if df is not None:
@@ -71,15 +72,15 @@ def iocv_detection(min_pause_lenght: float = 120,
 
     if df_primitives is not None:
         if df_primitives['Testtime[s]'].duplicated().any():
-            raise ValueError("Input Warning: Duplicated 'Testtime[s]' values found!")
+            raise ValueError("Duplicated 'Testtime[s]' values found!")
 
         if df_primitives['Testtime[s]'].isna().any():
-            raise ValueError("Input Warning: NaN values found in 'Testtime[s]'")
+            raise ValueError("NaN values found in 'Testtime[s]'")
 
         if not np.all(np.diff(df_primitives['Testtime[s]']) > 0):
-            raise ValueError("Input Warning: 'Testtime[s]' is not monotonically increasing!")
+            raise ValueError("'Testtime[s]' is not monotonically increasing!")
 
-        print("Checking if SOC exists in dataframe...")
+        logging.info("Checking if SOC exists in dataframe...")
         # todo: put back in
         # if 'SOC' in df_primitives.columns:
         #     print("SOC already exists in df_primitives, skipping SOC calculation...")
@@ -91,7 +92,7 @@ def iocv_detection(min_pause_lenght: float = 120,
         df_segments_and_sequences = step_analyzer_seqments_and_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
     else:
-        raise ValueError("Input Error: No df_primitives found!")
+        raise ValueError("No df_primitives found!")
 
 # Applying Rules for iOCV Sequences
     _rules = [
@@ -104,7 +105,7 @@ def iocv_detection(min_pause_lenght: float = 120,
         "Current[A]",
         "Power[W]",
     ]
-    print("Applying rules and standard columns to compute iOCV blocks...")
+    logging.info("Applying rules and standard columns to compute iOCV blocks...")
     dfs_per_block = filter_and_split_df_by_blocks(
         df_segments_and_sequences=df_segments_and_sequences,
         df_primitives=df_primitives,
@@ -114,7 +115,7 @@ def iocv_detection(min_pause_lenght: float = 120,
         print_blocks=True,
     )
 
-    print("Filtering iOCV Points...")
+    logging.info("Filtering iOCV Points...")
 
     #Filtering iOCV Points
     dfs_per_block = [df[df["Type"] == "Rest"] for df in dfs_per_block[0]]
@@ -122,7 +123,7 @@ def iocv_detection(min_pause_lenght: float = 120,
     dfs_per_block = [df for df in dfs_per_block if df["ID"].nunique() >= min_loops]
     dfs_per_block = [df for df in dfs_per_block if df["Duration"].min() >= min_pause_lenght]
 
-    print("Filtering iOCV Charge and Discharge blocks...")
+    logging.info("Filtering iOCV Charge and Discharge blocks...")
 
     dfs_with_type = []
     for df_block in dfs_per_block:
@@ -147,7 +148,7 @@ def iocv_detection(min_pause_lenght: float = 120,
     dfs_per_block = dfs_with_type
 
     if visualize:
-        print("Plotting iOCV curves...")
+        logging.info("Plotting iOCV curves...")
 
         fig, ax1 = plt.subplots(figsize=(12,8))
         ax1.set_xlabel('SOC', fontsize=15)
@@ -182,5 +183,5 @@ def iocv_detection(min_pause_lenght: float = 120,
         plt.tight_layout()
         plt.show()
 
-    print("Returning Dataframe with iOCV blocks...")
+    logging.info("Returning Dataframe with iOCV blocks...")
     return dfs_per_block

@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from pandas import DataFrame, Index
@@ -79,7 +80,7 @@ def _convert_file_to_pandas_data_frame(config: Config, input_path: str, custom_f
     tuple[DataFrame, str]
         A tuple containing the converted DataFrame and the meta data.
     """
-    print("converting file to pandas DataFrame...")
+    logging.info("converting file to pandas DataFrame...")
 
     if Config.not_exists(config):
         raise ValueError(f"Unknown config: {config}")
@@ -119,7 +120,7 @@ def _column_mapping(data_frame: DataFrame, config: Config, custom_folder: str = 
     DataFrame
         The DataFrame with the mapped columns.
     """
-    print("mapping columns...")
+    logging.info("mapping columns...")
 
     if data_frame is None:
         raise ValueError("Data frame is None.")
@@ -157,7 +158,7 @@ def _drop_additional_data(data_frame: DataFrame) -> DataFrame:
     DataFrame
         The DataFrame with columns dropped.
     """
-    print("dropping additional data...")
+    logging.info("dropping additional data...")
 
     if data_frame is None:
         raise ValueError("Data frame is None.")
@@ -184,7 +185,7 @@ def _add_metadata_to_dataframe(data_frame: DataFrame, meta_data: str) -> DataFra
     DataFrame
         The modified DataFrame with the added "Metadata" column.
     """
-    print("adding metadata to Dataframe...")
+    logging.info("adding metadata to Dataframe...")
 
     if data_frame is None:
         raise ValueError("Data frame is None.")
@@ -219,7 +220,7 @@ def _reorder_columns(data_frame: DataFrame) -> DataFrame:
     ValueError
         If the data_frame is None or empty.
     """
-    print("Getting columns in correct order...")
+    logging.info("Getting columns in correct order...")
 
     if data_frame is None:
         raise ValueError("Data frame is None.")
@@ -227,22 +228,22 @@ def _reorder_columns(data_frame: DataFrame) -> DataFrame:
     if data_frame.columns.size == 0:
         raise ValueError("Data frame is empty or has no columns.")
 
-    print("Checking for duplicate extra columns...")
+    logging.info("Checking for duplicate extra columns...")
     duplicates_fixed = _rename_duplicate_extra_columns(data_frame.columns)
     if not data_frame.columns.equals(duplicates_fixed):
         data_frame.columns = duplicates_fixed
 
-    print("Selecting and ordering standard columns...")
+    logging.info("Selecting and ordering standard columns...")
     ordered_standard_columns = [col for col in STANDARD_COLUMNS if col in data_frame.columns]
 
-    print("Selecting extra columns...")
+    logging.info("Selecting extra columns...")
     extra_columns = [col for col in data_frame.columns if col not in STANDARD_COLUMNS]
 
-    print("Combining standard and extra columns...")
+    logging.info("Combining standard and extra columns...")
     ordered_columns = ordered_standard_columns + extra_columns
 
     reordered = data_frame[ordered_columns]
-    print("Reordered DataFrame columns!")
+    logging.info("Reordered DataFrame columns!")
 
     return reordered
 
@@ -277,9 +278,7 @@ def _rename_duplicate_extra_columns(columns: Index) -> Index:
             duplicate_counts[col_name] += 1
 
     if any(count > 0 for count in duplicate_counts.values()):
-        print(
-            "\033[31mWARNING: Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.\033[0m"
-        )
+        logging.warning(f"Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.")
     return Index(result)
 
 
@@ -315,7 +314,7 @@ def _get_data_into_format(data_frame: DataFrame, config: Config, custom_folder: 
         If there is an error loading or applying the custom formatter module.
         If there is an error applying the predefined formatter.
     """
-    print("Starting to fix data format...")
+    logging.info("Starting to fix data format...")
 
     if data_frame is None:
         raise ValueError("Data frame is None.")
@@ -327,7 +326,7 @@ def _get_data_into_format(data_frame: DataFrame, config: Config, custom_folder: 
         raise ValueError(f"Valid custom folder path must be provided for {Config.Custom}")
 
     if config == Config.Custom:
-        print("Loading custom formatter module...")
+        logging.info("Loading custom formatter module...")
         try:
             custom_formatter = load_custom_module(custom_folder, "Formatter")
         except Exception as e:
@@ -337,11 +336,11 @@ def _get_data_into_format(data_frame: DataFrame, config: Config, custom_folder: 
         except Exception as e:
             raise ValueError(f"Error applying custom formatter: {e}")
     else:
-        print(f"Using formatter for config: {config}")
+        logging.info(f"Using formatter for config: {config}")
         try:
             FORMATTER_CONFIGS[config](data_frame)
         except Exception as e:
             raise ValueError(f"Error applying formatter: {e}")
 
-    print("Data format fixed.")
+    logging.info("Data format fixed.")
     return data_frame

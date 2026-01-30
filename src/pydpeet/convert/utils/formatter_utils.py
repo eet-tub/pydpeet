@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas
 
@@ -33,7 +35,7 @@ def typecast(data_frame: pandas.DataFrame, column_name: str, datatype) -> pandas
             raise ValueError(f"{column_name} is not in {data_frame.columns}")
         data_frame[column_name] = data_frame[column_name].astype(datatype)
     except Exception:
-        print(f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m")
+        logging.warning(f"Error converting column:{column_name} to {datatype.__name__}")
     return data_frame
 
 
@@ -67,7 +69,7 @@ def testtime_hours_to_seconds_with_string_interpretation(data_frame: pandas.Data
         else:
             data_frame["Testtime[s]"] = data_frame["Testtime[s]"].apply(_time_to_seconds)
     except Exception:
-        print("\033[31mWARNING: Error fixing Testtime[s] \033[0m")
+        logging.warning("Error fixing Testtime[s]")
     return data_frame
 
 
@@ -131,7 +133,7 @@ def apply_convert_to_float_if_possible(data_frame: pandas.DataFrame, column_name
             raise ValueError(f"{column_name} is not in {data_frame.columns}")
         data_frame[column_name] = data_frame[column_name].apply(_convert_to_float_if_possible)
     except Exception:
-        print(f"\033[31mWARNING: Error applying convert_to_float_if_possible for {column_name}\033[0m")
+        logging.warning(f"Error applying convert_to_float_if_possible for {column_name}")
     return data_frame
 
 
@@ -182,7 +184,7 @@ def replace_empty_with_none_in_standard_columns(data_frame: pandas.DataFrame):
             raise ValueError("dataframe is empty")
         data_frame[STANDARD_COLUMNS] = data_frame[STANDARD_COLUMNS].replace("", None)
     except Exception as e:
-        print(f"\033[31mWARNING: Error replacing empty with None. Reason: {e} \033[0m")
+        logging.warning(f"Error replacing empty with None. Reason: {e}")
     return data_frame
 
 
@@ -207,7 +209,7 @@ def testtime_hours_to_seconds_direct(data_frame: pandas.DataFrame) -> pandas.Dat
             raise ValueError("Testtime[s] is not in dataFrame.columns")
         data_frame["Testtime[s]"] = data_frame["Testtime[s]"].apply(_convert_to_hours_to_seconds_direct_if_possible)
     except Exception as e:
-        print(f"\033[31mWARNING: Error fixing Testtime[s] (converting hours to seconds). Reason: {e} \033[0m")
+        logging.warning(f"Error fixing Testtime[s] (converting hours to seconds). Reason: {e}")
     return data_frame
 
 
@@ -244,7 +246,7 @@ def round_testtime(data_frame: pandas.DataFrame) -> pandas.DataFrame:
 
         data_frame["Testtime[s]"] = round(data_frame["Testtime[s]"].astype(float), 5)
     except Exception as e:
-        print(f"\033[31mWARNING: Error fixing Testtime[s] (rounding). Reason: {e} \033[0m")
+        logging.warning(f"Error fixing Testtime[s] (rounding). Reason: {e}")
     return data_frame
 
 def nan_to_none_in_column(dataFrame: pandas.DataFrame, column_name: str) -> pandas.DataFrame | None:
@@ -274,7 +276,7 @@ def nan_to_none_in_column(dataFrame: pandas.DataFrame, column_name: str) -> pand
             raise ValueError(f"{column_name} is not in {dataFrame.columns}")
         dataFrame[column_name] = dataFrame[column_name].replace({np.nan: None})
     except Exception:
-        print(f"\033[31mWARNING: Error fixing {column_name} (replacing NaN with None) \033[0m")
+        logging.warning(f"Error fixing {column_name} (replacing NaN with None)")
     return dataFrame
 
 
@@ -317,7 +319,7 @@ def move_strings_from_column_to_metadata(data_frame: pandas.DataFrame, column_na
                                    (object))
         data_frame[column_name] = data_frame[column_name].replace({np.nan: None})
     except Exception:
-        print("\033[31mWARNING: Error adding Messages to Metadata \033[0m")
+        logging.warning("Error adding Messages to Metadata")
     return data_frame
 
 
@@ -367,7 +369,7 @@ def fix_time_format(data_frame: pandas.DataFrame, input_format: str = None) -> p
         except Exception:
             raise ValueError("Error changing to correct order in Timeformat")
     except Exception:
-        print("\033[31mWARNING: Error fixing timeformat Absolute Time[yyyy-mm-dd hh:mm:ss] \033[0m")
+        logging.warning("Error fixing timeformat Absolute Time[yyyy-mm-dd hh:mm:ss]")
     return data_frame
 
 
@@ -394,5 +396,5 @@ def absolute_time_timedate_typecast(data_frame: pandas.DataFrame) -> pandas.Data
             raise ValueError(f"Absolute Time[yyyy-mm-dd hh:mm:ss] Column doesn't exsist")
         data_frame["Absolute Time[yyyy-mm-dd hh:mm:ss]"] = pandas.to_datetime(data_frame["Absolute Time[yyyy-mm-dd hh:mm:ss]"], errors='coerce')
     except Exception:
-        print("\033[31mWARNING: Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss] \033[0m")
+        logging.warning("Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss]")
     return data_frame

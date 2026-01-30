@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -41,7 +43,7 @@ def fuds_ocv_by_pause(
     """
 
 
-    print("Applying rules and standard columns...")
+    logging.info("Applying rules and standard columns...")
     _rules = [
         "Pause"
     ]
@@ -62,7 +64,7 @@ def fuds_ocv_by_pause(
             also_return_filtered_df=False
         )
 
-    print("Filtering iOCV Points...")
+    logging.info("Filtering iOCV Points...")
 
     # Filter blocks with minimum Duration
     dfs_per_block = [df for df in dfs_per_block if df["Length"].min() >= min_pause_length]

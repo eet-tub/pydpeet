@@ -1,6 +1,8 @@
 import os
 from typing import List, Tuple, Dict
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 # "_" used to differentiate between functions that a user should access from outside
 # and functions that aren't expected to be called directly
@@ -126,8 +128,8 @@ def step_analyzer_primitives(
 
     # --- Warn if using fallback ---
     if STEP_ANALYZER_PRIMITIVES_CONFIG is None and not supress_IO_warnings:
-        print(
-            "\033[94mInput Warning: Using EXAMPLE_STEP_ANALYZER_PRIMITIVES_CONFIG as fallback configuration. Manual Parameters will be kept.\033[0m"
+        logger.warning(
+            "Using EXAMPLE_STEP_ANALYZER_PRIMITIVES_CONFIG as fallback configuration. Manual Parameters will be kept."
         )
 
     #TODO variable to choose if copy should be used?
@@ -137,14 +139,11 @@ def step_analyzer_primitives(
     if df is None or df.empty or not isinstance(df, pd.DataFrame):
         raise ValueError("Input dataframe is None or empty")
     if "Voltage[V]" not in df_step.columns:
-        print("\033[94mInput Error: 'Voltage[V]' column not found in input dataframe.\033[0m")
-        raise ValueError("Input Error: 'Voltage[V]' column not found in input dataframe.")
+        raise ValueError("'Voltage[V]' column not found in input dataframe.")
     if "Current[A]" not in df_step.columns:
-        print("\033[94mInput Error: 'Current[A]' column not found in input dataframe.\033[0m")
-        raise ValueError("Input Error: 'Current[A]' column not found in input dataframe.")
+        raise ValueError("'Current[A]' column not found in input dataframe.")
     if "Testtime[s]" not in df_step.columns:
-        print("\033[94mInput Error: 'Testtime[s]' column not found in input dataframe.\033[0m")
-        raise ValueError("Input Error: 'Testtime[s]' column not found in input dataframe.")
+        raise ValueError("'Testtime[s]' column not found in input dataframe.")
     if SEGMENTS_TO_DETECT_CONFIG is None or len(SEGMENTS_TO_DETECT_CONFIG) == 0:
         raise ValueError("SEGMENTS_TO_DETECT_CONFIG is None or empty")
     if ADJUST_SEGMENTS_CONFIG is None or len(ADJUST_SEGMENTS_CONFIG) == 0:
@@ -164,7 +163,7 @@ def step_analyzer_primitives(
 
     # --- Data cleanup ---
     if not supress_IO_warnings:
-        print("\033[94mInput Warning: Dropping NaN values in 'Testtime[s]', dropping duplicates and sorting 'Testtime[s]' column.\033[0m")
+        logger.warning("Dropping NaN values in 'Testtime[s]', dropping duplicates and sorting 'Testtime[s]' column.")
     df_step.dropna(subset=['Testtime[s]'], inplace=True)
     df_step.drop_duplicates(subset=['Testtime[s]'], inplace=True)
     df_step.sort_values(by=['Testtime[s]'], inplace=True)
@@ -173,22 +172,22 @@ def step_analyzer_primitives(
     if not supress_IO_warnings:
         for column_name, threshold in SEGMENTS_TO_DETECT_CONFIG:
             if threshold < 0:
-                print(f"\033[94mInput Warning: Threshold for {column_name} is negative, using abs({threshold}) instead.\033[0m")
+                logger.warning(f"Threshold for {column_name} is negative, using abs({threshold}) instead.")
                 SEGMENTS_TO_DETECT_CONFIG = [(column_name, abs(threshold)) for column_name, threshold in SEGMENTS_TO_DETECT_CONFIG]
         if THRESHOLD_CV_SEGMENTS_0A_END < 0.0:
-            print(f"\033[94mInput Warning: THRESHOLD_CV_SEGMENTS_0A_END is negative, using abs({THRESHOLD_CV_SEGMENTS_0A_END}) instead.\033[0m")
+            logger.warning(f"THRESHOLD_CV_SEGMENTS_0A_END is negative, using abs({THRESHOLD_CV_SEGMENTS_0A_END}) instead.")
             THRESHOLD_CV_SEGMENTS_0A_END = abs(THRESHOLD_CV_SEGMENTS_0A_END)
         if THRESHOLD_CONSOLE_PRINTS_CV_CHECK < 0:
-            print(f"\033[94mInput Warning: THRESHOLD_CONSOLE_PRINTS_CV_CHECK is negative, using abs({THRESHOLD_CONSOLE_PRINTS_CV_CHECK}) instead.\033[0m")
+            logger.warning(f"THRESHOLD_CONSOLE_PRINTS_CV_CHECK is negative, using abs({THRESHOLD_CONSOLE_PRINTS_CV_CHECK}) instead.")
             THRESHOLD_CONSOLE_PRINTS_CV_CHECK = abs(THRESHOLD_CONSOLE_PRINTS_CV_CHECK)
         if THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK < 0:
-            print(f"\033[94mInput Warning: THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is negative, using abs({THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK}) instead.\033[0m")
+            logger.warning(f"THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is negative, using abs({THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK}) instead.")
             THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK = abs(THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK)
         if THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH < 0:
-            print(f"\033[94mInput Warning: THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is negative, using abs({THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH}) instead.\033[0m")
+            logger.warning(f"THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is negative, using abs({THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH}) instead.")
             THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH = abs(THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH)
         if THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK < 0:
-            print(f"\033[94mInput Warning: THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is negative, using abs({THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK}) instead.\033[0m")
+            logger.warning(f"THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is negative, using abs({THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK}) instead.")
             THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK = abs(THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK)
 
     if PRECOMPILE:
@@ -198,10 +197,9 @@ def step_analyzer_primitives(
                 precompilation_step_analyzer()
 
         else:
-            print(
-                f"\033[91mInput Warning: Input dataframe is small ({len(df_step)} < 100_000 rows. Skipping precompilation unless you set FORCE_PRECOMPILATION = True.\033[0m")
+            logger.warning(f"Input dataframe is small ({len(df_step)} < 100_000 rows. Skipping precompilation unless you set FORCE_PRECOMPILATION = True.")
 
-    if SHOW_RUNTIME: print(f"detecting segments in dataframe of size {len(df_step)}...")
+    if SHOW_RUNTIME: logger.info(f"detecting segments in dataframe of size {len(df_step)}...")
 
     with log_time("calculating Power[W]", SHOW_RUNTIME=SHOW_RUNTIME):
         df_step["Power[W]"] = df_step["Voltage[V]"] * df_step["Current[A]"]
@@ -235,7 +233,7 @@ def step_analyzer_primitives(
                                            supress_IO_warnings=supress_IO_warnings)
 
     if SHOW_RUNTIME:
-        print("starting annotation...")
+        logger.info("starting annotation...")
 
     df_primitives = _annotate_primitives(
         df_step,
@@ -253,10 +251,10 @@ def step_analyzer_primitives(
     # Can be removed if we choose to always apply these additional corrections
     if check_CV_0Aend_segments_bool or check_Power_zero_W_segments_bool or check_zero_length_segments_bool:
         if SHOW_RUNTIME:
-            print("starting additional data checks and corrections...")
+            logger.info("starting additional data checks and corrections...")
     else:
         if not supress_IO_warnings:
-            print("\033[94mInput Warning:  Skipping additional data checks and corrections...\033[0m")
+            logger.warning("Skipping additional data checks and corrections...")
 
     if check_CV_0Aend_segments_bool:
         df_primitives = _check_CV_0Aend_segments(df_primitives=df_primitives,
@@ -337,9 +335,9 @@ def step_analyzer_seqments_and_sequences(df_primitives: pd.DataFrame,
 
     standard_columns = ['Testtime[s]', 'Voltage[V]', 'Current[A]', 'Power[W]', "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
     if not set(standard_columns).issubset(set(df_primitives.columns)):
-        print("\033[94mInput Warning: df_primitives doesn't have the standard columns.\033[0m")
+        logger.warning("df_primitives doesn't have the standard columns.")
 
-    if SHOW_RUNTIME: print("analyzing segments...")
+    if SHOW_RUNTIME: logger.info("analyzing segments...")
     with log_time("filtering by ID", SHOW_RUNTIME=SHOW_RUNTIME):
         df_ID_filtered = df_primitives.loc[df_primitives.groupby('ID')['ID'].idxmin()]
     # Not with log_time() since it's handled internally

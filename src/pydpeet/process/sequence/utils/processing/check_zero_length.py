@@ -2,7 +2,7 @@ import numpy as np
 
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction import df_primitives_correction
-
+import logging
 
 def _check_zero_length_segments(df_primitives,
                                 SHOW_RUNTIME,
@@ -91,21 +91,17 @@ def _check_zero_length_segments(df_primitives,
 
         if not supress_IO_warnings:
             if zero_length_ids_left_merge or zero_length_ids_right_merge:
-                print("\033[91m    WARNING: Segments with duration of 1 sample found.")
+                logging.warning("Segments with duration of 1 sample found.")
             if THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
                 if zero_length_ids_left_merge:
                     if len(zero_length_ids_left_merge) > THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
-                        print(
-                            f"\033[91m    Merged with left neighbor: {zero_length_ids_left_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}, ...\033[0m")
+                        logging.warning(f"Merged with left neighbor: {zero_length_ids_left_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}, ...")
                     else:
-                        print(
-                            f"\033[91m    Merged with left neighbor: {zero_length_ids_left_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}\033[0m")
+                        logging.warning(f"Merged with left neighbor: {zero_length_ids_left_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}")
                 if zero_length_ids_right_merge:
                     if len(zero_length_ids_right_merge) > THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
-                        print(
-                            f"\033[91m    Merged with right neighbor: {zero_length_ids_right_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}, ...\033[0m")
+                        logging.warning(f"Merged with right neighbor: {zero_length_ids_right_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}, ...")
                     else:
-                        print(
-                            f"\033[91m    Merged with right neighbor: {zero_length_ids_right_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}\033[0m")
+                        logging.warning(f"Merged with right neighbor: {zero_length_ids_right_merge[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]}")
 
     return df_primitives

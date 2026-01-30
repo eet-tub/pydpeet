@@ -1,4 +1,9 @@
 {
+  "src/pydpeet/utils/logging_style.py": {
+    "depth": 4,
+    "exports": ["set_logging_style"]
+  },
+
   "src/pydpeet/convert/convert.py": {
     "depth": 4,
     "exports": ["convert_file"]

@@ -1,3 +1,4 @@
+import logging
 from functools import reduce
 import operator
 from typing import Union
@@ -88,11 +89,11 @@ def return_or_print_blocks(df_filtered: pd.DataFrame,
         start_time = testtimes[start_idx]
         end_time = testtimes[end_idx]
         if print_blocks:
-            print("-" * 40)
-            print(f"Block {i + 1}:")
-            print(f"  Start ID: {start_id}, Testtime[s]: {start_time}")
-            print(f"  End ID:   {end_id}, Testtime[s]: {end_time}")
-            print("-" * 40)
+            logging.info("-" * 40)
+            logging.info(f"Block {i + 1}:")
+            logging.info(f"  Start ID: {start_id}, Testtime[s]: {start_time}")
+            logging.info(f"  End ID:   {end_id}, Testtime[s]: {end_time}")
+            logging.info("-" * 40)
 
         blocks.append({
             'start_id': start_id,
@@ -141,7 +142,8 @@ def filter_and_split_df_by_blocks(df_segments_and_sequences: pd.DataFrame,
 
 
     standard_columns = ["Testtime[s]", "Voltage[V]", "Current[A]", "Power[W]"]
-    print("\033[34m Input Warning: Using default standard columns:", standard_columns, "\033[0m")
+    logging.warning("Using default standard columns:")
+    logging.warning(standard_columns)
 
     df_filtered, df_filtered_IDs = filter_df(
         df_segments_and_sequences=df_segments_and_sequences,

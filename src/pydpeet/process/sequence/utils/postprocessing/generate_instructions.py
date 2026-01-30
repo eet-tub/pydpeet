@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 
 import pandas as pd
@@ -241,7 +242,7 @@ def generate_instructions(df_primitives,
         # Handle Ramp replacements with current-based logic
         if base_type in {"CRamp", "VRamp", "PRamp"}:
             if too_many_warnings < threshold_warnings:
-                print(f"    \033[91mWARNING: {base_type} segment (ID: {row['ID']}) replaced by CC with Average Current\033[0m")
+                logging.warning(f"{base_type} segment (ID: {row['ID']}) replaced by CC with Average Current")
                 too_many_warnings += 1
             if direction == "Charge" or (direction is None and current > 0):
                 instructions.append(build_instruction("Charge", f"{abs(current):.3f}A"))
@@ -275,10 +276,10 @@ def generate_instructions(df_primitives,
         elif base_type == "Pause":
             instructions.append(f"Rest for {length} seconds")
     if too_many_warnings > threshold_warnings:
-        print("\033[91m...\033[0m\n")
+        logging.warning("...")
     if unknown_seen:
-        print("\033[91mWarning: Unknown segment types encountered. "
-              "Instructions may be incomplete!\033[0m\n")
+        logging.warning("Unknown segment types encountered. "
+              "Instructions may be incomplete!")
 
     return instructions
 

@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,10 +58,10 @@ def compute_dva_ica(df_primitives = None,
     pd.DataFrame
         DataFrame containing all DVA and ICA curves.
     """
-    print("Executing DVA and ICA computation...")
+    logging.info("Executing DVA and ICA computation...")
     # falls nur ein df übergeben wird:
     if df is not None and df_primitives is not None:
-        raise ValueError("Input Error: Please provide either df or df_primitives, not both!")
+        raise ValueError("Please provide either df or df_primitives, not both!")
 
     if df is not None:
         df.drop_duplicates(subset=['Testtime[s]'], inplace=True)
@@ -76,28 +78,28 @@ def compute_dva_ica(df_primitives = None,
 
     if df_primitives is not None:
         if df_primitives['Testtime[s]'].duplicated().any():
-            raise ValueError("Input Warning: Duplicated 'Testtime[s]' values found!")
+            raise ValueError("Duplicated 'Testtime[s]' values found!")
 
         if df_primitives['Testtime[s]'].isna().any():
-            raise ValueError("Input Warning: NaN values found in 'Testtime[s]'")
+            raise ValueError("NaN values found in 'Testtime[s]'")
 
         if not np.all(np.diff(df_primitives['Testtime[s]']) > 0):
-            raise ValueError("Input Warning: 'Testtime[s]' is not monotonically increasing!")
+            raise ValueError("'Testtime[s]' is not monotonically increasing!")
 
-        print("Checking if SOC exists in dataframe...")
+        logging.info("Checking if SOC exists in dataframe...")
         if 'SOC' in df_primitives.columns:
-            print("SOC already exists in df_primitives, skipping SOC calculation...")
+            logging.info("SOC already exists in df_primitives, skipping SOC calculation...")
         else:
-            print("SOC column does not exist in df_primitives, adding it...")
+            logging.info("SOC column does not exist in df_primitives, adding it...")
             df_primitives = add_soc(df_primitives, method="withResetWhenFullAndEmpty",
                                     max_Voltage=soc_max_voltage, min_Voltage=soc_min_voltage, C_ref=soc_c_ref)
 
         df_segments_and_sequences = step_analyzer_seqments_and_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
     else:
-        raise ValueError("Input Error: No df_primitives found!")
+        raise ValueError("No df_primitives found!")
 
-    print("Calling iOCV detection...")
+    logging.info("Calling iOCV detection...")
     # Get every iocv as df
     dfs_per_block = iocv_detection(min_pause_lenght=min_pause_lenght,
                                    min_loops=min_loops,
@@ -106,20 +108,20 @@ def compute_dva_ica(df_primitives = None,
                                    )
 
     # Compute SOC
-    print("Checking if SOC exists in dataframe...")
+    logging.info("Checking if SOC exists in dataframe...")
     if 'SOC' in df_primitives.columns:
-        print("SOC already exists in df_primitives, skipping SOC calculation...")
+        logging.info("SOC already exists in df_primitives, skipping SOC calculation...")
     else:
-        print("SOC column does not exist in df_primitives, adding it...")
+        logging.info("SOC column does not exist in df_primitives, adding it...")
         df_primitives = add_soc(df_primitives.copy(), method="withResetWhenFullAndEmpty",
                                 max_Voltage=soc_max_voltage, min_Voltage=soc_min_voltage, C_ref=soc_c_ref)
 
 
-    print("Computing Capacity in Ah...")
+    logging.info("Computing Capacity in Ah...")
     capacity_Ah_points = integrate.cumulative_trapezoid((df_primitives['Current[A]']), x=df_primitives['Testtime[s]'], initial=0) / 3600
     df_primitives['Capacity_Ah'] = capacity_Ah_points
 
-    print("Labeling DVA/ICA blocks (Charge/Discharge)...")
+    logging.info("Labeling DVA/ICA blocks (Charge/Discharge)...")
     dfs_with_type = []
     for df_block in dfs_per_block:
         if df_block.empty:
@@ -142,7 +144,7 @@ def compute_dva_ica(df_primitives = None,
 
     dfs_per_block = dfs_with_type
 
-    print("Computing DVA and ICA for every block...")
+    logging.info("Computing DVA and ICA for every block...")
     all_dva_ica_curves = []
     for idx, block in enumerate(dfs_per_block):
         df_dva_ica = df_primitives.loc[
@@ -160,7 +162,7 @@ def compute_dva_ica(df_primitives = None,
         df_dva_ica["dQ_dV"] = 1 / df_dva_ica["dV_dQ"]
 
         if savgol:
-            print("Applying Savitzky-Golay filter...")
+            logging.info("Applying Savitzky-Golay filter...")
             window_length = int(
                 len(df_dva_ica["dQ_dV"]) * savgol_window_lenght_percentage
             )
@@ -175,7 +177,7 @@ def compute_dva_ica(df_primitives = None,
         all_dva_ica_curves.append(df_dva_ica)
 
     if visualize:
-        print("Plotting DVA and ICA curves...")
+        logging.info("Plotting DVA and ICA curves...")
         fig, (ax_dva, ax_ica) = plt.subplots(1, 2, figsize=(14, 6))
 
         charge_blocks = [df for df in all_dva_ica_curves if df["DVA_ICA_type"].iloc[0] == "Charge"]
@@ -212,7 +214,7 @@ def compute_dva_ica(df_primitives = None,
 
         plt.tight_layout()
         plt.show()
-    print("Returning DataFrame with all DVA and ICA Curves...")
+    logging.info("Returning DataFrame with all DVA and ICA Curves...")
     return pd.concat(all_dva_ica_curves, ignore_index=True)
 
 dataframes_path = Path(r"C:/python projekte/BA_Repo/pydpeet/src/Alex_BA/Tests/Test_res/")

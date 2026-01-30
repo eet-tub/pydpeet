@@ -1,5 +1,6 @@
 import numpy as np
 from numba import njit
+import logging
 
 @njit(cache=True)
 def _widen_segments_numba(Data_arr, ID_arr, thresholds):
@@ -153,11 +154,11 @@ def _widen_constant_segments(df, adjust_segments_config, Threshold_segments_to_p
             if not supress_IO_warnings:
                 if Threshold_segments_to_print:
                     if Threshold_segments_to_print < len(removed_ranges):
-                        print(f"\033[91m    WARNING: Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges[:Threshold_segments_to_print]) + " ...\033[0m")
+                        logging.warning(f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges[:Threshold_segments_to_print]) + " ...")
                     else:
-                        print(f"\033[91m    WARNING: Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges[:Threshold_segments_to_print]) + "\033[0m")
+                        logging.warning(f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges[:Threshold_segments_to_print]))
                 else:
-                    print(f"\033[91m    WARNING: Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges) + "\033[0m")
+                    logging.warning(f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges))
 
     # Update DataFrame
     for i, col in enumerate(ID_columns_name_list):
