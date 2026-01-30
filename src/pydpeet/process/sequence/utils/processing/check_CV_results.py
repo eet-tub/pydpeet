@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 from numba import njit
@@ -203,15 +205,15 @@ def _check_CV_0Aend_segments(df_primitives,
 
         if not supress_IO_warnings:
             if expanded_ranges:
-                print(
-                    "\033[91m    WARNING: Suspicious Voltage Segments that end with Current[A] = 0.0 found.\033[0m")
+                logging.warning(
+                    "Suspicious Voltage Segments that end with Current[A] = 0.0 found.")
             if THRESHOLD_CONSOLE_PRINTS_CV_CHECK:
                 expanded_ranges_items = list(expanded_ranges.items())
                 if len(expanded_ranges_items) > THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
                     preview = expanded_ranges_items[:THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK]
-                    print(f"\033[91m    Turned into CC segments: {preview}, ...\033[0m")
+                    logging.warning(f"Turned into CC segments: {preview}, ...")
                 else:
-                    print(f"\033[91m    Turned into CC segments: {expanded_ranges_items}\033[0m")
+                    logging.warning(f"Turned into CC segments: {expanded_ranges_items}")
 
 
     return df_primitives
