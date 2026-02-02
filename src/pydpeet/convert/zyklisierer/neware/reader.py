@@ -354,6 +354,7 @@ def _handle_final(step: DataFrame, record: DataFrame) -> DataFrame:
 
             if numpy.isnan(step_id):
                 if current_step_type != step_type:
+                    record_step_id.setflags(write=True)
                     record_step_id[last_idx:idx] = current_step_id
                     last_idx = idx
                     break
