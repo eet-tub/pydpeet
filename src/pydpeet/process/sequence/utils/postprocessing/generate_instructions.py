@@ -2,6 +2,7 @@ from typing import Dict
 
 import pandas as pd
 
+from pydpeet.citations import citeme
 from pydpeet.process.sequence.step_analyzer import step_analyzer_seqments_and_sequences
 
 
@@ -181,6 +182,12 @@ def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
     return dataframe_records
 
 
+@citeme.bachelorthesis('Daniel_BA', {
+    'author': 'Daniel Schröder',
+    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
+    'school': 'Technische Universität Berlin',
+    'year': '2026'
+})
 def generate_instructions(df_primitives,
                           end_condition_map: dict = {
                             "CC": "voltage",

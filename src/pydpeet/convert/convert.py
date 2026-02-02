@@ -2,6 +2,7 @@ from pathlib import Path
 
 from pandas import DataFrame, Index
 
+from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import Config, READER_CONFIGS, MAPPER_CONFIGS, STANDARD_COLUMNS, FORMATTER_CONFIGS
 from pydpeet.convert.map import mapping
 from pydpeet.convert.utils.ext_path import ExtPath
@@ -14,6 +15,12 @@ ConfigLike = Union[Config, str]
 
 
 @measure_time
+@citeme.internship('PPB25', {
+    'author': 'Daniel Schröder, Alexander Hinrichsen, Jan Kalisch, Cataldo De Simone',
+    'title': 'Python Package zur Batteriemessdatenverarbeitung',
+    'school': 'Technische Universität Berlin',
+    'year': '2025'
+})
 def convert_file(config: ConfigLike, input_path: str, keep_all_additional_data: bool = False,
             custom_folder_path: str = None) -> DataFrame:
     """

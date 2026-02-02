@@ -1,6 +1,15 @@
 import pandas as pd
+
+from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import STANDARD_COLUMNS
 
+
+@citeme.internship('PPB25', {
+    'author': 'Daniel Schröder, Alexander Hinrichsen, Jan Kalisch, Cataldo De Simone',
+    'title': 'Python Package zur Batteriemessdatenverarbeitung',
+    'school': 'Technische Universität Berlin',
+    'year': '2025'
+})
 def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -> pd.DataFrame:
     """
     Renames and maps specific columns in the DataFrame to standardized names.

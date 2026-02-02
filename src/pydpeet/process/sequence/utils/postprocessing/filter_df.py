@@ -4,7 +4,15 @@ from typing import Union
 import pandas as pd
 from pandas import DataFrame
 
+from pydpeet.citations import citeme
 
+
+@citeme.bachelorthesis('Daniel_BA', {
+    'author': 'Daniel Schröder',
+    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
+    'school': 'Technische Universität Berlin',
+    'year': '2026'
+})
 def filter_df(df_segments_and_sequences,
               df_primitives,
               rules,

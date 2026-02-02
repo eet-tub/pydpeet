@@ -2,6 +2,7 @@ import os
 from typing import List, Tuple, Dict
 import pandas as pd
 
+from pydpeet.citations import citeme
 # "_" used to differentiate between functions that a user should access from outside
 # and functions that aren't expected to be called directly
 
@@ -26,6 +27,12 @@ from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction impo
 from pydpeet.process.sequence.utils.configs.CONFIG_Fallback import FALLBACK_CONFIG
 
 
+@citeme.bachelorthesis('Daniel_BA', {
+    'author': 'Daniel Schröder',
+    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
+    'school': 'Technische Universität Berlin',
+    'year': '2026'
+})
 def step_analyzer_primitives(
         df: pd.DataFrame,
         STEP_ANALYZER_PRIMITIVES_CONFIG: Dict = None,
@@ -293,6 +300,12 @@ def step_analyzer_primitives(
     return df_primitives
 
 
+@citeme.bachelorthesis('Daniel_BA', {
+    'author': 'Daniel Schröder',
+    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
+    'school': 'Technische Universität Berlin',
+    'year': '2026'
+})
 def step_analyzer_seqments_and_sequences(df_primitives: pd.DataFrame,
                                          SEGMENT_SEQUENCE_CONFIG: dict = None,
                                          SHOW_RUNTIME: bool = True
@@ -350,6 +363,12 @@ def step_analyzer_seqments_and_sequences(df_primitives: pd.DataFrame,
     return df_segments_and_sequences
 
 
+@citeme.bachelorthesis('Daniel_BA', {
+    'author': 'Daniel Schröder',
+    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
+    'school': 'Technische Universität Berlin',
+    'year': '2026'
+})
 def precompilation_step_analyzer():
     """
     Precompilation of the step analyzer function using dummy data.

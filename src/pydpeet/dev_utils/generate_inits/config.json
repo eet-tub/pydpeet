@@ -1,4 +1,9 @@
 {
+  "src/pydpeet/citations/citeme.py": {
+    "depth": 4,
+    "exports": ["print_references", "write_to_bibtex"]
+  },
+  
   "src/pydpeet/convert/convert.py": {
     "depth": 4,
     "exports": ["convert_file"]

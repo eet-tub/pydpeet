@@ -1,6 +1,6 @@
 """
 Auto-generated __init__ file.
-Created: 2026-01-26 15:08:14
+Created: 2026-02-02 10:44:50
 """
 
 # Bind selected names from source modules into this package without leaking helper names
@@ -17,7 +17,6 @@ def _pydpeet_bind():
     _m = importlib.import_module('pydpeet.process.analyze.configs.battery_config')
     globals()['am23nmc'] = getattr(_m, 'am23nmc')
     globals()['battery_default'] = getattr(_m, 'battery_default')
-    globals()['BatteryConfig'] = getattr(_m, 'BatteryConfig')
     globals()['tc23nmc'] = getattr(_m, 'tc23nmc')
     _m = importlib.import_module('pydpeet.process.analyze.extract.OCV.iocv_detection')
     globals()['iocv_detection'] = getattr(_m, 'iocv_detection')

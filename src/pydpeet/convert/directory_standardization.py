@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import Config, DataOutputFiletype
 from pydpeet.convert.convert import convert_file
 from pydpeet.convert.export import export
@@ -10,6 +11,12 @@ import pandas as pd
 
 
 @measure_time
+@citeme.internship('PPB25', {
+    'author': 'Daniel Schröder, Alexander Hinrichsen, Jan Kalisch, Cataldo De Simone',
+    'title': 'Python Package zur Batteriemessdatenverarbeitung',
+    'school': 'Technische Universität Berlin',
+    'year': '2025'
+})
 def convert_files_in_directory(
         config: Config,
         input_path: str,
