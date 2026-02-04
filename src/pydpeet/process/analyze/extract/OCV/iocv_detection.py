@@ -53,6 +53,7 @@ def iocv_detection(min_pause_lenght: float = 120,
     # Sanity Checks for Input
     if df is not None and df_primitives is not None:
         raise ValueError("Please provide either df or df_primitives, not both!")
+        raise ValueError("Please provide either df or df_primitives, not both!")
 
 
     if df is not None:
@@ -72,11 +73,14 @@ def iocv_detection(min_pause_lenght: float = 120,
     if df_primitives is not None:
         if df_primitives['Testtime[s]'].duplicated().any():
             raise ValueError("Duplicated 'Testtime[s]' values found!")
+            raise ValueError("Duplicated 'Testtime[s]' values found!")
 
         if df_primitives['Testtime[s]'].isna().any():
             raise ValueError("NaN values found in 'Testtime[s]'")
+            raise ValueError("NaN values found in 'Testtime[s]'")
 
         if not np.all(np.diff(df_primitives['Testtime[s]']) > 0):
+            raise ValueError("'Testtime[s]' is not monotonically increasing!")
             raise ValueError("'Testtime[s]' is not monotonically increasing!")
 
         logging.info("Checking if SOC exists in dataframe...")
@@ -93,6 +97,7 @@ def iocv_detection(min_pause_lenght: float = 120,
         df_segments_and_sequences = step_analyzer_seqments_and_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
     else:
+        raise ValueError("No df_primitives found!")
         raise ValueError("No df_primitives found!")
 
 # Applying Rules for iOCV Sequences
