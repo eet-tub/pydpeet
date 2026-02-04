@@ -182,12 +182,6 @@ def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
     return dataframe_records
 
 
-@citeme.bachelorthesis('Daniel_BA', {
-    'author': 'Daniel Schröder',
-    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
-    'school': 'Technische Universität Berlin',
-    'year': '2026'
-})
 def generate_instructions(df_primitives,
                           end_condition_map: dict = {
                             "CC": "voltage",
