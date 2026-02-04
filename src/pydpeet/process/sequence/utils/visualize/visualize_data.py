@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import tkinter as tk
+import logging
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
 # -------------------------------------------------------------------
@@ -216,10 +217,10 @@ def visualize_phases(
     show_runtime: bool = True
 ):
     if start_time is None:
-        print("\033[94m    Input Warning: start_time is None - setting it to 0.0 \033[0m")
+        logging.warning("start_time is None - setting it to 0.0")
         start_time = 0.0
     if end_time is None:
-        print("\033[94m    Input Warning: end_time is None - setting it to the biggest possible float \033[0m")
+        logging.warning("end_time is None - setting it to the biggest possible float")
         end_time = float('inf')
     if dataframe is None:
         raise ValueError("dataframe is None")
@@ -238,7 +239,7 @@ def visualize_phases(
     if start_time >= end_time:
         raise ValueError(f"start_time ({start_time}) must be less than end_time ({end_time})")
     if not (0 <= segment_alpha <= 1):
-        print("\033[91m Warning: segment_alpha must be between 0 and 1 - resetting it now to 0.3 \033[0m")
+        logging.warning("segment_alpha must be between 0 and 1 - resetting it now to 0.3")
         segment_alpha = 0.3
 
     if start_time is None:

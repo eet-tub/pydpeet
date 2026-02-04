@@ -1,3 +1,4 @@
+import logging
 import os
 import pandas
 from pydpeet.convert.configs.config import DataOutputFiletype
@@ -74,7 +75,7 @@ def _do_export(data_frame: pandas.DataFrame,
         DataOutputFiletype.parquet, DataOutputFiletype.csv, or
         DataOutputFiletype.xlsx.
     """
-    print(f"exporting to {output_path}")
+    logging.info(f"exporting to {output_path}")
     match data_output_filetype:
         case DataOutputFiletype.parquet:
             full_output_path = f"{output_path}_Data.parquet"

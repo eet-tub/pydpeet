@@ -1,3 +1,4 @@
+import logging
 import pandas as pd
 from pydpeet.convert.configs.config import STANDARD_COLUMNS
 
@@ -43,15 +44,13 @@ def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -
     # Add missing columns with None values if they do not exist, and issue warnings
     for missing in missing_columns:
         if missing not in df.columns:
-            print(
-                f"\033[31m WARNING: Missing column: '{missing}'. Adding Collumn (with None values) named: '{missing}'. \033[0m")
+            logging.warning( f"Missing column: '{missing}'. Adding Collumn (with None values) named: '{missing}'.")
             df[missing] = None
 
     # Warn if a column that should be mapped is missing and add it with None values
     for original_col in column_map.keys():
         if original_col not in df.columns:
-            print(
-                f"\033[31m WARNING: Column to be mapped '{original_col}' does not exist in DataFrame. Adding it with None values. \033[0m")
+            logging.warning(f"Column to be mapped '{original_col}' does not exist in DataFrame. Adding it with None values.")
             df[original_col] = None
 
     # Rename the existing columns as per the column_map

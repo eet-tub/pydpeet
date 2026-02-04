@@ -2,9 +2,6 @@ import pandas
 from pydpeet.convert.utils.formatter_utils import typecast
 
 
-
-
-
 def get_data_into_format(dataFrame: pandas.DataFrame):
     """
     Format a DataFrame into standard format required by the database.

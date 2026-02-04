@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 
@@ -130,14 +131,14 @@ def _process_file(
     output_path : str
         The path to the directory where the standardized file will be written.
     """
-    print(f"Processing file: {filename}")
+    logging.info(f"Processing file: {filename}")
     try:
         df = convert_file(config, file_path, keep_all_additional_data, custom_folder_path)
         output_filename = f"{os.path.splitext(filename)[0]}_{config_name}_{current_date}"
-        print(f"Successfully processed: {output_filename}")
+        logging.info(f"Successfully processed: {output_filename}")
         return df
     except Exception as e:
-        print(f"Error processing file {filename}: {e}")
+        logging.warning(f"Issue processing file {filename}: {e}")
 
     
 
@@ -178,11 +179,11 @@ def _process_file_and_export(
     output_path : str
         The path to the directory where the standardized file will be written.
     """
-    print(f"Processing file: {filename}")
+    logging.info(f"Processing file: {filename}")
     try:
         df = convert_file(config, file_path, keep_all_additional_data, custom_folder_path)
         output_filename = f"{os.path.splitext(filename)[0]}_{config_name}_{current_date}"
         export(df, output_path, output_filename, data_output_filetype)
-        print(f"Successfully processed and exported: {output_filename}")
+        logging.info(f"Successfully processed and exported: {output_filename}")
     except Exception as e:
-        print(f"Error processing file {filename}: {e}")
+        logging.warning(f"Issue processing file {filename}: {e}")

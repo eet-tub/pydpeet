@@ -1,3 +1,4 @@
+import logging
 import os.path
 import re
 from concurrent.futures import ThreadPoolExecutor
@@ -61,7 +62,7 @@ def _read_sheets(main_file_path: str) -> Dict[str, DataFrame] | None:
     Returns:
     Dict[str, DataFrame] | None: A dictionary containing DataFrames for each sheet.
     """
-    print(f"Reading sheets from {main_file_path}...")
+    logging.info(f"Reading sheets from {main_file_path}...")
     if not os.path.exists(main_file_path):
         raise FileNotFoundError(f"Not found: {main_file_path}")
     if not os.path.isfile(main_file_path) or not main_file_path.endswith('.xlsx') or main_file_path.endswith('.xls'):
@@ -204,13 +205,13 @@ def _handle_cycle_step_test(cycle_sheet: DataFrame, step_sheet: DataFrame, test_
     Returns:
     DataFrame: A DataFrame containing the merged data from the cycle, step, and test sheets.
     """
-    print("Handling sheets cycle, step and test...")
-    print("merging cycle and step...")
+    logging.info("Handling sheets cycle, step and test...")
+    logging.info("merging cycle and step...")
 
     cycle_step_test = pandas.merge(cycle_sheet, step_sheet, left_on='Cycle Index', right_on='Cycle Index', how='left')
     test = _handle_test(test_sheet)
 
-    print("merging cycle_step_test and test...")
+    logging.info("merging cycle_step_test and test...")
     return pandas.merge(cycle_step_test, test, left_on='Step Index', right_on='Step Index', how='left')
 
 
@@ -229,7 +230,7 @@ def _handle_test(test: DataFrame) -> DataFrame:
     Returns:
     DataFrame: A DataFrame containing the handled test sheet data.
     """
-    print("handling test sheet...")
+    logging.info("handling test sheet...")
 
     headers_idx = test[test.apply(lambda row: row.astype(str).str.contains("Step Index").any(), axis=1)].index[0]
     data = DataFrame(test.iloc[headers_idx + 1:].values, columns=test.iloc[headers_idx])
@@ -267,7 +268,7 @@ def _handle_record_auxvol_auxtemp(
     DataFrame: A DataFrame containing the merged data from the record, auxiliary voltage, and
     auxiliary temperature sheets.
     """
-    print("hadling record auxvol auxtemp sheets...")
+    logging.info("hadling record auxvol auxtemp sheets...")
 
     df_record.rename(columns={
         'Current(A)': 'Current[A] - record',
@@ -278,13 +279,13 @@ def _handle_record_auxvol_auxtemp(
     if df_auxvol is not None:
         df_auxvol = _re_index_headers(df_auxvol, ['DataPoint', 'Date', 'V1', 'Aux. ΔV'], 'Single cell voltage(V)')
         df_auxvol.rename(columns={'Date': 'Date - auxVol', 'DataPoint': 'DataPoint - auxVol'}, inplace=True)
-        print("merging record and auxvol...")
+        logging.info("merging record and auxvol...")
         result = pandas.merge(df_record, df_auxvol, left_on='DataPoint', right_on='DataPoint - auxVol', how='left')
 
     if df_auxtemp is not None:
         df_auxtemp = _re_index_headers(df_auxtemp, ['DataPoint', 'Date', 'T1', 'Aux. ΔT'], 'Single cell temperature(℃)')
         df_auxtemp.rename(columns={'Date': 'Date - auxTemp', 'DataPoint': 'DataPoint - auxTemp'}, inplace=True)
-        print("merging record_auxvol and auxtemp...")
+        logging.info("merging record_auxvol and auxtemp...")
         result = pandas.merge(result, df_auxtemp, left_on='DataPoint', right_on='DataPoint - auxTemp', how='left')
 
     return result
@@ -307,13 +308,13 @@ def _re_index_headers(df: DataFrame, expected_headers: list[str], keyword: str):
     Returns:
     DataFrame: The DataFrame with the reindexed headers.
     """
-    print("checking if headers need to be reindexed...")
+    logging.info("checking if headers need to be reindexed...")
     if not all(header in df.columns for header in expected_headers) and keyword in df.columns:
-        print("reindexing headers...")
+        logging.info("reindexing headers...")
         df.columns = df.iloc[0].values
         df = df.iloc[1:]
     else:
-        print("no need to reindex headers...")
+        logging.info("no need to reindex headers...")
     return df
 
 
@@ -334,7 +335,7 @@ def _handle_final(step: DataFrame, record: DataFrame) -> DataFrame:
     Returns:
     DataFrame: A DataFrame containing the merged data from the step and record sheets.
     """
-    print("handling final merge...")
+    logging.info("handling final merge...")
 
     record['step_id'] = numpy.nan
     last_idx = 0
@@ -353,6 +354,7 @@ def _handle_final(step: DataFrame, record: DataFrame) -> DataFrame:
 
             if numpy.isnan(step_id):
                 if current_step_type != step_type:
+                    record_step_id.setflags(write=True)
                     record_step_id[last_idx:idx] = current_step_id
                     last_idx = idx
                     break

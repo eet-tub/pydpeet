@@ -71,7 +71,7 @@ def run_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, 
             if 'StepID' in df.columns:
                 first_val = df['StepID'].iloc[0]
                 if isinstance(first_val, str) and first_val.lower() == "test":
-                    print(f"Skipping DataFrame {i} because StepID starts with 'Test'")
+                    logging.warning(f"Skipping DataFrame {i} because StepID starts with 'Test'")
                     continue
 
             last_valid_idx = df['Testtime[s]'].last_valid_index()

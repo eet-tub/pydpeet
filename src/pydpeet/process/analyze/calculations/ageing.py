@@ -1,12 +1,9 @@
 import logging
-
+import pandas as pd
 import numpy as np
 
 from pydpeet.process.analyze.calculations.throughput import calculate_average_positive_chargeThroughput
 from pydpeet.process.analyze.calculations.utils import _check_columns, StepTimer
-from numba import njit
-
-
 
 
 def calculate_average_temperature(df, verbose=True):
@@ -78,7 +75,7 @@ def calculate_soh_loss(df, verbose=True):
 
     if soh.empty:
         if verbose:
-            print("No valid SOH values found.")
+            logging.warning("No valid SOH values found.")
         return np.nan
 
     with StepTimer(verbose) as st:
@@ -101,13 +98,13 @@ def calculate_soh_loss_per_cycle(df, verbose=True):
 
     if cycles.empty:
         if verbose:
-            print("No valid EquivalentFullCycles values found.")
+            logging.warning("No valid EquivalentFullCycles values found. returning np.nan")
         return np.nan
 
     max_cycles = cycles.max()
     if max_cycles <= 0:
         if verbose:
-            print("Max EquivalentFullCycles <= 0, cannot compute loss per cycle.")
+            logging.warning("Max EquivalentFullCycles <= 0, cannot compute loss per cycle. returning np.nan")
         return np.nan
 
     with StepTimer(verbose) as st:
@@ -117,8 +114,6 @@ def calculate_soh_loss_per_cycle(df, verbose=True):
     return soh_loss_per_cycle
 
 
-import pandas as pd
-import numpy as np
 
 
 def calculate_soh_loss_over_charging(df, verbose=True):
@@ -153,7 +148,7 @@ def calculate_soh_loss_over_charging(df, verbose=True):
         df.at[end_idx, 'SohLossPerAh'] = loss_per_current
 
         if verbose:
-            print(f"From index {start_idx} to {end_idx}: SOH diff = {soh_diff}, "
+            logging.info(f"From index {start_idx} to {end_idx}: SOH diff = {soh_diff}, "
                   f"Avg current = {avg_current}, Loss/current = {loss_per_current}")
 
     return df

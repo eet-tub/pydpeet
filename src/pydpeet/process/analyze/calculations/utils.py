@@ -146,7 +146,7 @@ def drop_duplicate_testtime(df, keep="first"):
     df_clean = df.drop_duplicates(subset=["Testtime[s]"], keep=keep).copy()
     n_after = len(df_clean)
 
-    print(f"Dropped {n_before - n_after} duplicate rows (kept={keep}).")
+    logging.warning(f"Dropped {n_before - n_after} duplicate rows (kept={keep}).")
 
     return df_clean.sort_values("Testtime[s]").reset_index(drop=True)
 
@@ -356,7 +356,7 @@ def plot_single_column_all_files(input_dir, column = ColumnName.CAPACITY, title 
         match = cell_regex.search(filename)
         if not match:
             if verbose:
-                print(f"Skipping {filename}: no valid cell ID found.")
+                logging.warning(f"Skipping {filename}: no valid cell ID found.")
             continue
 
         cell_id = match.group(1)
@@ -365,12 +365,12 @@ def plot_single_column_all_files(input_dir, column = ColumnName.CAPACITY, title 
         try:
             df = pd.read_parquet(path)
         except Exception as e:
-            print(f"Error reading {filename}: {e}")
+            logging.error(f"Error reading {filename}: {e}")
             continue
 
         if column.value not in df.columns:
             if verbose:
-                print(f"{filename}: column '{column.value}' not found, skipping.")
+                logging.warning(f"{filename}: column '{column.value}' not found, skipping.")
             continue
 
         data = df[column.value]
@@ -378,7 +378,7 @@ def plot_single_column_all_files(input_dir, column = ColumnName.CAPACITY, title 
         valid_index = data.dropna().index
         if len(valid_index) == 0:
             if verbose:
-                print(f"{cell_id}: no valid (non-NaN) values for {column.value}, skipping.")
+                logging.warning(f"{cell_id}: no valid (non-NaN) values for {column.value}, skipping.")
             continue
 
         first_valid_idx = valid_index[0]  # Label des ersten gültigen Eintrags
@@ -429,7 +429,7 @@ def plot_single_column_all_files(input_dir, column = ColumnName.CAPACITY, title 
         gc.collect()
 
     if not found_any:
-        print(f"Keine gültigen Daten für Spalte '{column.value}' in '{input_dir}' gefunden.")
+        logging.warning(f"No valid data found in column '{column.value}' in '{input_dir}'. Returning None, None")
         return None, None
 
     ax.set_title(f"{column.value} über {x_label_EFC} ({cycler})", fontsize=30)
@@ -449,9 +449,8 @@ def plot_single_column_all_files(input_dir, column = ColumnName.CAPACITY, title 
 
 import matplotlib.pyplot as plt
 
-def plot_axis_with_color(x_axis, y_axis, colour_column,
-                         title: str = "", xlabel=None, ylabel=None,
-                         colourlabel=None, s=40, alpha=0.8, edgecolour='None', plot_colourbar=True):
+def plot_axis_with_color(x_axis, y_axis, colour_column, title: str = "", xlabel=None, ylabel=None, s=40, alpha=0.8,
+                         edgecolour='None', plot_colourbar=True):
     import matplotlib.colors as mcolors
 
     fig, ax = plt.subplots(figsize=(24, 6))
@@ -461,7 +460,7 @@ def plot_axis_with_color(x_axis, y_axis, colour_column,
         y_axis,
         c=colour_column,
         cmap="viridis",
-        norm = norm,
+        norm=norm,
         s=s,
         alpha=alpha,
         edgecolor=edgecolour,

@@ -1,3 +1,4 @@
+import logging
 from time import perf_counter
 from contextlib import contextmanager
 
@@ -24,4 +25,4 @@ def log_time(description: str = "",
     yield
     end = perf_counter()
     if SHOW_RUNTIME:
-        print(f"    {end - start:.4f}s {description}")
+        logging.info(f"    {end - start:.4f}s {description}")
