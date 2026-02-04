@@ -4,8 +4,6 @@ from typing import Union
 import pandas as pd
 from pandas import DataFrame
 
-from pydpeet.citations import citeme
-
 
 def filter_df(df_segments_and_sequences,
               df_primitives,

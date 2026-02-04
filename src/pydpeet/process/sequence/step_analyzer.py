@@ -2,9 +2,6 @@ import os
 from typing import List, Tuple, Dict
 import pandas as pd
 
-from pydpeet.citations import citeme
-# "_" used to differentiate between functions that a user should access from outside
-# and functions that aren't expected to be called directly
 
 # LOG_TIME
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time

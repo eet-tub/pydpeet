@@ -1,6 +1,5 @@
 import pandas as pd
 
-from pydpeet.citations import citeme
 from pydpeet.process.sequence.utils.annotate.annotate_primitives import _merged_annotations
 
 
