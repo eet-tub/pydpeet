@@ -1,26 +1,15 @@
 """
 Auto-generated __init__ file.
-Created: 2026-01-30 20:07:37
+Created: 2026-02-04 13:46:34
 """
 
-# Bind selected names from source modules into this package without leaking helper names
+# Re-export selected names from source modules
 
-def _pydpeet_bind():
-    import importlib, sys
-    _m = importlib.import_module('pydpeet.process.sequence.utils.postprocessing.df_primitives_correction')
-    globals()['df_primitives_correction'] = getattr(_m, 'df_primitives_correction')
-    _m = importlib.import_module('pydpeet.process.sequence.utils.postprocessing.filter_df')
-    globals()['filter_and_split_df_by_blocks'] = getattr(_m, 'filter_and_split_df_by_blocks')
-    _m = importlib.import_module('pydpeet.process.sequence.utils.postprocessing.generate_instructions')
-    globals()['generate_instructions'] = getattr(_m, 'generate_instructions')
-    _m = importlib.import_module('pydpeet.process.sequence.step_analyzer')
-    globals()['step_analyzer_primitives'] = getattr(_m, 'step_analyzer_primitives')
-    globals()['step_analyzer_seqments_and_sequences'] = getattr(_m, 'step_analyzer_seqments_and_sequences')
-    _m = importlib.import_module('pydpeet.process.sequence.utils.visualize.visualize_data')
-    globals()['visualize_phases'] = getattr(_m, 'visualize_phases')
-
-_pydpeet_bind()
-del _pydpeet_bind
+from pydpeet.process.sequence.step_analyzer import step_analyzer_primitives, step_analyzer_seqments_and_sequences
+from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction import df_primitives_correction
+from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
+from pydpeet.process.sequence.utils.postprocessing.generate_instructions import generate_instructions
+from pydpeet.process.sequence.utils.visualize.visualize_data import visualize_phases
 
 # Public API for this package
 __all__ = [
