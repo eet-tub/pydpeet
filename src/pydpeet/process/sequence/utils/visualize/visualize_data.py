@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import tkinter as tk
 import logging
+
+from pydpeet.citations import citeme
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
 # -------------------------------------------------------------------
@@ -194,6 +196,12 @@ def _visualize_phases(
         plt.tight_layout()
 
 
+@citeme.bachelorthesis('Daniel_BA', {
+    'author': 'Daniel Schröder',
+    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
+    'school': 'Technische Universität Berlin',
+    'year': '2026'
+})
 def visualize_phases(
     dataframe: pd.DataFrame,
     start_time: float = None,

@@ -1,9 +1,9 @@
 {
-  "src/pydpeet/utils/logging_style.py": {
+  "src/pydpeet/citations/citeme.py": {
     "depth": 4,
-    "exports": ["set_logging_style"]
+    "exports": ["print_references", "write_to_bibtex"]
   },
-
+  
   "src/pydpeet/convert/convert.py": {
     "depth": 4,
     "exports": ["convert_file"]
