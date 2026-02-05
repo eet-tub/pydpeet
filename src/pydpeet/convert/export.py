@@ -2,7 +2,6 @@ import logging
 import os
 import pandas
 
-from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import DataOutputFiletype
 
 

@@ -1,9 +1,7 @@
 import logging
 from typing import Dict
-
 import pandas as pd
 
-from pydpeet.citations import citeme
 from pydpeet.process.sequence.step_analyzer import step_analyzer_seqments_and_sequences
 
 

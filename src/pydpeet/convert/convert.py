@@ -3,7 +3,6 @@ from pathlib import Path
 
 from pandas import DataFrame, Index
 
-from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import Config, READER_CONFIGS, MAPPER_CONFIGS, STANDARD_COLUMNS, FORMATTER_CONFIGS
 from pydpeet.convert.map import mapping
 from pydpeet.convert.utils.ext_path import ExtPath

@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 import logging
 
-from pydpeet.citations import citeme
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
 # -------------------------------------------------------------------

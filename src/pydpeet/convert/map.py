@@ -1,7 +1,6 @@
 import logging
 import pandas as pd
 
-from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import STANDARD_COLUMNS
 
 

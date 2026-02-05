@@ -2,7 +2,6 @@ import logging
 import os
 from datetime import datetime
 
-from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import Config, DataOutputFiletype
 from pydpeet.convert.convert import convert_file
 from pydpeet.convert.export import export
