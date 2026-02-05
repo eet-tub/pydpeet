@@ -5,12 +5,7 @@ import pandas
 from pydpeet.citations import citeme
 from pydpeet.convert.configs.config import DataOutputFiletype
 
-@citeme.internship('PPB25', {
-    'author': 'Daniel Schröder, Alexander Hinrichsen, Jan Kalisch, Cataldo De Simone',
-    'title': 'Python Package zur Batteriemessdatenverarbeitung',
-    'school': 'Technische Universität Berlin',
-    'year': '2025'
-})
+
 def export(data_frame: pandas.DataFrame,output_path: str,output_file_name: str,data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet):
     """
     Export the given DataFrame to the given output path.

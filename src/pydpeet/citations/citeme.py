@@ -3,6 +3,8 @@ TODO Code taken from : https://github.com/citation-file-format/citeme/tree/maste
 """
 
 import functools
+import json
+import pathlib
 from six import iteritems
 
 from bibtexparser.bwriter import BibTexWriter
@@ -256,6 +258,77 @@ class unpublished(Citation):
         self._required = ['author', 'title', 'note']
         self._optional = ['month', 'year', 'key']
 
+
+_CITATION_TYPES = {
+    "article": article,
+    "book": book,
+    "booklet": booklet,
+    "inbook": inbook,
+    "incollection": incollection,
+    "inproceedings": inproceedings,
+    "conference": conference,
+    "manual": manual,
+    "mastersthesis": mastersthesis,
+    "bachelorthesis": bachelorthesis,
+    "internship": internship,
+    "misc": misc,
+    "phdthesis": phdthesis,
+    "proceedings": proceedings,
+    "techreport": techreport,
+    "unpublished": unpublished,
+}
+
+_REFERENCE_CACHE = None
+_REFERENCE_JSON_PATH = pathlib.Path(__file__).resolve().parent / "citations.json"
+
+
+def _load_reference_db():
+    global _REFERENCE_CACHE
+
+    if _REFERENCE_CACHE is None:
+        with open(_REFERENCE_JSON_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        _REFERENCE_CACHE = {entry["id"]: entry for entry in data}
+        _REFERENCE_CACHE["__source__"] = str(_REFERENCE_JSON_PATH)
+
+    return _REFERENCE_CACHE
+
+
+def from_id(ref_id):
+    """
+    Usage:
+        @citeme.from_id("Daniel_BA")
+        def foo():
+            ...
+    """
+
+    def _decorator(func):
+        db = _load_reference_db()
+
+        if ref_id not in db:
+            raise KeyError(
+                f"Reference ID '{ref_id}' not found in {db.get('__source__')}"
+            )
+
+        entry = dict(db[ref_id])  # copy
+        ref_type = entry.pop("type")
+        handle = entry.pop("id")
+
+        if ref_type not in _CITATION_TYPES:
+            raise ValueError(f"Unsupported citation type '{ref_type}'")
+
+        citation_cls = _CITATION_TYPES[ref_type]
+        citation = citation_cls(handle, entry)
+
+        @functools.wraps(func)
+        def wrapped(*args, **kwargs):
+            CiteMe().add_reference(citation)
+            return func(*args, **kwargs)
+
+        return wrapped
+
+    return _decorator
 
 def set_pedantic(value):
     CiteMe.set_pedantic(value)

@@ -4,12 +4,6 @@ from pydpeet.citations import citeme
 from pydpeet.process.sequence.utils.annotate.annotate_primitives import _merged_annotations
 
 
-@citeme.bachelorthesis('Daniel_BA', {
-    'author': 'Daniel Schröder',
-    'title': 'Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit',
-    'school': 'Technische Universität Berlin',
-    'year': '2026'
-})
 def df_primitives_correction(
         df_primitives: pd.DataFrame,
         correction_config: dict,
