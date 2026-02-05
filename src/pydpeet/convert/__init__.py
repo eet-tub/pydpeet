@@ -1,23 +1,14 @@
 """
 Auto-generated __init__ file.
-Created: 2026-01-30 20:07:37
+Created: 2026-02-04 13:46:34
 """
 
-# Bind selected names from source modules into this package without leaking helper names
+# Re-export selected names from source modules
 
-def _pydpeet_bind():
-    import importlib, sys
-    _m = importlib.import_module('pydpeet.convert.convert')
-    globals()['convert_file'] = getattr(_m, 'convert_file')
-    _m = importlib.import_module('pydpeet.convert.directory_standardization')
-    globals()['convert_files_in_directory'] = getattr(_m, 'convert_files_in_directory')
-    _m = importlib.import_module('pydpeet.convert.export')
-    globals()['export'] = getattr(_m, 'export')
-    _m = importlib.import_module('pydpeet.convert.map')
-    globals()['mapping'] = getattr(_m, 'mapping')
-
-_pydpeet_bind()
-del _pydpeet_bind
+from pydpeet.convert.convert import convert_file
+from pydpeet.convert.directory_standardization import convert_files_in_directory
+from pydpeet.convert.export import export
+from pydpeet.convert.map import mapping
 
 # Public API for this package
 __all__ = [

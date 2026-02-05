@@ -232,45 +232,16 @@ def apply_config(project_root, package_root, config_path, logger):
                 # module imports -> bind functions into this package WITHOUT leaving the submodule object as an attribute
                 # inside the loop that writes the __init__.py file for dir_path:
 
+                # --- static re-export approach ---
                 if data["module_imports"]:
-                    f.write(
-                        "# Bind selected names from source modules into this package without leaking helper names\n\n")
-
-                    # Build name->module mapping
-                    name_to_module = {}
-                    for mod, names in data["module_imports"].items():
-                        for nm in names:
-                            name_to_module[nm] = mod
-
-                    # Determine the exact ordering used for __all__ (must match later)
-                    all_entries = sorted(data["exports"])
-
-                    # Construct ordered modules and their names in the order of appearance in all_entries
-                    ordered_mods = []
-                    mod_to_names_ordered = {}
-                    for ent in all_entries:
-                        if ent in name_to_module:
-                            mod = name_to_module[ent]
-                            if mod not in mod_to_names_ordered:
-                                mod_to_names_ordered[mod] = []
-                                ordered_mods.append(mod)
-                            mod_to_names_ordered[mod].append(ent)
-
-                    # Create a single private bind function that imports all required modules
-                    # and binds their selected names into this package's globals.
-                    f.write("def _pydpeet_bind():\n")
-                    f.write("    import importlib, sys\n")
-                    for mod in ordered_mods:
-                        f.write(f"    _m = importlib.import_module('{mod}')\n")
-                        for nm in mod_to_names_ordered[mod]:
-                            f.write(f"    globals()['{nm}'] = getattr(_m, '{nm}')\n")
-                        # f.write("    try:\n")
-                        # f.write(f"        delattr(sys.modules[__name__], '{mod.split('.')[-1]}')\n")
-                        # f.write("    except Exception:\n")
-                        # f.write("        pass\n")
+                    f.write("# Re-export selected names from source modules\n\n")
+                    # module_imports is mapping full_module_dotted -> set(names)
+                    for mod in sorted(data["module_imports"].keys()):
+                        names = sorted(data["module_imports"][mod])
+                        # Write a single `from <module> import a, b, c` line per module
+                        # Use explicit imports only for the configured names
+                        f.write(f"from {mod} import {', '.join(names)}\n")
                     f.write("\n")
-                    f.write("_pydpeet_bind()\n")
-                    f.write("del _pydpeet_bind\n\n")
 
                 # Write __all__
                 all_entries = sorted(data["exports"])
