@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import tkinter as tk
 import logging
+
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
 # -------------------------------------------------------------------

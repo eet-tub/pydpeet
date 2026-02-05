@@ -4,12 +4,14 @@ Created: 2026-02-04 13:46:34
 """
 
 # Child packages exported by this package
+from . import citations
 from . import convert
 from . import process
 from . import utils
 
 # Public API for this package
 __all__ = [
+    'citations',
     'convert',
     'process',
     'utils',

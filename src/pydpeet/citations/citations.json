@@ -1,0 +1,34 @@
+[
+  {
+    "type": "internship",
+    "id": "PPB25",
+    "author": "Daniel Schröder, Alexander Hinrichsen, Jan Kalisch, Cataldo De Simone",
+    "title": "Python Package zur Batteriemessdatenverarbeitung",
+    "school": "Technische Universität Berlin",
+    "year": 2025
+  },
+  {
+    "type": "bachelorthesis",
+    "id": "Daniel_BA",
+    "author": "Daniel Schröder",
+    "title": "Automatisierte Erkennung charakteristischer Abschnitte in Batteriemessdaten auf Basis von Strom, Spannung und Zeit",
+    "school": "Technische Universität Berlin",
+    "year": 2026
+  },
+  {
+    "type": "bachelorthesis",
+    "id": "Jan_BA",
+    "author": "Jan Kalisch",
+    "title": "Entwicklung eines Python-Moduls zur Alterungsanalyse von Batteriemessdaten und Validierung des Tools anhand eines umfangreichen Laboralterungssatzes",
+    "school": "Technische Universität Berlin",
+    "year": 2026
+  },
+  {
+    "type": "bachelorthesis",
+    "id": "Jan_BA",
+    "author": "Alexander Hinrichsen",
+    "title": "Automatisierte Extraktion und Auswertung von OCV-Kurven aus Batteriemessdaten",
+    "school": "Technische Universität Berlin",
+    "year": 2026
+  }
+]

@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
+
 from pydpeet.convert.configs.config import STANDARD_COLUMNS
+
 
 def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -> pd.DataFrame:
     """
