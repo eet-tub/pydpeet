@@ -1,6 +1,8 @@
 import logging
 import os.path
 import re
+import warnings
+from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor
 from plistlib import InvalidFileException
 from typing import Dict
@@ -12,6 +14,7 @@ from pandas import DataFrame
 from pydpeet.convert.configs.const import PANDAS_EXCEL_ENGINE
 
 _BASE_CHILD_FILE_PATTERN = r'_(\d+).(xlsx|xls)'
+
 
 def to_DataFrame(input_path: str) -> (DataFrame, str):
     """
@@ -93,8 +96,8 @@ def _find_children(main_file_path) -> list[str]:
         child_file_path for file_name in os.listdir(main_file_dir)
         if ((child_file_path := os.path.join(main_file_dir, file_name)).endswith('.xlsx') or
             child_file_path.endswith('.xls'))
-        and re.fullmatch(child_file_pattern, file_name)
-        and child_file_path != main_file_path
+           and re.fullmatch(child_file_pattern, file_name)
+           and child_file_path != main_file_path
     ]
     child_file_paths.sort(
         key=lambda file: int(match.group(1))
@@ -144,7 +147,8 @@ def _read_sheets_from(main_file: str, children: list[str]) -> Dict[str, DataFram
 
     with (ThreadPoolExecutor() as executor):
         main_file_future = executor.submit(pandas.ExcelFile, main_file, engine=PANDAS_EXCEL_ENGINE)
-        children_excels = list(executor.map(lambda child: pandas.ExcelFile(child, engine=PANDAS_EXCEL_ENGINE), children))
+        children_excels = list(
+            executor.map(lambda child: pandas.ExcelFile(child, engine=PANDAS_EXCEL_ENGINE), children))
         main_file = main_file_future.result()
         main_sheets_future = executor.submit(main_file.parse, main_file.sheet_names)
         children_sheets = list(executor.map(lambda child: child.parse(child.sheet_names), children_excels))
@@ -246,6 +250,23 @@ def _handle_test(test: DataFrame) -> DataFrame:
     return data
 
 
+@contextmanager
+def _capture_settingwithcopy_debug():
+    original = warnings.showwarning
+
+    def _handler(message, category, filename, lineno, file=None, line=None):
+        if category is pandas.errors.SettingWithCopyWarning:
+            logging.debug("%s:%d: %s", filename, lineno, message)
+        else:
+            original(message, category, filename, lineno, file, line)
+
+    warnings.showwarning = _handler
+    try:
+        yield
+    finally:
+        warnings.showwarning = original
+
+
 def _handle_record_auxvol_auxtemp(
         df_record: DataFrame,
         df_auxvol: DataFrame | None,
@@ -278,13 +299,15 @@ def _handle_record_auxvol_auxtemp(
     result = df_record
     if df_auxvol is not None:
         df_auxvol = _re_index_headers(df_auxvol, ['DataPoint', 'Date', 'V1', 'Aux. ΔV'], 'Single cell voltage(V)')
-        df_auxvol.rename(columns={'Date': 'Date - auxVol', 'DataPoint': 'DataPoint - auxVol'}, inplace=True)
+        with _capture_settingwithcopy_debug():
+            df_auxvol.rename(columns={'Date': 'Date - auxVol', 'DataPoint': 'DataPoint - auxVol'}, inplace=True)
         logging.info("merging record and auxvol...")
         result = pandas.merge(df_record, df_auxvol, left_on='DataPoint', right_on='DataPoint - auxVol', how='left')
 
     if df_auxtemp is not None:
         df_auxtemp = _re_index_headers(df_auxtemp, ['DataPoint', 'Date', 'T1', 'Aux. ΔT'], 'Single cell temperature(℃)')
-        df_auxtemp.rename(columns={'Date': 'Date - auxTemp', 'DataPoint': 'DataPoint - auxTemp'}, inplace=True)
+        with _capture_settingwithcopy_debug():
+            df_auxtemp.rename(columns={'Date': 'Date - auxTemp', 'DataPoint': 'DataPoint - auxTemp'}, inplace=True)
         logging.info("merging record_auxvol and auxtemp...")
         result = pandas.merge(result, df_auxtemp, left_on='DataPoint', right_on='DataPoint - auxTemp', how='left')
 
