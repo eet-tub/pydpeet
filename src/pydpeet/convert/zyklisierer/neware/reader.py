@@ -341,15 +341,15 @@ def _re_index_headers(df: DataFrame, expected_headers: list[str], keyword: str):
     return df
 
 
-def _handle_final(step: DataFrame, record: DataFrame) -> DataFrame:
+def _handle_final(step: pandas.DataFrame, record: pandas.DataFrame) -> pandas.DataFrame:
     """
-    Handles the final merge between the step and record sheets.
+    Merges the step and record DataFrames based on the 'step_id' column.
 
-    This function takes two DataFrames as input: the step sheet and the record sheet.
-    It first adds a 'step_id' column to the record sheet, which is initially set to NaN.
-    Then it iterates over the step sheet and assigns the step id to the corresponding records in the record sheet.
-    The step id is assigned until a record with a different step type is encountered.
-    Finally, it drops the 'Step Type - record' column from the record sheet and merges it with the step sheet on the 'step_id' column.
+    This function takes two DataFrames as input: 'step' and 'record'. It merges the two DataFrames
+    based on the 'step_id' column, which is obtained by identifying the index of rows in the 'record'
+    DataFrame where the 'Time' column (or a similar column) is 0 or a timedelta of 0. The 'step' DataFrame
+    is merged with the 'record' DataFrame using the 'step_id' column as the merge key. The resulting
+    DataFrame is returned.
 
     Parameters:
     step (DataFrame): The DataFrame representing the step sheet.
@@ -360,28 +360,28 @@ def _handle_final(step: DataFrame, record: DataFrame) -> DataFrame:
     """
     logging.info("handling final merge...")
 
-    record['step_id'] = numpy.nan
-    last_idx = 0
+    step = step.reset_index(drop=True)
 
-    step_type_series = step['Step Type']
-    step_id_series = step.index
+    # Build reset mask from Time column
+    time_series = record['Time']
+    time_td = pandas.to_timedelta(time_series, errors='coerce')
+    time_num = pandas.to_numeric(time_series, errors='coerce')
 
-    record_step_id = record['step_id'].values
-    record_step_type = record['Step Type - record'].values
-    record_len = len(record)
+    reset_mask = (
+            time_td.eq(pandas.Timedelta(0)) |
+            time_num.eq(0)
+    ).fillna(False)
 
-    for current_step_id, current_step_type in zip(step_id_series, step_type_series):
-        for idx in range(last_idx, record_len):
-            step_id = record_step_id[idx]
-            step_type = record_step_type[idx]
+    # Keep only rising edges (first True in each block)
+    reset_mask &= ~reset_mask.shift(1, fill_value=False)
 
-            if numpy.isnan(step_id):
-                if current_step_type != step_type:
-                    record_step_id.setflags(write=True)
-                    record_step_id[last_idx:idx] = current_step_id
-                    last_idx = idx
-                    break
+    # Prevent first row from triggering a reset
+    reset_mask.iloc[0] = False
 
-    record['step_id'] = record_step_id
-    record.drop('Step Type - record', axis=1, inplace=True)
-    return step.merge(record, left_index=True, right_on='step_id', how='left')
+    record['step_id'] = reset_mask.cumsum()
+
+    record.drop(columns=['Step Type - record'], inplace=True)
+
+    merged = step.merge(record, left_index=True, right_on='step_id', how='left')
+
+    return merged
