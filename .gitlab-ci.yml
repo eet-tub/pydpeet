@@ -1,0 +1,62 @@
+# Define the order of pipeline stages.
+# Stages are executed sequentially from top to bottom.
+stages: [lint, notebooks, docs]
+
+# # -------------------------------
+# # LINT STAGE
+# # -------------------------------
+# lint:
+#   # Assign this job to the "lint" stage.
+#   stage: lint
+
+#   # Docker image used to execute the job.
+#   # python:3.13-slim is a minimal Python environment.
+#   image: python:3.13-slim
+
+#   # Environment variables available during the job execution.
+#   variables:
+#     # Directory where pre-commit stores its repositories and logs.
+#     # Placing it inside the project directory allows caching and artifact access.
+#     PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
+
+#   # Commands executed before the main script.
+#   # Used here to prepare the environment.
+#   before_script:
+#     # Update the package index inside the container.
+#     - apt-get update
+
+#     # Install git, which is required by pre-commit to operate on the repository.
+#     - apt-get install -y git
+
+#     # Upgrade pip and install pre-commit.
+#     - pip install -U pip pre-commit
+
+#   # Main commands of the job.
+#   script:
+#     # Run all configured pre-commit hooks on all files in the repository.
+#     # --show-diff-on-failure prints the diff for easier debugging in CI logs.
+#     - pre-commit run --all-files --show-diff-on-failure
+
+
+docs_build:
+  stage: docs
+  image: python:3.13-slim
+
+  before_script:
+    - apt-get update
+    - apt-get install -y pandoc
+    - pip install -U pip
+    - pip install -e ".[docs]"
+
+  script:
+    - python docs/build_docs.py
+
+  artifacts:
+    when: always
+    paths:
+      - docs/build/html
+    expire_in: 14 days
+
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
