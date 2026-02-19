@@ -1,0 +1,5 @@
+# Quickstart
+
+```python
+import pydpeet
+```

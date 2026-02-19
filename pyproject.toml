@@ -21,7 +21,9 @@ dependencies = [
     "python-calamine",
     "numba",
     "matplotlib",
-    "scipy"
+    "scipy",
+    "bibtexparser",
+    "scikit-learn"
 ]
 requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -33,3 +35,22 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+
+[project.optional-dependencies]
+docs = [
+  "sphinx",
+  "pydata-sphinx-theme",
+  "myst-parser",
+  "nbsphinx",
+  "sphinx-copybutton",
+  "bibtexparser",
+]
+
+
+[tool.ruff]
+line-length = 10000
+target-version = "py311"  # oder py310/py312 je nach Projekt
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"] # E: Fehler, F: Fehlfunktionen, I: Importbezogene Probleme, B: Bugs, UP: Unnötige Importe
+ignore = ["E501"]  # E501: Zeilenlängenbeschränkung ignorieren
