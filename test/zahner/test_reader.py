@@ -2,7 +2,7 @@ import unittest
 
 from pydpeet.io.device.zahner.reader import to_dataframe
 from pydpeet.io.device.zahner_new import reader as reader_new
-from test.utils import with_zip_files, RES_PATH
+from test.utils import RES_PATH, with_zip_files
 
 
 class MyTestCase(unittest.TestCase):
@@ -15,5 +15,5 @@ class MyTestCase(unittest.TestCase):
         with_zip_files(zip_files_path, lambda file: reader_new.to_dataframe(file))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

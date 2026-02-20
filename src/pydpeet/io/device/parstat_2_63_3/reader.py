@@ -14,16 +14,16 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     metadata = []
 
     # Open the file and process lines
-    with open(input_path, 'r', encoding='us-ascii') as file:
+    with open(input_path, encoding="us-ascii") as file:
         # Read metadata until the header line is found
         line = file.readline()
-        while not line.startswith('Segment'):
+        while not line.startswith("Segment"):
             metadata.append(line.strip())
             line = file.readline()
 
         # Extract headers and remaining data
-        headers = line.strip().split(',')
-        data_lines = [row.strip().split(',') for row in file if row.strip()]
+        headers = line.strip().split(",")
+        data_lines = [row.strip().split(",") for row in file if row.strip()]
 
     # Join metadata into a single string
     metadata_str = "\n".join(metadata)

@@ -13,13 +13,13 @@ from pydpeet.process.analyze.soc import SocMethod, add_soc
 
 # Public API for this package
 __all__ = [
-    'BatteryConfig',
-    'SocMethod',
-    'add_capacity',
-    'add_resistance_internal',
-    'add_soc',
-    'battery_config_default',
-    'extract_ocv_iocv',
-    'hakadi_nmc_1500',
-    'lgm50lt_nmc_4800',
+    "BatteryConfig",
+    "SocMethod",
+    "add_capacity",
+    "add_resistance_internal",
+    "add_soc",
+    "battery_config_default",
+    "extract_ocv_iocv",
+    "hakadi_nmc_1500",
+    "lgm50lt_nmc_4800",
 ]

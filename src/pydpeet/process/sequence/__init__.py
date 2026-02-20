@@ -13,10 +13,10 @@ from pydpeet.process.sequence.utils.visualize.visualize_data import visualize_ph
 
 # Public API for this package
 __all__ = [
-    'add_primitives',
-    'df_primitives_correction',
-    'extract_sequences',
-    'filter_and_split_df_by_blocks',
-    'generate_instructions',
-    'visualize_phases',
+    "add_primitives",
+    "df_primitives_correction",
+    "extract_sequences",
+    "filter_and_split_df_by_blocks",
+    "generate_instructions",
+    "visualize_phases",
 ]

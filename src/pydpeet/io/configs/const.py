@@ -1,1 +1,1 @@
-PANDAS_EXCEL_ENGINE = 'calamine'
+PANDAS_EXCEL_ENGINE = "calamine"

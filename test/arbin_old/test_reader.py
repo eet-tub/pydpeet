@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from numpy.ma.testutils import assert_equal
 
-from pydpeet.io.device.arbin_4_23_PV090331.reader import to_dataframe, read_sheets
+from pydpeet.io.device.arbin_4_23_PV090331.reader import read_sheets, to_dataframe
 
 
 class ArbinOldTests(unittest.TestCase):
@@ -18,7 +18,6 @@ class ArbinOldTests(unittest.TestCase):
                 pass
 
     def test_read_sheets(self):
-
         mock_obj = Mock()
         mock_obj.sheet_names = []
 
@@ -28,5 +27,5 @@ class ArbinOldTests(unittest.TestCase):
         assert_equal(md, "")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

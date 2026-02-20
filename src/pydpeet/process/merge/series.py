@@ -1,13 +1,12 @@
 import logging
-from typing import List
 
 import numpy as np
 import pandas as pd
 
 from pydpeet.process.analyze.utils import StepTimer, drop_duplicate_testtime
 
-
 # ** series and campaign utilities **
+
 
 def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, sort_dfs=True):
     """
@@ -62,19 +61,19 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
 
     with StepTimer(verbose) as st:
         for i, raw_df in enumerate(sorted_dfs):
-            if raw_df is None or raw_df.empty or 'Testtime[s]' not in raw_df.columns:
+            if raw_df is None or raw_df.empty or "Testtime[s]" not in raw_df.columns:
                 continue
 
             df = raw_df.copy()
 
             # Skip battery description files (existing behavior)
-            if 'StepID' in df.columns:
-                first_val = df['StepID'].iloc[0]
+            if "StepID" in df.columns:
+                first_val = df["StepID"].iloc[0]
                 if isinstance(first_val, str) and first_val.lower() == "test":
                     logging.warning(f"Skipping DataFrame {i} because StepID starts with 'Test'")
                     continue
 
-            last_valid_idx = df['Testtime[s]'].last_valid_index()
+            last_valid_idx = df["Testtime[s]"].last_valid_index()
             if last_valid_idx is None:
                 logging.info(f"DataFrame {i} skipped: 'Testtime[s]' is all NaN")
                 continue
@@ -93,24 +92,24 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
                 other_storage = {c: [] for c in datetime_cols + object_cols}
 
             # Convert StepID to int64
-            if 'StepID' in df.columns:
-                df['StepID'] = pd.to_numeric(df['StepID'], errors='coerce').fillna(0).astype(np.int64)
+            if "StepID" in df.columns:
+                df["StepID"] = pd.to_numeric(df["StepID"], errors="coerce").fillna(0).astype(np.int64)
 
             # Ensure Testtime[s] is numeric and safe for addition
-            df['Testtime[s]'] = pd.to_numeric(df['Testtime[s]'], errors='coerce').fillna(0.0)
+            df["Testtime[s]"] = pd.to_numeric(df["Testtime[s]"], errors="coerce").fillna(0.0)
 
             # --- Apply the current cumulative offset to this DataFrame ---
-            df['Testtime[s]'] = df['Testtime[s]'] + time_offset
+            df["Testtime[s]"] = df["Testtime[s]"] + time_offset
 
             # Assign sequential TestIndex
-            df['TestIndex'] = valid_index
+            df["TestIndex"] = valid_index
             valid_index += 1
 
             # Ensure TestIndex is tracked in numeric columns / col_order
-            if 'TestIndex' not in numeric_cols:
-                numeric_cols.append('TestIndex')
-            if 'TestIndex' not in col_order:
-                col_order.append('TestIndex')
+            if "TestIndex" not in numeric_cols:
+                numeric_cols.append("TestIndex")
+            if "TestIndex" not in col_order:
+                col_order.append("TestIndex")
 
             # Store numeric and other columns
             numeric_storage.append(df[numeric_cols].to_numpy())
@@ -118,16 +117,16 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
                 other_storage[column].extend(df[column].tolist())
 
             # Compute the maximum Testtime after offset (this is the basis for next offset)
-            df_max = df['Testtime[s]'].dropna().max()
+            df_max = df["Testtime[s]"].dropna().max()
 
             # If not the last DataFrame, add a pause row placed at df_max + time_between_tests_seconds
             if i < len(sorted_dfs) - 1:
                 pause_value = float(df_max + time_between_tests_seconds)
                 pause_numeric = []
                 for column in numeric_cols:
-                    if column == 'Testtime[s]':
+                    if column == "Testtime[s]":
                         pause_numeric.append(pause_value)
-                    elif column == 'TestIndex':
+                    elif column == "TestIndex":
                         pause_numeric.append(-1)
                     else:
                         pause_numeric.append(np.nan)
@@ -165,7 +164,7 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
             logging.info(f"Merged non-numeric column: {column}")
 
         dfs_merged = pd.DataFrame(data_dict, columns=col_order)
-        dfs_merged['Testtime[s]'] = dfs_merged['Testtime[s]'].astype(float)
+        dfs_merged["Testtime[s]"] = dfs_merged["Testtime[s]"].astype(float)
         st.log(f"Final merged DataFrame shape: {dfs_merged.shape}")
 
     dfs_merged = drop_duplicate_testtime(dfs_merged)
@@ -191,7 +190,7 @@ def _sort_dfs(df_list, verbose=True):
     if not df_list:
         return []
 
-    time_col = 'Absolute Time[yyyy-mm-dd hh:mm:ss]'
+    time_col = "Absolute Time[yyyy-mm-dd hh:mm:ss]"
 
     # ensure df_list always work with (df, filename) pairs
     if isinstance(df_list[0], (tuple, list)) and len(df_list[0]) == 2:
@@ -204,10 +203,7 @@ def _sort_dfs(df_list, verbose=True):
         return []
 
     # Check if at least one DF has a valid absolute time column
-    has_abs_time = all(
-        time_col in df.columns and df[time_col].notna().any()
-        for df, _ in pairs
-    )
+    has_abs_time = all(time_col in df.columns and df[time_col].notna().any() for df, _ in pairs)
 
     if has_abs_time:
         if verbose:
@@ -237,7 +233,7 @@ def _sort_dfs(df_list, verbose=True):
     return [df for df, _ in sorted_pairs]
 
 
-def merge_into_campaign(test_series_list: List[List[pd.DataFrame]], verbose=True):
+def merge_into_campaign(test_series_list: list[list[pd.DataFrame]], verbose=True):
     """
     Execute a list of test series and return a list of merged DataFrames.
 

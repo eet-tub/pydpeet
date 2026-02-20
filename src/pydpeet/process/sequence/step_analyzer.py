@@ -1,50 +1,51 @@
-import os
-from typing import List, Tuple, Dict
-import pandas as pd
 import logging
+import os
+
+import pandas as pd
+
 logger = logging.getLogger(__name__)
 
 
 # LOG_TIME
-from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 # ANNOTATION
 from pydpeet.process.sequence.utils.annotate.annotate_primitives import _annotate_primitives, _merged_annotations
-# PROCESSING
-from pydpeet.process.sequence.utils.processing.split_in_segments import _split_in_segments_using_incremental_linear_fit
-from pydpeet.process.sequence.utils.processing.attempt_to_merge_neighboring_segments import \
-    _attempt_to_merge_neighboring_segments
-from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
-from pydpeet.process.sequence.utils.processing.supress_smaller_segments import _add_segment_lengths, \
-    _keep_max_segment_id
-from pydpeet.process.sequence.utils.processing.analyze_segments import _analyze_segments
-from pydpeet.process.sequence.utils.processing.check_CV_results import _check_CV_0Aend_segments
-from pydpeet.process.sequence.utils.processing.check_zero_length import _check_zero_length_segments
-from pydpeet.process.sequence.utils.processing.check_power_zero_watt_segments import _check_power_zero_watt_segments
-# POSTPROCESSING
-from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction import df_primitives_correction
+
 # CONFIG Fallback
 from pydpeet.process.sequence.utils.configs.CONFIG_Fallback import FALLBACK_CONFIG
+from pydpeet.process.sequence.utils.console_prints.log_time import log_time
+
+# POSTPROCESSING
+from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction import df_primitives_correction
+from pydpeet.process.sequence.utils.processing.analyze_segments import _analyze_segments
+from pydpeet.process.sequence.utils.processing.attempt_to_merge_neighboring_segments import _attempt_to_merge_neighboring_segments
+from pydpeet.process.sequence.utils.processing.check_CV_results import _check_CV_0Aend_segments
+from pydpeet.process.sequence.utils.processing.check_power_zero_watt_segments import _check_power_zero_watt_segments
+from pydpeet.process.sequence.utils.processing.check_zero_length import _check_zero_length_segments
+
+# PROCESSING
+from pydpeet.process.sequence.utils.processing.split_in_segments import _split_in_segments_using_incremental_linear_fit
+from pydpeet.process.sequence.utils.processing.supress_smaller_segments import _add_segment_lengths, _keep_max_segment_id
+from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
 
 
 def add_primitives(
-        df: pd.DataFrame,
-        STEP_ANALYZER_PRIMITIVES_CONFIG: Dict = None,
-        SEGMENTS_TO_DETECT_CONFIG: List[Tuple[str, float]] = None,
-        ADJUST_SEGMENTS_CONFIG: List[Tuple[str, float]] = None,
-        THRESHOLDS_PRIMITIVE_ANNOTATION: Dict[str, float] = None,
-        THRESHOLD_CV_SEGMENTS_0A_END: float = None,
-        THRESHOLD_CONSOLE_PRINTS_CV_CHECK: int = None,
-        THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: int = None,
-        THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH: int = None,
-        THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK: int = None,
-        SHOW_RUNTIME: bool = True,
-        check_CV_0Aend_segments_bool: bool = True,
-        check_zero_length_segments_bool: bool = True,
-        check_Power_zero_W_segments_bool: bool = True,
-        supress_IO_warnings: bool = False,
-        PRECOMPILE: bool = True,  # When debugging use PRECOMPILE=False, else you'll see the dummy data!
-        FORCE_PRECOMPILATION: bool = False,
-
+    df: pd.DataFrame,
+    STEP_ANALYZER_PRIMITIVES_CONFIG: dict = None,
+    SEGMENTS_TO_DETECT_CONFIG: list[tuple[str, float]] = None,
+    ADJUST_SEGMENTS_CONFIG: list[tuple[str, float]] = None,
+    THRESHOLDS_PRIMITIVE_ANNOTATION: dict[str, float] = None,
+    THRESHOLD_CV_SEGMENTS_0A_END: float = None,
+    THRESHOLD_CONSOLE_PRINTS_CV_CHECK: int = None,
+    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: int = None,
+    THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH: int = None,
+    THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK: int = None,
+    SHOW_RUNTIME: bool = True,
+    check_CV_0Aend_segments_bool: bool = True,
+    check_zero_length_segments_bool: bool = True,
+    check_Power_zero_W_segments_bool: bool = True,
+    supress_IO_warnings: bool = False,
+    PRECOMPILE: bool = True,  # When debugging use PRECOMPILE=False, else you'll see the dummy data!
+    FORCE_PRECOMPILATION: bool = False,
 ) -> pd.DataFrame:
     """
     Function to perform step analysis to create a segmentation of a dataframe into primitive Segments.
@@ -118,7 +119,7 @@ def add_primitives(
     PRECOMPILE = merged_config["PRECOMPILE"]
     FORCE_PRECOMPILATION = merged_config["FORCE_PRECOMPILATION"]
 
-    DATA_COLUMNS = { #standard values
+    DATA_COLUMNS = {  # standard values
         "V": "Voltage[V]",
         "I": "Current[A]",
         "P": "Power[W]",
@@ -126,11 +127,9 @@ def add_primitives(
 
     # --- Warn if using fallback ---
     if STEP_ANALYZER_PRIMITIVES_CONFIG is None and not supress_IO_warnings:
-        logger.warning(
-            "Using EXAMPLE_STEP_ANALYZER_PRIMITIVES_CONFIG as fallback configuration. Manual Parameters will be kept."
-        )
+        logger.warning("Using EXAMPLE_STEP_ANALYZER_PRIMITIVES_CONFIG as fallback configuration. Manual Parameters will be kept.")
 
-    #TODO variable to choose if copy should be used?
+    # TODO variable to choose if copy should be used?
     df_step = df.copy()
 
     # --- Guardrails ---
@@ -162,9 +161,9 @@ def add_primitives(
     # --- Data cleanup ---
     if not supress_IO_warnings:
         logger.warning("Dropping NaN values in 'Testtime[s]', dropping duplicates and sorting 'Testtime[s]' column.")
-    df_step.dropna(subset=['Testtime[s]'], inplace=True)
-    df_step.drop_duplicates(subset=['Testtime[s]'], inplace=True)
-    df_step.sort_values(by=['Testtime[s]'], inplace=True)
+    df_step.dropna(subset=["Testtime[s]"], inplace=True)
+    df_step.drop_duplicates(subset=["Testtime[s]"], inplace=True)
+    df_step.sort_values(by=["Testtime[s]"], inplace=True)
 
     # --- Guardrails & IO Warnings ---
     if not supress_IO_warnings:
@@ -190,24 +189,21 @@ def add_primitives(
 
     if PRECOMPILE:
         if len(df_step) > 100_000 or FORCE_PRECOMPILATION:
-            with log_time("precompiling step_analyzer_primitives and df_primitives_correction",
-                          SHOW_RUNTIME=SHOW_RUNTIME):
+            with log_time("precompiling step_analyzer_primitives and df_primitives_correction", SHOW_RUNTIME=SHOW_RUNTIME):
                 _precompile_step_analyzer()
 
         else:
             logger.warning(f"Input dataframe is small ({len(df_step)} < 100_000 rows. Skipping precompilation unless you set FORCE_PRECOMPILATION = True.")
 
-    if SHOW_RUNTIME: logger.info(f"detecting segments in dataframe of size {len(df_step)}...")
+    if SHOW_RUNTIME:
+        logger.info(f"detecting segments in dataframe of size {len(df_step)}...")
 
     with log_time("calculating Power[W]", SHOW_RUNTIME=SHOW_RUNTIME):
         df_step["Power[W]"] = df_step["Voltage[V]"] * df_step["Current[A]"]
 
     for column_name, threshold in SEGMENTS_TO_DETECT_CONFIG:
-        with log_time(f"separating {column_name} into segments using incremental linear fit",
-                      SHOW_RUNTIME=SHOW_RUNTIME):
-            df_step = _split_in_segments_using_incremental_linear_fit(df=df_step,
-                                                                      column_name=column_name,
-                                                                      threshold=threshold)
+        with log_time(f"separating {column_name} into segments using incremental linear fit", SHOW_RUNTIME=SHOW_RUNTIME):
+            df_step = _split_in_segments_using_incremental_linear_fit(df=df_step, column_name=column_name, threshold=threshold)
 
     keep_max_segment_id_config = []
     for key, col_name in DATA_COLUMNS.items():
@@ -217,18 +213,13 @@ def add_primitives(
         keep_max_segment_id_config.append((f"Length_{segment_col}", segment_col))
 
     with log_time("suppressing smaller segments", SHOW_RUNTIME=SHOW_RUNTIME):
-        df_step = _keep_max_segment_id(df=df_step,
-                                       keep_max_segment_id_config=keep_max_segment_id_config)
+        df_step = _keep_max_segment_id(df=df_step, keep_max_segment_id_config=keep_max_segment_id_config)
 
     with log_time("attempting to merge neighboring segments", SHOW_RUNTIME=SHOW_RUNTIME):
-        df_step = _attempt_to_merge_neighboring_segments(df=df_step,
-                                                         adjust_segments_config=ADJUST_SEGMENTS_CONFIG)
+        df_step = _attempt_to_merge_neighboring_segments(df=df_step, adjust_segments_config=ADJUST_SEGMENTS_CONFIG)
 
     with log_time("fine tuning width of constant segments to better fit the data", SHOW_RUNTIME=SHOW_RUNTIME):
-        df_step = _widen_constant_segments(df=df_step,
-                                           adjust_segments_config=ADJUST_SEGMENTS_CONFIG,
-                                           Threshold_segments_to_print=THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH,
-                                           supress_IO_warnings=supress_IO_warnings)
+        df_step = _widen_constant_segments(df=df_step, adjust_segments_config=ADJUST_SEGMENTS_CONFIG, Threshold_segments_to_print=THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH, supress_IO_warnings=supress_IO_warnings)
 
     if SHOW_RUNTIME:
         logger.info("starting annotation...")
@@ -241,10 +232,8 @@ def add_primitives(
     )
 
     with log_time("dropping temporary length and segment columns", SHOW_RUNTIME=SHOW_RUNTIME):
-        columns_to_drop = [f"Length_Segment_{v}" for v in DATA_COLUMNS.values()] + \
-                          [f"Segment_{v}" for v in DATA_COLUMNS.values()]
+        columns_to_drop = [f"Length_Segment_{v}" for v in DATA_COLUMNS.values()] + [f"Segment_{v}" for v in DATA_COLUMNS.values()]
         df_primitives = df_primitives.drop(columns=columns_to_drop)
-
 
     # Can be removed if we choose to always apply these additional corrections
     if check_CV_0Aend_segments_bool or check_Power_zero_W_segments_bool or check_zero_length_segments_bool:
@@ -255,44 +244,52 @@ def add_primitives(
             logger.warning("Skipping additional data checks and corrections...")
 
     if check_CV_0Aend_segments_bool:
-        df_primitives = _check_CV_0Aend_segments(df_primitives=df_primitives,
-                                                 tolerance=THRESHOLD_CV_SEGMENTS_0A_END,
-                                                 SHOW_RUNTIME=SHOW_RUNTIME,
-                                                 DATA_COLUMNS=DATA_COLUMNS,
-                                                 THRESHOLDS_PRIMITIVE_ANNOTATION=THRESHOLDS_PRIMITIVE_ANNOTATION,
-                                                 supress_IO_warnings=supress_IO_warnings,
-                                                 THRESHOLD_CONSOLE_PRINTS_CV_CHECK=THRESHOLD_CONSOLE_PRINTS_CV_CHECK,
-                                                 THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK=THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK)
+        df_primitives = _check_CV_0Aend_segments(
+            df_primitives=df_primitives,
+            tolerance=THRESHOLD_CV_SEGMENTS_0A_END,
+            SHOW_RUNTIME=SHOW_RUNTIME,
+            DATA_COLUMNS=DATA_COLUMNS,
+            THRESHOLDS_PRIMITIVE_ANNOTATION=THRESHOLDS_PRIMITIVE_ANNOTATION,
+            supress_IO_warnings=supress_IO_warnings,
+            THRESHOLD_CONSOLE_PRINTS_CV_CHECK=THRESHOLD_CONSOLE_PRINTS_CV_CHECK,
+            THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK=THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK
+        )
 
     if check_zero_length_segments_bool:
-        df_primitives = _check_zero_length_segments(df_primitives,
-                                                    SHOW_RUNTIME=SHOW_RUNTIME,
-                                                    DATA_COLUMNS=DATA_COLUMNS,
-                                                    THRESHOLDS_PRIMITIVE_ANNOTATION=THRESHOLDS_PRIMITIVE_ANNOTATION,
-                                                    supress_IO_warnings=supress_IO_warnings,
-                                                    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK=THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK)
+        df_primitives = _check_zero_length_segments(
+            df_primitives,
+            SHOW_RUNTIME=SHOW_RUNTIME,
+            DATA_COLUMNS=DATA_COLUMNS,
+            THRESHOLDS_PRIMITIVE_ANNOTATION=THRESHOLDS_PRIMITIVE_ANNOTATION,
+            supress_IO_warnings=supress_IO_warnings,
+            THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK=THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK
+        )
 
     if check_Power_zero_W_segments_bool:
-        df_primitives = _check_power_zero_watt_segments(df_primitives=df_primitives,
-                                                        SHOW_RUNTIME=SHOW_RUNTIME,
-                                                        THRESHOLDS_PRIMITIVE_ANNOTATION=THRESHOLDS_PRIMITIVE_ANNOTATION,
-                                                        supress_IO_warnings=supress_IO_warnings,
-                                                        THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK=THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK,
-                                                        DATA_COLUMNS=DATA_COLUMNS)
+        df_primitives = _check_power_zero_watt_segments(
+            df_primitives=df_primitives,
+            SHOW_RUNTIME=SHOW_RUNTIME,
+            THRESHOLDS_PRIMITIVE_ANNOTATION=THRESHOLDS_PRIMITIVE_ANNOTATION,
+            supress_IO_warnings=supress_IO_warnings,
+            THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK=THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK,
+            DATA_COLUMNS=DATA_COLUMNS
+        )
 
     if check_CV_0Aend_segments_bool or check_zero_length_segments_bool or check_Power_zero_W_segments_bool:
         with log_time("updating annotations", SHOW_RUNTIME=SHOW_RUNTIME):
-            df_primitives = _merged_annotations(df=df_primitives,
-                                                data_columns=DATA_COLUMNS,
-                                                thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION)
+            df_primitives = _merged_annotations(
+                df=df_primitives,
+                data_columns=DATA_COLUMNS,
+                thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION
+            )
 
     return df_primitives
 
 
-def extract_sequences(df_primitives: pd.DataFrame,
-                      SEGMENT_SEQUENCE_CONFIG: dict = None,
-                      SHOW_RUNTIME: bool = True
-                      ) -> pd.DataFrame:
+def extract_sequences(
+        df_primitives: pd.DataFrame,
+        SEGMENT_SEQUENCE_CONFIG: dict = None,
+        SHOW_RUNTIME: bool = True) -> pd.DataFrame:
     """
 
     Create a DataFrame of segments and sequences from a DataFrame of primitives. (ID, longest sequence, segments/sequence)
@@ -324,24 +321,22 @@ def extract_sequences(df_primitives: pd.DataFrame,
 
     """
 
-
     if SEGMENT_SEQUENCE_CONFIG is None or not isinstance(SEGMENT_SEQUENCE_CONFIG, dict):
         raise ValueError("SEGMENT_SEQUENCE_CONFIG is None or not a dict")
 
     if df_primitives is None or not isinstance(df_primitives, pd.DataFrame):
         raise ValueError("df_primitives is None or not a DataFrame")
 
-    standard_columns = ['Testtime[s]', 'Voltage[V]', 'Current[A]', 'Power[W]', "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
+    standard_columns = ["Testtime[s]", "Voltage[V]", "Current[A]", "Power[W]", "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
     if not set(standard_columns).issubset(set(df_primitives.columns)):
         logger.warning("df_primitives doesn't have the standard columns.")
 
-    if SHOW_RUNTIME: logger.info("analyzing segments...")
+    if SHOW_RUNTIME:
+        logger.info("analyzing segments...")
     with log_time("filtering by ID", SHOW_RUNTIME=SHOW_RUNTIME):
-        df_ID_filtered = df_primitives.loc[df_primitives.groupby('ID')['ID'].idxmin()]
+        df_ID_filtered = df_primitives.loc[df_primitives.groupby("ID")["ID"].idxmin()]
     # Not with log_time() since it's handled internally
-    df_segments_and_sequences = _analyze_segments(df=df_ID_filtered,
-                                                  SHOW_RUNTIME=SHOW_RUNTIME,
-                                                  SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG)
+    df_segments_and_sequences = _analyze_segments(df=df_ID_filtered, SHOW_RUNTIME=SHOW_RUNTIME, SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG)
 
     return df_segments_and_sequences
 
@@ -359,31 +354,37 @@ def _precompile_step_analyzer():
     Returns:
         None
     """
-    from pydpeet.process.sequence.utils.configs.CONFIG_preprocessing import STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE, \
-         THRESHOLDS_PRIMITIVE_ANNOTATION, DATA_COLUMNS,  SEGMENT_SEQUENCE_CONFIG
+    from pydpeet.process.sequence.utils.configs.CONFIG_preprocessing import DATA_COLUMNS, SEGMENT_SEQUENCE_CONFIG, STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE, THRESHOLDS_PRIMITIVE_ANNOTATION
+
     # precompile using dummy data
     _project_dir = os.path.dirname(os.path.abspath(__file__))
-    _res_dir = os.path.join(_project_dir, '../../../res')
+    _res_dir = os.path.join(_project_dir, "../../../res")
     _input_path = os.path.join(_res_dir, "precompile_dummy_data.parquet")
     _df_file = pd.read_parquet(_input_path)
-    _df_primitives = add_primitives(df=_df_file,
-                                              STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE,
-                                              SHOW_RUNTIME=False,
-                                              check_CV_0Aend_segments_bool=True,
-                                              check_zero_length_segments_bool=True,
-                                              supress_IO_warnings=True,
-                                              PRECOMPILE=False)
+    _df_primitives = add_primitives(
+        df=_df_file,
+        STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE,
+        SHOW_RUNTIME=False,
+        check_CV_0Aend_segments_bool=True,
+        check_zero_length_segments_bool=True,
+        supress_IO_warnings=True,
+        PRECOMPILE=False
+    )
 
     correction_config = {
         "replace_ID": {
             1: "V",
         }
     }
-    _df_primitives = df_primitives_correction(df_primitives=_df_primitives,
-                                              correction_config=correction_config,
-                                              data_columns=DATA_COLUMNS,
-                                              thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION)
+    _df_primitives = df_primitives_correction(
+        df_primitives=_df_primitives,
+        correction_config=correction_config,
+        data_columns=DATA_COLUMNS,
+        thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION
+    )
 
-    _ = extract_sequences(df_primitives=_df_primitives,
-                                             SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG,
-                                             SHOW_RUNTIME=False)
+    _ = extract_sequences(
+        df_primitives=_df_primitives,
+        SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG,
+        SHOW_RUNTIME=False
+    )

@@ -1,8 +1,7 @@
 import unittest
 from pathlib import Path
 
-from pydpeet.io.convert import convert, Config
-
+from pydpeet.io.convert import Config, convert
 from test.utils import RES_PATH, with_zip_files
 
 
@@ -50,23 +49,21 @@ class MyTestCase(unittest.TestCase):
         self._datatype_test(RES_PATH / "zahner" / "old" / "for_datatype_test" / "cfg1", Config.Zahner_1)
 
     def test_expected_datatypes_Zahner_2(self):
-        self._datatype_test(RES_PATH / "zahner" / "old" /"for_datatype_test" / "cfg2", Config.Zahner_2)
+        self._datatype_test(RES_PATH / "zahner" / "old" / "for_datatype_test" / "cfg2", Config.Zahner_2)
 
     def test_expected_datatypes_Zahner_new_1(self):
-        self._datatype_test(RES_PATH / "zahner" / "new" /"for_datatype_test" / "cfg1", Config.Zahner_new_1)
+        self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg1", Config.Zahner_new_1)
 
     def test_expected_datatypes_Zahner_new_2(self):
-        self._datatype_test(RES_PATH / "zahner" / "new" /"for_datatype_test" / "cfg2", Config.Zahner_new_2)
+        self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg2", Config.Zahner_new_2)
 
     def test_expected_datatypes_Zahner_new_3(self):
-        self._datatype_test(RES_PATH / "zahner" / "new" /"for_datatype_test" / "cfg3", Config.Zahner_new_3)
+        self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg3", Config.Zahner_new_3)
 
     def _datatype_test(self, input_path: Path, config: Config):
         with_zip_files(
             input_path,
-            lambda file: self._validate_dataframe(
-                convert(config, file, False)
-            )
+            lambda file: self._validate_dataframe(convert(config, file, False))
         )
 
     def _validate_dataframe(self, df):
@@ -83,7 +80,6 @@ class MyTestCase(unittest.TestCase):
 
         if errors:
             raise AssertionError("\n".join(errors))
-
 
 
 if __name__ == "__main__":

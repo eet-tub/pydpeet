@@ -7,5 +7,5 @@ Created: 2026-02-20 17:27:09
 from . import pydpeet
 
 __all__ = [
-    'pydpeet',
+    "pydpeet",
 ]

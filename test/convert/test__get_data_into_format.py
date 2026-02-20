@@ -2,10 +2,10 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from pandas import DataFrame
-
-from pydpeet.io.configs.config import Config, FORMATTER_CONFIGS
-from pydpeet.io.convert import _get_data_into_format
 from utils import mock_config
+
+from pydpeet.io.configs.config import FORMATTER_CONFIGS, Config
+from pydpeet.io.convert import _get_data_into_format
 
 
 class TestGetDataIntoFormat(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestGetDataIntoFormat(unittest.TestCase):
         with self.assertRaises(ValueError):
             _get_data_into_format(DataFrame(), mock_config())
 
-    @patch('ppb.convert.load_custom_module')
+    @patch("ppb.convert.load_custom_module")
     def test_custom_formatter_loaded_and_applied(self, mock_load_custom_module):
         data_frame = DataFrame()
         mock_formatter = MagicMock()
@@ -41,5 +41,5 @@ class TestGetDataIntoFormat(unittest.TestCase):
         mock_formatter.assert_called_once_with(data_frame)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

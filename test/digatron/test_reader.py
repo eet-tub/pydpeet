@@ -13,5 +13,5 @@ class MyTestCase(unittest.TestCase):
         with_zip_files(RES_PATH / "digatron_eis", lambda file: reader_eis.to_dataframe(file))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

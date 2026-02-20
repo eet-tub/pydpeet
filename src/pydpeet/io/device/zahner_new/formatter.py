@@ -1,7 +1,6 @@
 import pandas
-from pydpeet.io.utils.formatter_utils import round_testtime
-from pydpeet.io.utils.formatter_utils import nan_to_none_in_column
-from pydpeet.io.utils.formatter_utils import typecast
+
+from pydpeet.io.utils.formatter_utils import nan_to_none_in_column, round_testtime, typecast
 
 
 def get_data_into_format_zahner_1(dataFrame: pandas.DataFrame) -> pandas.DataFrame:

@@ -1,4 +1,5 @@
 import logging
+
 import pandas as pd
 
 from pydpeet.convert.configs.config import STANDARD_COLUMNS
@@ -34,7 +35,7 @@ def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -
         raise ValueError("column_map is not a dictionary")
     if type(missing_columns) is not list:
         raise ValueError("missing_columns is not a list")
-    standard_columns_excluding_metadata = [col for col in STANDARD_COLUMNS if not col.startswith('Metadata')]
+    standard_columns_excluding_metadata = [col for col in STANDARD_COLUMNS if not col.startswith("Metadata")]
     if not all(col in list(column_map.values()) + missing_columns for col in standard_columns_excluding_metadata):
         raise ValueError("column_map and missing_columns do not contain all standard columns")
     if any(col not in STANDARD_COLUMNS for col in list(column_map.values()) + missing_columns):
@@ -46,7 +47,7 @@ def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -
     # Add missing columns with None values if they do not exist, and issue warnings
     for missing in missing_columns:
         if missing not in df.columns:
-            logging.warning( f"Missing column: '{missing}'. Adding Collumn (with None values) named: '{missing}'.")
+            logging.warning(f"Missing column: '{missing}'. Adding Collumn (with None values) named: '{missing}'.")
             df[missing] = None
 
     # Warn if a column that should be mapped is missing and add it with None values

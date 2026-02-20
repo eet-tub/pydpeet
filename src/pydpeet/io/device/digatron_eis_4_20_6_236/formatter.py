@@ -1,11 +1,6 @@
 import pandas as pd
-from pydpeet.io.utils.formatter_utils import apply_convert_to_float_if_possible
-from pydpeet.io.utils.formatter_utils import nan_to_none_in_column
-from pydpeet.io.utils.formatter_utils import replace_empty_with_none_in_standard_columns
-from pydpeet.io.utils.formatter_utils import move_strings_from_column_to_metadata
-from pydpeet.io.utils.formatter_utils import typecast
-from pydpeet.io.utils.formatter_utils import round_testtime
-from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast
+
+from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast, apply_convert_to_float_if_possible, move_strings_from_column_to_metadata, nan_to_none_in_column, replace_empty_with_none_in_standard_columns, round_testtime, typecast
 
 
 def get_data_into_format(data_frame: pd.DataFrame):
@@ -33,11 +28,3 @@ def get_data_into_format(data_frame: pd.DataFrame):
     data_frame = nan_to_none_in_column(data_frame, "Current[A]")
     data_frame = move_strings_from_column_to_metadata(data_frame, "Voltage[V]")
     return data_frame
-
-
-
-
-
-
-
-

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class BatteryConfig:
     cell_name: str = "Default"
@@ -16,8 +17,10 @@ class BatteryConfig:
     min_current_diff: float = 1
     max_time_diff: float = 0.5
     min_voltage_diff: float = 0
-    ignore_negative_resistance_values: bool = False # ignores negative values in internal resistance calculation,
-                                                    # should only appear in Neware Cells because of a bug
+    # ignores negative values in internal resistance calculation,
+    # should only appear in Neware Cells because of a bug
+    ignore_negative_resistance_values: bool = False
+
 
 battery_config_default = BatteryConfig()
 
@@ -26,10 +29,10 @@ lgm50lt_nmc_4800 = BatteryConfig(
     c_ref=4.8,
     max_voltage=4.2,
     min_voltage=2.5,
-    min_current_diff = 1,
-    max_time_diff = 0.5,
-    min_voltage_diff = 0,
-    ignore_negative_resistance_values = True
+    min_current_diff=1,
+    max_time_diff=0.5,
+    min_voltage_diff=0,
+    ignore_negative_resistance_values=True
 )
 
 hakadi_nmc_1500 = BatteryConfig(
@@ -37,6 +40,3 @@ hakadi_nmc_1500 = BatteryConfig(
     max_voltage=3.6,
     min_voltage=2.0
 )
-
-
-

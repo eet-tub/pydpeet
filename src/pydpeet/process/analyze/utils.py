@@ -1,18 +1,13 @@
-import gc
 import logging
-import os
-import re
 import time
-from enum import Enum
 
 import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
 from numba import njit
 
 
 class StepTimer:
     """Helper to log elapsed time for sub-steps inside a method."""
+
     def __init__(self, verbose=True, indent="    "):
         self.verbose = verbose
         self.indent = indent
@@ -41,8 +36,8 @@ def _check_columns(df, required_columns):
         raise KeyError(f"The following required columns are missing: {', '.join(missing_columns)}")
 
 
-
 # Precompute arrays that are independent of chosen SOC reset method
+
 
 @njit(cache=True)
 def precompute_block_arrays_soc_methods(time, current, voltage, capacity_values, c_ref):
@@ -56,10 +51,10 @@ def precompute_block_arrays_soc_methods(time, current, voltage, capacity_values,
     delta_t = np.zeros(n, dtype=np.float64)
     if n > 1:
         for i in range(1, n):
-            if np.isnan(time[i]) or np.isnan(time[i-1]):
+            if np.isnan(time[i]) or np.isnan(time[i - 1]):
                 delta_t[i] = 0.0
             else:
-                delta_t[i] = time[i] - time[i-1]
+                delta_t[i] = time[i] - time[i - 1]
 
     # delta_Q = current * delta_t
     delta_Q = np.zeros(n, dtype=np.float64)
@@ -103,6 +98,7 @@ def precompute_block_arrays_soc_methods(time, current, voltage, capacity_values,
         voltage_arr[i] = voltage[i] if not np.isnan(voltage[i]) else 0.0
 
     return delta_soc, current, abs_current, voltage_arr, c_ref_as
+
 
 def drop_duplicate_testtime(df, keep="first"):
     """

@@ -18,7 +18,7 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     impedance_spectrum_data = []
 
     # Read the input file
-    with open(input_path, 'r', encoding='us-ascii') as f:
+    with open(input_path, encoding="us-ascii") as f:
         lines = f.readlines()
 
     # Temporary variables to store data for each segment
@@ -37,7 +37,7 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
                 impedance_spectrum_data.append(current_data)
             else:
                 # Add the meta data to the string
-                meta_data_string += '\n'.join(current_data) + '\n'
+                meta_data_string += "\n".join(current_data) + "\n"
 
             # Reset for the next segment
             current_segment = None
@@ -68,20 +68,20 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     elif current_segment == "impedance_spectrum_data":
         impedance_spectrum_data.append(current_data)
     elif current_segment == "meta_data":
-        meta_data_string += '\n'.join(current_data) + '\n'
+        meta_data_string += "\n".join(current_data) + "\n"
 
     # Split the first string into columns to get the headers
-    headers_ex = excitation_data[0][0].strip().split(',')
-    headers_ex = [item for item in headers_ex if item != '']
-    headers_im = impedance_spectrum_data[0][0].strip().split(',')
-    headers_im = ['impedance_frequency' if header == 'frequency' else header for header in headers_im]
+    headers_ex = excitation_data[0][0].strip().split(",")
+    headers_ex = [item for item in headers_ex if item != ""]
+    headers_im = impedance_spectrum_data[0][0].strip().split(",")
+    headers_im = ["impedance_frequency" if header == "frequency" else header for header in headers_im]
 
     # Split strings by ',' and create DataFrame for excitation data
-    excitation_data_split = [row.split(',') for row in excitation_data[0][1:]]
+    excitation_data_split = [row.split(",") for row in excitation_data[0][1:]]
     excitation_df = pd.DataFrame(excitation_data_split, columns=headers_ex)
 
     # Split strings by ',' and create DataFrame for impedance spectrum data
-    impedance_spectrum_data_split = [row.split(',') for row in impedance_spectrum_data[0][1:]]
+    impedance_spectrum_data_split = [row.split(",") for row in impedance_spectrum_data[0][1:]]
     impedance_spectrum_df = pd.DataFrame(impedance_spectrum_data_split, columns=headers_im)
 
     # Combine DataFrames (meta_data_string does not need to be converted to a DataFrame)

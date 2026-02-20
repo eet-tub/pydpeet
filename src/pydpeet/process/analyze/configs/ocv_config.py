@@ -1,6 +1,5 @@
-from pydpeet.process.sequence.utils.preprocessing.calculate_thresholds import calculate_minimum_definitive_differences
 from pydpeet.process.sequence.configs.config import NEWARE_CT_4008Q_5V12A_S1
-from typing import Dict
+from pydpeet.process.sequence.utils.preprocessing.calculate_thresholds import calculate_minimum_definitive_differences
 
 THRESHOLD_DICT_Custom = [  # ARBIN_OLD
     0.0005,  # ACCURACY_VOLTAGE_SIGNAL
@@ -8,7 +7,7 @@ THRESHOLD_DICT_Custom = [  # ARBIN_OLD
     0.0005,  # ACCURACY_VOLTAGE_MEASUREMENT
     0.01,  # ACCURACY_CURRENT_MEASUREMENT
     5,  # FS_VOLTAGE
-    3  # FS_CURRENT
+    3,  # FS_CURRENT
 ]
 # use THRESHOLD_DICT = THRESHOLD_DICT_Custom if you don't want to use a predefined dictionary
 THRESHOLD_DICT = NEWARE_CT_4008Q_5V12A_S1.threshold_dict_neware
@@ -22,7 +21,7 @@ SEGMENTS_TO_DETECT_CONFIG = [
     ("Power[W]", (MIN_DEFINITIVE_VOLTAGE_DIFFERENCE + MIN_DEFINITIVE_CURRENT_DIFFERENCE) / 2),
 ]
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
-#ORDER IS IMPORTANT!
+# ORDER IS IMPORTANT!
 ADJUST_SEGMENTS_CONFIG = [
     ("Voltage[V]", MIN_DEFINITIVE_VOLTAGE_DIFFERENCE),
     ("Current[A]", MIN_DEFINITIVE_CURRENT_DIFFERENCE),
@@ -53,13 +52,13 @@ VISUALIZE_PHASES_CONFIG = [
 LINE_VISUALIZATION_CONFIG = [
     ("Voltage[V]", "blue", (2.4, 4.3)),
     ("Current[A]", "red", (-10, 10)),
-    #("Power[W]", "green", (-40, 20)),
+    # ("Power[W]", "green", (-40, 20)),
 ]
 # Bilder Bachelorarbeit Text
-#("Voltage[V]", "blue", (2.4, 4.3)),
-#("Current[A]", "red", (-10, 10)),
-START = 0#55000.0
-END = 1e10#90000
+# ("Voltage[V]", "blue", (2.4, 4.3)),
+# ("Current[A]", "red", (-10, 10)),
+START = 0  # 55000.0
+END = 1e10  # 90000
 USE_LINES_FOR_SEGMENTS = True
 SHOW_COLUMN_NAMES = False
 SHOW_TIME = False
@@ -75,17 +74,15 @@ END_CONDITION_MAP_GENERATE_INSTRUCTIONS = {
     "Pause": "time",
 }
 ########################################################################################################################
-SEQUENCES_CONFIG: Dict[str, Dict] = {
+SEQUENCES_CONFIG: dict[str, dict] = {
     # Complex Sequences
     # Loop rules: "loop": True, "exact_loops": 2, "min_loops": 2, "max_loops": 2, "minimum_IDs": 6
-    "Discharge_iOCV": {"loop": True, "sequence": ["Pause","CC_Discharge"]},
-    "Charge_iOCV": {"loop": True, "sequence": ["Pause","CC_Charge"]},
-    #"Discharge_iOCV": {"sequence": ["Discharge_iOCV_correction", "CC_Discharge","CV_Discharge"]},
-
-
+    "Discharge_iOCV": {"loop": True, "sequence": ["Pause", "CC_Discharge"]},
+    "Charge_iOCV": {"loop": True, "sequence": ["Pause", "CC_Charge"]},
+    # "Discharge_iOCV": {"sequence": ["Discharge_iOCV_correction", "CC_Discharge","CV_Discharge"]},
 }
 
-SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
+SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
     # Primitive segments
     # Pause
     # CC_Charge, CV_Charge, CP_Charge
@@ -146,9 +143,8 @@ SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
         "rules": {
             "direction": "Charge",
         }
-    }
+    },
 }
-
 
 
 SEGMENT_SEQUENCE_CONFIG = {

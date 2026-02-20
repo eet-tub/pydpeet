@@ -14,7 +14,7 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     metadata = []
 
     # Open the file and process lines
-    with open(input_path, 'r', encoding='us-ascii') as file:
+    with open(input_path, encoding="us-ascii") as file:
         # Read metadata until a data header line is detected
         line = file.readline()
         while not (line.strip().startswith("time") or line.strip().startswith("Number")):
@@ -22,10 +22,10 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
             line = file.readline()
 
         # Detect delimiter and process the header
-        if ';' in line:
-            delimiter = ';'
-        elif ',' in line:
-            delimiter = ','
+        if ";" in line:
+            delimiter = ";"
+        elif "," in line:
+            delimiter = ","
         else:
             delimiter = None  # Whitespace-delimited
 

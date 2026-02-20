@@ -1,13 +1,11 @@
 import inspect
 import logging
-import warnings
 
 import numpy as np
-import pandas as pd
 
-from pydpeet.process.analyze.average import calculate_total_charge, calculate_total_discharge
-from pydpeet.process.analyze.utils import _check_columns, StepTimer
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
+from pydpeet.process.analyze.utils import StepTimer, _check_columns
+
 
 # doku: bei Neware FUDS Test erhöht sich die Spannung bei einem negativen Stromsprung um ca. 1A
 def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
@@ -34,7 +32,7 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
     Returns:
     pandas.DataFrame: DataFrame with added 'internal_resistance[ohm]', 'delta_t', 'delta_current', and 'delta_voltage' columns
     """
-    required_cols = ['Testtime[s]', 'Current[A]', 'Voltage[V]']
+    required_cols = ["Testtime[s]", "Current[A]", "Voltage[V]"]
     _check_columns(df, required_cols)
 
     if config is None:
@@ -51,28 +49,28 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
 
     # Calculate differences
     with StepTimer(verbose) as st:
-        delta_t = df['Testtime[s]'].diff()
-        delta_current = df['Current[A]'].diff()
-        delta_voltage = df['Voltage[V]'].diff()
+        delta_t = df["Testtime[s]"].diff()
+        delta_current = df["Current[A]"].diff()
+        delta_voltage = df["Voltage[V]"].diff()
         st.log("calculated delta_t, delta_I, delta_V")
 
     # Only calculate resistance when:
     mask = (
-        (delta_t > 0) &  # Time is increasing
-        ((delta_t <= max_time_diff) | (delta_t == 0)) &  # Within max time window
-        (abs(delta_current) >= min_current_diff) &  # Significant current change
-        (abs(delta_voltage) >= min_voltage_diff)  # Significant voltage change
+        (delta_t > 0)  # Time is increasing
+        & ((delta_t <= max_time_diff) | (delta_t == 0))  # Within max time window
+        & (abs(delta_current) >= min_current_diff)  # Significant current change
+        & (abs(delta_voltage) >= min_voltage_diff)  # Significant voltage change
     )
 
     # Calculate resistance only for valid points
     with StepTimer(verbose) as st:
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             resistance = delta_voltage / delta_current
             resistance[~((delta_current != 0) & mask)] = np.nan  # Set invalid calculations to NaN
         st.log("computed internal resistance for valid points")
 
     # Assign the calculated resistances
-    df['InternalResistance[ohm]'] = resistance
+    df["InternalResistance[ohm]"] = resistance
 
     # useful for debugging
     # df['delta_t'] = delta_t
@@ -80,6 +78,6 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
     # df['delta_voltage'] = delta_voltage
 
     if ignore_negative_resistance_values:
-        df['InternalResistance[ohm]'] = df['InternalResistance[ohm]'].mask(df['InternalResistance[ohm]'] <= 0)
+        df["InternalResistance[ohm]"] = df["InternalResistance[ohm]"].mask(df["InternalResistance[ohm]"] <= 0)
 
     return df

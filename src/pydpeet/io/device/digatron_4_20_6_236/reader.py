@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     """
     Parses the input file from the Digatron Cycler into a pandas DataFrame.
@@ -13,19 +14,19 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     metadata = []
 
     # Open the file and process lines
-    with open(input_path, 'r', encoding='us-ascii') as file:
+    with open(input_path, encoding="us-ascii") as file:
         # Read metadata until the header line is found
         line = file.readline()
-        while not line.startswith('Zeitstempel'):
+        while not line.startswith("Zeitstempel"):
             metadata.append(line.strip())
             line = file.readline()
 
         # Extract headers and remaining data
-        headers = line.strip().split(';')
-        data_lines = [row.strip().split(';') for row in file if row.strip()]
+        headers = line.strip().split(";")
+        data_lines = [row.strip().split(";") for row in file if row.strip()]
 
         # appending first string from datalines
-        metadata.append(';'.join(data_lines.pop(0)))
+        metadata.append(";".join(data_lines.pop(0)))
 
     # Join metadata into a single string
     metadata_str = "\n".join(metadata)

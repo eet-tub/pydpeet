@@ -12,8 +12,8 @@ from pydpeet.io.write import write
 
 # Public API for this package
 __all__ = [
-    'convert',
-    'mapping',
-    'read',
-    'write',
+    "convert",
+    "mapping",
+    "read",
+    "write",
 ]

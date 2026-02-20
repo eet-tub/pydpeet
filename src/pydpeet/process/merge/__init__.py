@@ -9,5 +9,5 @@ from pydpeet.process.merge.series import merge_into_series
 
 # Public API for this package
 __all__ = [
-    'merge_into_series',
+    "merge_into_series",
 ]

@@ -8,32 +8,43 @@ import pandas as pd
 from numba import njit
 
 from pydpeet.process.analyze.capacity import add_capacity
-from pydpeet.process.analyze.utils import precompute_block_arrays_soc_methods, StepTimer
-from pydpeet.process.sequence.configs import config
-
+from pydpeet.process.analyze.utils import StepTimer, precompute_block_arrays_soc_methods
 
 # ** SOC calculation logic **
 
+
 class SocMethod(Enum):
-    WITHOUT_RESET = 'withoutReset'
-    WITH_RESET_WHEN_FULL = 'withResetWhenFull'
-    WITH_RESET_WHEN_EMPTY = 'withResetWhenEmpty'
-    WITH_RESET_WHEN_FULL_AND_EMPTY = 'withResetWhenFullAndEmpty'
+    WITHOUT_RESET = "withoutReset"
+    WITH_RESET_WHEN_FULL = "withResetWhenFull"
+    WITH_RESET_WHEN_EMPTY = "withResetWhenEmpty"
+    WITH_RESET_WHEN_FULL_AND_EMPTY = "withResetWhenFullAndEmpty"
+
 
 # Map method names to integers expected by numba function
 SOC_METHOD_MAP = {
-    'WITHOUT_RESET': 0,
-    'WITH_RESET_WHEN_FULL': 1,
-    'WITH_RESET_WHEN_EMPTY': 2,
-    'WITH_RESET_WHEN_FULL_AND_EMPTY': 3
+    "WITHOUT_RESET": 0,
+    "WITH_RESET_WHEN_FULL": 1,
+    "WITH_RESET_WHEN_EMPTY": 2,
+    "WITH_RESET_WHEN_FULL_AND_EMPTY": 3
 }
+
 
 # numba compiled multi-method function: compute SOC arrays for all methods in one call, writing into preallocated output
 @njit(cache=True)
-def _compute_soc_multi_methods_out(delta_soc, current, abs_current, voltage,
-                                   soc_start, lower_soc, upper_soc,
-                                   threshold_current, max_voltage, min_voltage,
-                                   method_ints, socs_out, reset_buf):
+def _compute_soc_multi_methods_out(
+        delta_soc,
+        current,
+        abs_current,
+        voltage,
+        soc_start,
+        lower_soc,
+        upper_soc,
+        threshold_current,
+        max_voltage,
+        min_voltage,
+        method_ints,
+        socs_out,
+        reset_buf):
     """
     Compute State of Charge (SOC) arrays for all methods in one call, writing into preallocated output.
 
@@ -67,8 +78,8 @@ def _compute_soc_multi_methods_out(delta_soc, current, abs_current, voltage,
         charge_sign = 1.0
 
         # Method flags
-        is_full_method = (method_int == 1 or method_int == 3)
-        is_empty_method = (method_int == 2 or method_int == 3)
+        is_full_method = method_int == 1 or method_int == 3
+        is_empty_method = method_int == 2 or method_int == 3
 
         # Minimum run length for reset
         min_run_length = 3
@@ -84,8 +95,11 @@ def _compute_soc_multi_methods_out(delta_soc, current, abs_current, voltage,
             # Full-Rest Runs
             if is_full_method and (voltage[i] >= max_voltage and abs_current[i] < threshold_current):
                 start = i
-                while i + 1 < n and not np.isnan(voltage[i + 1]) and not np.isnan(abs_current[i + 1]) and \
-                      voltage[i + 1] >= max_voltage and abs_current[i + 1] < threshold_current:
+                while(i + 1 < n
+                        and not np.isnan(voltage[i + 1])
+                        and not np.isnan(abs_current[i + 1])
+                        and voltage[i + 1] >= max_voltage
+                        and abs_current[i + 1] < threshold_current):
                     i += 1
                 run_length = i - start + 1
                 if run_length >= min_run_length:
@@ -96,8 +110,11 @@ def _compute_soc_multi_methods_out(delta_soc, current, abs_current, voltage,
             # Empty-Rest Runs
             if is_empty_method and (voltage[i] <= min_voltage and abs_current[i] < threshold_current):
                 start = i
-                while i + 1 < n and not np.isnan(voltage[i + 1]) and not np.isnan(abs_current[i + 1]) and \
-                      voltage[i + 1] <= min_voltage and abs_current[i + 1] < threshold_current:
+                while (i + 1 < n
+                       and not np.isnan(voltage[i + 1])
+                       and not np.isnan(abs_current[i + 1])
+                       and voltage[i + 1] <= min_voltage
+                       and abs_current[i + 1] < threshold_current):
                     i += 1
                 run_length = i - start + 1
                 if run_length >= min_run_length and reset_buf[i] < 0.0:
@@ -151,9 +168,19 @@ def _compute_soc_multi_methods_out(delta_soc, current, abs_current, voltage,
     return
 
 
-def add_soc(df: pd.DataFrame, df_primitives: pd.DataFrame, neware_bool = True, standard_method=None, methods=None, config=None,
-            lower_soc_for_voltage=0, upper_soc_for_voltage=1, lower_voltage_for_soc=0, upper_voltage_for_soc=0,
-            verbose=True, restart_for_testindex=True):
+def add_soc(
+        df: pd.DataFrame,
+        df_primitives: pd.DataFrame,
+        neware_bool=True,
+        standard_method=None,
+        methods=None,
+        config=None,
+        lower_soc_for_voltage=0,
+        upper_soc_for_voltage=1,
+        lower_voltage_for_soc=0,
+        upper_voltage_for_soc=0,
+        verbose=True,
+        restart_for_testindex=True):
     """
     Computes the Soc (State of Charge) for a battery cell, from the given dataframe. It therefore integrates the current over time,
     using the trapezoid rule. As a capacity reference value, the first calculated capacity value is used, which is updated once the
@@ -209,7 +236,6 @@ def add_soc(df: pd.DataFrame, df_primitives: pd.DataFrame, neware_bool = True, s
     voltage_intervall = config.voltage_intervall
     lower_soc = lower_soc_for_voltage or 0
     upper_soc = upper_soc_for_voltage or 1
-
 
     logging.info(f"Starting SOC computation on dataframe of size {len(df)}...")
 
@@ -369,7 +395,17 @@ def warmup_numba():
     socs_out = np.zeros((1, n), dtype=np.float64)
     reset_buf = np.zeros(n, dtype=np.float64)
     _compute_soc_multi_methods_out(
-        np.zeros(n), np.zeros(n), np.zeros(n), np.zeros(n), 0.0,
-        0.0, 1.0, 0.01, 4.2, 3.0, dummy_methods, socs_out, reset_buf
+        np.zeros(n),
+        np.zeros(n),
+        np.zeros(n),
+        np.zeros(n),
+        0.0,
+        0.0,
+        1.0,
+        0.01,
+        4.2,
+        3.0,
+        dummy_methods,
+        socs_out,
+        reset_buf
     )
-

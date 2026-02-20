@@ -6,13 +6,20 @@ import numpy as np
 import pandas as pd
 
 from pydpeet.process.analyze.average import calculate_total_charge, calculate_total_discharge
-from pydpeet.process.analyze.utils import _check_columns, StepTimer
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
+from pydpeet.process.analyze.utils import StepTimer
 
 # ** Battery performance metrics **
 
-def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: BatteryConfig = None,
-                           max_time_diff_in_secs: int = 300, ignore_threshold_values: bool = False, verbose=True):
+
+def add_efficiency_coulomb(
+        df,
+        df_blocks_charge,
+        df_blocks_discharge,
+        config: BatteryConfig = None,
+        max_time_diff_in_secs: int = 300,
+        ignore_threshold_values: bool = False,
+        verbose=True):
     """
     Calculate the Coulomb Efficiency of a battery based on the given data.
 
@@ -46,15 +53,14 @@ def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: Ba
     if isinstance(df_blocks_discharge, pd.DataFrame):
         df_blocks_discharge = [df_blocks_discharge]
 
-
     # Determine which time column to use
-    if 'Testtime[s]' in df.columns:
-        time_col = 'Testtime[s]'
+    if "Testtime[s]" in df.columns:
+        time_col = "Testtime[s]"
         parse_time = False
         tolerance_val = max_time_diff_in_secs  # already seconds
-    elif 'Absolute Time[yyyy-mm-dd hh:mm:ss]' in df.columns:
+    elif "Absolute Time[yyyy-mm-dd hh:mm:ss]" in df.columns:
         warnings.warn("Absolute Time[yyyy-mm-dd hh:mm:ss] is used as time column, because there is no 'Testtime[s]' given.")
-        time_col = 'Absolute Time[yyyy-mm-dd hh:mm:ss]'
+        time_col = "Absolute Time[yyyy-mm-dd hh:mm:ss]"
         parse_time = True
         tolerance_val = pd.Timedelta(seconds=max_time_diff_in_secs)
     else:
@@ -65,11 +71,11 @@ def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: Ba
 
     # Voltage thresholds
     max_v_adj_down = max_voltage * (1 - config.voltage_intervall)
-    max_v_adj_up   = max_voltage * (1 + config.voltage_intervall)
-    min_v_adj_up   = min_voltage * (1 + config.voltage_intervall)
+    max_v_adj_up = max_voltage * (1 + config.voltage_intervall)
+    min_v_adj_up = min_voltage * (1 + config.voltage_intervall)
     min_v_adj_down = min_voltage * (1 - config.voltage_intervall)
 
-    df['CoulombEfficiency'] = np.nan  # numeric NaN
+    df["CoulombEfficiency"] = np.nan  # numeric NaN
 
     # Helper to summarize blocks safely
     def summarize_blocks(blocks, total_col_name):
@@ -77,28 +83,28 @@ def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: Ba
         for block in blocks:
             if block.empty:
                 continue
-            block_max = block['Voltage[V]'].max()
-            block_min = block['Voltage[V]'].min()
+            block_max = block["Voltage[V]"].max()
+            block_min = block["Voltage[V]"].min()
             if ignore_threshold_values or (max_v_adj_down <= block_max <= max_v_adj_up and min_v_adj_down <= block_min <= min_v_adj_up):
                 start_time = pd.to_datetime(block[time_col].iloc[0]) if parse_time else block[time_col].iloc[0]
-                end_time   = pd.to_datetime(block[time_col].iloc[-1]) if parse_time else block[time_col].iloc[-1]
+                end_time = pd.to_datetime(block[time_col].iloc[-1]) if parse_time else block[time_col].iloc[-1]
                 with StepTimer(verbose) as timer:
-                    total = calculate_total_charge(block) if total_col_name == 'total_charge' else calculate_total_discharge(block)
+                    total = calculate_total_charge(block) if total_col_name == "total_charge" else calculate_total_discharge(block)
                     timer.log(f"calculated {total_col_name} for one block")
                 summary.append({
-                    'start_time': start_time,
-                    'end_time': end_time,
+                    "start_time": start_time,
+                    "end_time": end_time,
                     total_col_name: total,
-                    'last_index': block.index[-1]
+                    "last_index": block.index[-1]
                 })
         if not summary:
-            return pd.DataFrame(columns=['start_time', 'end_time', total_col_name, 'last_index'])
-        return pd.DataFrame(summary).sort_values('start_time')
+            return pd.DataFrame(columns=["start_time", "end_time", total_col_name, "last_index"])
+        return pd.DataFrame(summary).sort_values("start_time")
 
     # Helper to find matching blocks
     with StepTimer(verbose) as st:
-        charge_df = summarize_blocks(df_blocks_charge, 'total_charge')
-        discharge_df = summarize_blocks(df_blocks_discharge, 'total_discharge')
+        charge_df = summarize_blocks(df_blocks_charge, "total_charge")
+        discharge_df = summarize_blocks(df_blocks_discharge, "total_discharge")
         st.log("summarized all charge/discharge blocks")
 
     if charge_df.empty or discharge_df.empty:
@@ -107,23 +113,23 @@ def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: Ba
 
     if parse_time:
         # Ensure datetime dtype
-        charge_df['start_time'] = pd.to_datetime(charge_df['start_time'])
-        charge_df['end_time']   = pd.to_datetime(charge_df['end_time'])
-        discharge_df['start_time'] = pd.to_datetime(discharge_df['start_time'])
-        discharge_df['end_time']   = pd.to_datetime(discharge_df['end_time'])
+        charge_df["start_time"] = pd.to_datetime(charge_df["start_time"])
+        charge_df["end_time"] = pd.to_datetime(charge_df["end_time"])
+        discharge_df["start_time"] = pd.to_datetime(discharge_df["start_time"])
+        discharge_df["end_time"] = pd.to_datetime(discharge_df["end_time"])
 
     # Sort before merge_asof
-    charge_df = charge_df.sort_values('start_time').reset_index(drop=True)
-    discharge_df = discharge_df.sort_values('start_time').reset_index(drop=True)
+    charge_df = charge_df.sort_values("start_time").reset_index(drop=True)
+    discharge_df = discharge_df.sort_values("start_time").reset_index(drop=True)
 
     # Forward merge: discharge after charge
     with StepTimer(verbose) as st:
         paired_forward = pd.merge_asof(
             charge_df,
             discharge_df,
-            left_on='end_time',
-            right_on='start_time',
-            direction='forward',
+            left_on="end_time",
+            right_on="start_time",
+            direction="forward",
             tolerance=tolerance_val
         )
         st.log("performed forward merge of charge/discharge blocks")
@@ -133,9 +139,9 @@ def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: Ba
         paired_backward = pd.merge_asof(
             charge_df,
             discharge_df,
-            left_on='start_time',
-            right_on='end_time',
-            direction='backward',
+            left_on="start_time",
+            right_on="end_time",
+            direction="backward",
             tolerance=tolerance_val
         )
         st.log("performed backward merge of charge/discharge blocks")
@@ -143,21 +149,21 @@ def add_efficiency_coulomb(df, df_blocks_charge, df_blocks_discharge, config: Ba
     # Combine forward/backward and pick closest in absolute time
     with StepTimer(verbose) as st:
         combined = pd.concat([paired_forward, paired_backward], ignore_index=True, sort=False)
-        combined['time_diff'] = (pd.to_datetime(combined['start_time_y']) - pd.to_datetime(combined['end_time_x'])).abs()
-        combined = combined.dropna(subset=['total_discharge'])
-        combined = combined.sort_values('time_diff').drop_duplicates(subset=['start_time_x', 'end_time_x'])
+        combined["time_diff"] = (pd.to_datetime(combined["start_time_y"]) - pd.to_datetime(combined["end_time_x"])).abs()
+        combined = combined.dropna(subset=["total_discharge"])
+        combined = combined.sort_values("time_diff").drop_duplicates(subset=["start_time_x", "end_time_x"])
 
         # Assign Coulomb Efficiency to last index of the later block
         for _, row in combined.iterrows():
-            total_charge = row.get('total_charge', np.nan)
-            total_discharge = row.get('total_discharge', np.nan)
+            total_charge = row.get("total_charge", np.nan)
+            total_discharge = row.get("total_discharge", np.nan)
             if pd.isna(total_charge) or total_charge == 0:
                 ce = np.nan
             else:
                 ce = total_discharge / total_charge
             # Use nan-safe max and cast to int to avoid type checker complaints about comparing Series
-            last_index = int(np.nanmax([row.get('last_index_x', np.nan), row.get('last_index_y', np.nan)]))
-            df.loc[last_index, 'CoulombEfficiency'] = ce
+            last_index = int(np.nanmax([row.get("last_index_x", np.nan), row.get("last_index_y", np.nan)]))
+            df.loc[last_index, "CoulombEfficiency"] = ce
         st.log("assigned Coulomb Efficiency to dataframe")
 
     return df

@@ -1,6 +1,7 @@
 import pandas
-from pydpeet.io.utils.formatter_utils import round_testtime
-from pydpeet.io.utils.formatter_utils import typecast
+
+from pydpeet.io.utils.formatter_utils import round_testtime, typecast
+
 
 def get_data_into_format(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     """
@@ -30,6 +31,3 @@ def get_data_into_format(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     typecast(data_frame, "Zre[Ohm]", float)
     typecast(data_frame, "Zim[Ohm]", float)
     return data_frame
-
-
-

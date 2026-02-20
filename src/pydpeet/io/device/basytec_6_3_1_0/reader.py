@@ -1,7 +1,7 @@
 import logging
+from io import StringIO
 
 import pandas as pd
-from io import StringIO
 
 
 def to_dataframe(input_path: str) -> (pd.DataFrame, str):
@@ -15,14 +15,14 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     Returns:
         (pd.DataFrame, str): A tuple containing the DataFrame with the data and metadata as a string.
     """
-    with open(input_path, 'r', encoding='iso-8859-1') as file:
+    with open(input_path, encoding="iso-8859-1") as file:
         lines = file.readlines()
 
     # Collect all metadata lines (those starting with '~')
     metadata_lines = []
     data_start_idx = 0
     for idx, line in enumerate(lines):
-        if line.startswith('~'):
+        if line.startswith("~"):
             metadata_lines.append(line.strip())
         else:
             data_start_idx = idx
@@ -32,7 +32,7 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
         logging.warning("The file does not contain expected metadata lines starting with '~'.")
 
     # The last metadata line is used as the header; remove it from metadata_lines.
-    header_line = metadata_lines.pop().lstrip('~').strip()
+    header_line = metadata_lines.pop().lstrip("~").strip()
     headers = header_line.split()
 
     # Join the remaining metadata lines into a single string.

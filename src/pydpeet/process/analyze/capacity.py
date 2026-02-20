@@ -1,20 +1,19 @@
-import logging
 import inspect
+import logging
 
 import numpy as np
-from matplotlib import pyplot as plt
 from scipy import integrate
 
+from pydpeet.process.analyze.configs.battery_config import BatteryConfig
 from pydpeet.process.analyze.configs.step_analyzer_config import SEGMENT_SEQUENCE_CONFIG
 from pydpeet.process.analyze.utils import StepTimer, _check_columns
-from pydpeet.process.analyze.configs.battery_config import BatteryConfig
 from pydpeet.process.sequence.step_analyzer import extract_sequences
-from pydpeet.process.sequence.configs import config
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 
 # ** Capacity and Degradation metrics **
 
-def add_capacity(df, df_primitives, neware_bool = True, config: BatteryConfig = None, verbose=True):
+
+def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = None, verbose=True):
     """
     Compute the capacity of a battery cell from its discharge data.
 
@@ -35,7 +34,7 @@ def add_capacity(df, df_primitives, neware_bool = True, config: BatteryConfig = 
         :param THRESHOLD_DICT: threshold dictionary for neware params
     """
     # Check if the required columns are present
-    required_cols = ['Testtime[s]', 'Current[A]', 'Voltage[V]']
+    required_cols = ["Testtime[s]", "Current[A]", "Voltage[V]"]
     _check_columns(df, required_cols)
 
     if config is None:
@@ -52,7 +51,6 @@ def add_capacity(df, df_primitives, neware_bool = True, config: BatteryConfig = 
 
     logging.info(f"Starting capacity computation on dataframe of size {len(df)}...")
 
-
     # Step 2: Segments and sequences
     with StepTimer(verbose) as st:
         df_segments_and_sequences = extract_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG)
@@ -61,67 +59,65 @@ def add_capacity(df, df_primitives, neware_bool = True, config: BatteryConfig = 
     if neware_bool:
         # Step 3: Filter discharge blocks
         rules = [
-            'CC_Discharge_after_CC_Charge',
-            'CC_Discharge_after_CCCV_Charge',
-            'CC_Discharge_after_CV_Charge',
-            'CC_Discharge_after_CCCV_Charge_with_Pause',
-            'CC_Discharge_after_CC_Charge_with_Pause',
-            'CC_Discharge_after_CV_Charge_with_Pause'
+            "CC_Discharge_after_CC_Charge",
+            "CC_Discharge_after_CCCV_Charge",
+            "CC_Discharge_after_CV_Charge",
+            "CC_Discharge_after_CCCV_Charge_with_Pause",
+            "CC_Discharge_after_CC_Charge_with_Pause",
+            "CC_Discharge_after_CV_Charge_with_Pause"
         ]
         with StepTimer(verbose) as st:
             dfs_per_block, df_filtered = filter_and_split_df_by_blocks(
                 df_segments_and_sequences=df_segments_and_sequences,
                 df_primitives=df_primitives,
                 rules=rules,
-                combine_op='or',
-                also_return_filtered_df=True
+                combine_op="or", also_return_filtered_df=True
             )
             st.log("filtered initial discharge blocks")
 
-    rules = ['CC_Discharge']
+    rules = ["CC_Discharge"]
     with StepTimer(verbose) as st:
         dfs_per_block, df_filtered = filter_and_split_df_by_blocks(
             df_segments_and_sequences=df_segments_and_sequences,
             df_primitives=df_primitives,
             rules=rules,
-            combine_op='or',
-            also_return_filtered_df=True
+            combine_op="or", also_return_filtered_df=True
         )
         st.log("filtered CC_Discharge blocks")
 
     discharge_dfs = []
     # search for the blocks with a full discharge (from max to min)
     for i, block in enumerate(dfs_per_block):
-        avg_current = block['Current[A]'].mean()
-        voltage_range = (block['Voltage[V]'].max(), block['Voltage[V]'].min())
+        avg_current = block["Current[A]"].mean()
+        voltage_range = (block["Voltage[V]"].max(), block["Voltage[V]"].min())
 
-        if not (minimal_current < avg_current < maximal_current) or \
-                not (voltage_range[0] >= max_voltage * (1 - voltage_intervall) and
-                     voltage_range[1] <= min_voltage * (1 + voltage_intervall)):
+        if (not (minimal_current < avg_current < maximal_current)
+                or not (voltage_range[0] >= max_voltage * (1 - voltage_intervall)
+                        and voltage_range[1] <= min_voltage * (1 + voltage_intervall))):
             continue
 
         block = block.copy()
-        time_diff = block['Testtime[s]'].diff() / 3600
-        block['Capacity[Ah]'] = (block['Current[A]'] * time_diff).cumsum()
+        time_diff = block["Testtime[s]"].diff() / 3600
+        block["Capacity[Ah]"] = (block["Current[A]"] * time_diff).cumsum()
 
         if len(block) > 0:
-            time_seconds = block['Testtime[s]'].values
-            current = block['Current[A]'].values
+            time_seconds = block["Testtime[s]"].values
+            current = block["Current[A]"].values
             with StepTimer(verbose) as st:
                 capacity_ah = integrate.cumulative_trapezoid(abs(current), time_seconds, initial=0) / 3600
                 st.log(f"computed cumulative capacity for block {i}")
-            block['Capacity[Ah]'] = float('NaN')
-            block.loc[block.index[-1], 'Capacity[Ah]'] = capacity_ah[-1]
+            block["Capacity[Ah]"] = float("NaN")
+            block.loc[block.index[-1], "Capacity[Ah]"] = capacity_ah[-1]
 
         discharge_dfs.append(block)
 
     df_with_capacity = df.copy()
     if len(discharge_dfs) > 0:
         for block in discharge_dfs:
-            df_with_capacity.loc[block.index[0]:block.index[-1], 'Capacity[Ah]'] = block['Capacity[Ah]']
+            df_with_capacity.loc[block.index[0] : block.index[-1], "Capacity[Ah]"] = block["Capacity[Ah]"]
     else:
         logging.info("No valid discharge blocks found, returning DataFrame with Capacity as nans")
-        df_with_capacity['Capacity[Ah]'] = np.full(len(df_with_capacity), np.nan, dtype=np.float64)
+        df_with_capacity["Capacity[Ah]"] = np.full(len(df_with_capacity), np.nan, dtype=np.float64)
 
     return df_with_capacity
 
@@ -140,9 +136,9 @@ def add_charge_throughput(df, inplace=False, calculate_tests_individually=False,
     The 'ChargeThroughput[Ah]' column represents the cumulative charge (in Ah) with sign (i.e., loaded + / unloaded -)
     The 'AbsoluteChargeThroughput[Ah]' column represents the cumulative absolute charge (in Ah)
     """
-    time_col = 'Testtime[s]'
-    current_col = 'Current[A]'
-    testindex_col = 'TestIndex'
+    time_col = "Testtime[s]"
+    current_col = "Current[A]"
+    testindex_col = "TestIndex"
 
     # quick checks
     if time_col not in df.columns or current_col not in df.columns:

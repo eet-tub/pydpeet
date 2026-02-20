@@ -21,7 +21,6 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
 
 
 def read_sheets(excel_file: pd.ExcelFile) -> (pd.DataFrame, str):
-
     # variables for the dataframe and String
     """
     Reads data from all sheets in an Excel file and returns them as a tuple of a DataFrame and a string.

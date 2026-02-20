@@ -1,6 +1,5 @@
-from pydpeet.process.sequence.utils.preprocessing.calculate_thresholds import calculate_minimum_definitive_differences
 from pydpeet.process.sequence.configs import config
-from typing import Dict
+from pydpeet.process.sequence.utils.preprocessing.calculate_thresholds import calculate_minimum_definitive_differences
 
 # using neware thresholds as default
 THRESHOLD_DICT = config.NEWARE_CT_4008Q_5V12A_S1
@@ -14,7 +13,7 @@ SEGMENTS_TO_DETECT_CONFIG = [
     ("Power[W]", (MIN_DEFINITIVE_VOLTAGE_DIFFERENCE + MIN_DEFINITIVE_CURRENT_DIFFERENCE) / 2),
 ]
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
-#ORDER IS IMPORTANT!
+# ORDER IS IMPORTANT!
 ADJUST_SEGMENTS_CONFIG = [
     ("Voltage[V]", MIN_DEFINITIVE_VOLTAGE_DIFFERENCE),
     ("Current[A]", MIN_DEFINITIVE_CURRENT_DIFFERENCE),
@@ -65,14 +64,14 @@ END_CONDITION_MAP_GENERATE_INSTRUCTIONS = {
     "Pause": "time",
 }
 ########################################################################################################################
-SEQUENCES_CONFIG: Dict[str, Dict] = {
+SEQUENCES_CONFIG: dict[str, dict] = {
     # Complex Sequences
     # Loop rules: "loop": True, "exact_loops": 2, "min_loops": 2, "max_loops": 2, "minimum_IDs": 6
-    "Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge","Pause"]},
+    "Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge", "Pause"]},
     "Charge_iOCV": {"loop": True, "min_loops": 2, "sequence": ["Pause", "CC_Charge"]},
     "CCCV_Charge": {"loop": False, "sequence": ["CC_Charge", "CV_Charge"]},
 }
-SEGMENTS_CONFIG_SIMPLE: Dict[str, Dict] = {
+SEGMENTS_CONFIG_SIMPLE: dict[str, dict] = {
     # Primitive segments
     # I, V, P,
     # Charging, Discharging
@@ -102,7 +101,7 @@ SEGMENTS_CONFIG_SIMPLE: Dict[str, Dict] = {
         }
     },
 }
-SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
+SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
     # Primitive segments
     # Pause
     # CC_Charge, CV_Charge, CP_Charge
@@ -199,7 +198,6 @@ SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
         }
     },
 }
-
 
 
 SEGMENT_SEQUENCE_CONFIG = {

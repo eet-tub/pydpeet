@@ -9,6 +9,6 @@ from pydpeet.citations.citeme import print_references, write_to_bibtex
 
 # Public API for this package
 __all__ = [
-    'print_references',
-    'write_to_bibtex',
+    "print_references",
+    "write_to_bibtex",
 ]

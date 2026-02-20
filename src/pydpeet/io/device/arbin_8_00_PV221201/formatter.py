@@ -1,6 +1,6 @@
 import pandas
-from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast
-from pydpeet.io.utils.formatter_utils import testtime_hours_to_seconds_with_string_interpretation
+
+from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast, testtime_hours_to_seconds_with_string_interpretation
 
 
 def get_data_into_format(data_frame: pandas.DataFrame) -> pandas.DataFrame:
@@ -20,11 +20,3 @@ def get_data_into_format(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     data_frame = testtime_hours_to_seconds_with_string_interpretation(data_frame, True)
     data_frame = absolute_time_timedate_typecast(data_frame)
     return data_frame
-
-
-
-
-
-
-
-
