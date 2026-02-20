@@ -323,7 +323,7 @@ def get_data_into_format(dataFrame: pandas.DataFrame):
 ```python
 import pandas as pd
 
-def to_DataFrame(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     ***YOUR CODE***
     return dataFrame, metadata_string
 ```

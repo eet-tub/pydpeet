@@ -3,8 +3,8 @@ from unittest.mock import patch, MagicMock
 
 from pandas import DataFrame
 
-from ppb.configs.config import Config, READER_CONFIGS
-from ppb.convert import _convert_file_to_pandas_data_frame
+from pydpeet.io.configs.config import Config, READER_CONFIGS
+from pydpeet.io.convert import _convert_file_to_pandas_data_frame
 from utils import mock_config
 
 

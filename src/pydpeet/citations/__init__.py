@@ -1,18 +1,11 @@
 """
 Auto-generated __init__ file.
-Created: 2026-02-02 10:44:50
+Created: 2026-02-20 17:27:09
 """
 
-# Bind selected names from source modules into this package without leaking helper names
+# Re-export selected names from source modules
 
-def _pydpeet_bind():
-    import importlib, sys
-    _m = importlib.import_module('pydpeet.citations.citeme')
-    globals()['print_references'] = getattr(_m, 'print_references')
-    globals()['write_to_bibtex'] = getattr(_m, 'write_to_bibtex')
-
-_pydpeet_bind()
-del _pydpeet_bind
+from pydpeet.citations.citeme import print_references, write_to_bibtex
 
 # Public API for this package
 __all__ = [

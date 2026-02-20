@@ -1,6 +1,6 @@
 import unittest
 import pandas as pandas
-from ppb.utils.formatter_utils import move_strings_from_column_to_metadata
+from pydpeet.io.utils.formatter_utils import move_strings_from_column_to_metadata
 from unittest.mock import patch
 from io import StringIO
 

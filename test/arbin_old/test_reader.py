@@ -3,14 +3,14 @@ from unittest.mock import Mock
 
 from numpy.ma.testutils import assert_equal
 
-from ppb.zyklisierer.arbin_old.reader import to_DataFrame, read_sheets
+from pydpeet.io.device.arbin_4_23_PV090331.reader import to_dataframe, read_sheets
 
 
 class ArbinOldTests(unittest.TestCase):
     def test_invalid_input_path(self):
         for value in ["invalid", None, ""]:
             try:
-                _, _ = to_DataFrame(value)
+                _, _ = to_dataframe(value)
                 self.fail()
             except FileNotFoundError:
                 pass

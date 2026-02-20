@@ -3,8 +3,8 @@ import unittest
 from pandas.testing import assert_index_equal
 from pandas import Index
 
-from ppb.configs.config import STANDARD_COLUMNS
-from ppb.convert import _rename_duplicate_extra_columns
+from pydpeet.io.configs.config import STANDARD_COLUMNS
+from pydpeet.io.convert import _rename_duplicate_extra_columns
 
 
 class TestRenameDuplicateExtraColumns(unittest.TestCase):

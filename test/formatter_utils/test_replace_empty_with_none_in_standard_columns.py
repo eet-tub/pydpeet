@@ -4,11 +4,11 @@ from unittest.mock import patch
 
 import pandas
 
-from ppb.configs.config import STANDARD_COLUMNS
-from ppb.convert import _convert_file_to_pandas_data_frame, _column_mapping, _drop_additional_data, \
+from pydpeet.io.configs.config import STANDARD_COLUMNS
+from pydpeet.io.convert import _convert_file_to_pandas_data_frame, _column_mapping, _drop_additional_data, \
     _add_metadata_to_dataframe, _reorder_columns
-from ppb.utils.formatter_utils import replace_empty_with_none_in_standard_columns
-from ppb.configs.config import Config
+from pydpeet.io.utils.formatter_utils import replace_empty_with_none_in_standard_columns
+from pydpeet.io.configs.config import Config
 from test.utils import RES_PATH
 
 

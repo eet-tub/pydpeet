@@ -4,13 +4,13 @@ from pathlib import Path
 from typing import Any, Callable
 from unittest.mock import MagicMock
 
-from pydpeet.convert.configs.config import Config
+from pydpeet.io.configs.config import Config
 
 _TEST_ROOT = Path(__file__).parent
 RES_PATH = _TEST_ROOT / "res"
 TEMP_PATH = _TEST_ROOT / "tmp"
 
-def with_zip_file_for_path(zip_file: Path, test_func_for_path: Callable[[Path], Any]) -> [Any]:
+def with_zip_file_for_path(zip_file: Path, test_func_for_path: Callable[[Path], Any]) -> list[Any]:
     extract_dir = zip_file.parent / "unzipped"
     try:
         with zipfile.ZipFile(zip_file, 'r') as zip_ref:
@@ -31,7 +31,7 @@ def with_zip_files(zip_files_path: Path, test_func_for_each_file: Callable) -> N
 
 def with_zip_file(
         zip_file: Path, test_func_for_each_file: Callable[[str], Any]
-) -> [Any]:
+) -> list[Any]:
     extract_dir = zip_file.parent / "unzipped"
     try:
         with zipfile.ZipFile(zip_file, 'r') as zip_ref:

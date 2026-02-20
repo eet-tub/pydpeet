@@ -3,21 +3,21 @@ from unittest.mock import patch
 
 from pandas import DataFrame
 
-from ppb.configs.config import Config, MAPPER_CONFIGS
-from ppb.convert import _column_mapping
+from pydpeet.io.configs.config import Config, MAPPER_CONFIGS
+from pydpeet.io.convert import _column_mapping
 from utils import mock_config
 
 
 class TestColumnMapping(unittest.TestCase):
 
     def test_data_frame_none(self):
-        config = Config.BaSyTec
+        config = Config.BaSyTec_6_3_1_0
         with self.assertRaises(ValueError):
             _column_mapping(None, config)
 
     @patch('ppb.convert.mapping')
     def test_config_in_mapper_configs(self, mock_mapping):
-        config = Config.BaSyTec
+        config = Config.BaSyTec_6_3_1_0
         data_frame = DataFrame()
         column_map = {'a': 'b'}
         missing_required_columns = ['c']

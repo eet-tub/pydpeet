@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pandas
 
-from ppb.utils.formatter_utils import testtime_hours_to_seconds_direct
+from pydpeet.io.utils.formatter_utils import testtime_hours_to_seconds_direct
 
 
 class TestTesttimeHoursToSecondsDirect(unittest.TestCase):

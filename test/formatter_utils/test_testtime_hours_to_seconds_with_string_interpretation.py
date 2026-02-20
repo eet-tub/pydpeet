@@ -1,6 +1,6 @@
 import unittest
 import pandas
-from ppb.utils.formatter_utils import testtime_hours_to_seconds_with_string_interpretation
+from pydpeet.io.utils.formatter_utils import testtime_hours_to_seconds_with_string_interpretation
 from unittest.mock import patch
 from io import StringIO
 

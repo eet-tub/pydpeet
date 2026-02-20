@@ -1,7 +1,7 @@
 import unittest
 
-from pydpeet.convert.configs.config import Config
-from pydpeet.convert.directory_standardization import directory_standardization
+from pydpeet.io.configs.config import Config
+from pydpeet.io.convert import convert_files_in_directory
 
 
 
@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
     def test_neware(self):
         zip_file = RES_PATH / "neware" / "for_directory_standardization" / "data.zip"
         with_zip_file_for_path(
-            zip_file, lambda input_path: directory_standardization(
+            zip_file, lambda input_path: convert_files_in_directory(
                 'Neware',
                 str(input_path),
                 str(RES_PATH / "neware" / "for_directory_standardization" / "output"),

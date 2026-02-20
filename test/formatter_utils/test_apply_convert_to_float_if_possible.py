@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pandas
 
-from ppb.utils.formatter_utils import apply_convert_to_float_if_possible
+from pydpeet.io.utils.formatter_utils import apply_convert_to_float_if_possible
 
 
 class TestApplyConvertToFloatIfPossible(unittest.TestCase):

@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pandas
 
 
-from ppb.utils.formatter_utils import typecast
+from pydpeet.io.utils.formatter_utils import typecast
 
 
 class TestTypecastFunction(unittest.TestCase):

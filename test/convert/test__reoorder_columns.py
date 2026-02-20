@@ -1,8 +1,8 @@
 import unittest
 from pandas import DataFrame
 
-from ppb.configs.config import STANDARD_COLUMNS
-from ppb.convert import _reorder_columns
+from pydpeet.io.configs.config import STANDARD_COLUMNS
+from pydpeet.io.convert import _reorder_columns
 
 
 class TestReorderColumns(unittest.TestCase):

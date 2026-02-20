@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import pandas
-from ppb.map import mapping
+from pydpeet.io.map import mapping
 
 
 COLUMN_MAP = {

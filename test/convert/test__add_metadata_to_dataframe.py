@@ -1,7 +1,7 @@
 import unittest
 
 from pandas import DataFrame
-from ppb.convert import _add_metadata_to_dataframe
+from pydpeet.io.convert import _add_metadata_to_dataframe
 
 
 class TestAddMetadataToDataFrame(unittest.TestCase):

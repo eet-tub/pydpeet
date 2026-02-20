@@ -3,8 +3,8 @@ import unittest
 from pandas import DataFrame
 from unittest.mock import patch
 from io import StringIO
-from ppb.configs.config import DataOutputFiletype
-from ppb.export import export
+from pydpeet.io.configs.config import DataOutputFiletype
+from pydpeet.io.write import write
 from test.utils import TEMP_PATH
 
 
@@ -16,13 +16,13 @@ class TestExportFunction(unittest.TestCase):
         df = None
         output_file_name = 'test_file'
         with self.assertRaises(ValueError):
-            export(df, self.OUTPUT_PATH_STR, output_file_name)
+            write(df, self.OUTPUT_PATH_STR, output_file_name)
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_valid_export(self, mock_stdout):
         df = DataFrame({'A': [1, 2, 3]})
         output_file_name = 'test_file'
-        export(df, self.OUTPUT_PATH_STR, output_file_name)
+        write(df, self.OUTPUT_PATH_STR, output_file_name)
         output_file_path = self.OUTPUT_PATH / output_file_name
         self.assertTrue((self.OUTPUT_PATH / (output_file_name + '_Data.parquet')).exists())
         self.assertEqual(mock_stdout.getvalue(), f"exporting to {output_file_path}\n")
@@ -32,7 +32,7 @@ class TestExportFunction(unittest.TestCase):
         data_frame = 'not a dataframe'
         output_file_name = 'test_file'
         with self.assertRaises(TypeError):
-            export(data_frame, self.OUTPUT_PATH_STR, output_file_name)
+            write(data_frame, self.OUTPUT_PATH_STR, output_file_name)
         self.assertEqual(mock_stdout.getvalue(), '')
 
     @patch('sys.stdout', new_callable=StringIO)
@@ -40,7 +40,7 @@ class TestExportFunction(unittest.TestCase):
         df = DataFrame({'A': [1, 2, 3]})
         output_file_name = 'test_file'
         with self.assertRaises(ValueError):
-            export(df, 123, output_file_name)
+            write(df, 123, output_file_name)
         self.assertEqual(mock_stdout.getvalue(), '')
 
     @patch('sys.stdout', new_callable=StringIO)
@@ -48,14 +48,14 @@ class TestExportFunction(unittest.TestCase):
         df = DataFrame({'A': [1, 2, 3]})
         output_file_name = 'test_file'
         with self.assertRaises(ValueError):
-            export(df, self.OUTPUT_PATH_STR, output_file_name, data_output_filetype=' invalid')
+            write(df, self.OUTPUT_PATH_STR, output_file_name, data_output_filetype=' invalid')
         self.assertEqual(mock_stdout.getvalue(), '')
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_non_existent_output_directory(self, mock_stdout):
         df = DataFrame({'A': [1, 2, 3]})
         output_file_name = 'test_file'
-        export(df, self.OUTPUT_PATH_STR, output_file_name, data_output_filetype=DataOutputFiletype.parquet)
+        write(df, self.OUTPUT_PATH_STR, output_file_name, data_output_filetype=DataOutputFiletype.parquet)
         output_file_path = self.OUTPUT_PATH / output_file_name
         self.assertEqual(mock_stdout.getvalue(), f"exporting to {output_file_path}\n")
 
@@ -64,7 +64,7 @@ class TestExportFunction(unittest.TestCase):
         df = DataFrame({'A': [1, 2, 3]})
         output_file_name = 'test_file'
         output_file_path = self.OUTPUT_PATH / output_file_name
-        export(df, self.OUTPUT_PATH_STR, output_file_name)
+        write(df, self.OUTPUT_PATH_STR, output_file_name)
         self.assertTrue((self.OUTPUT_PATH / (output_file_name + '_Data.parquet')).exists())
         self.assertEqual(mock_stdout.getvalue(), f"exporting to {output_file_path}\n")
 

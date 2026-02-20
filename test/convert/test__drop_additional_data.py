@@ -1,7 +1,7 @@
 import unittest
 from pandas import DataFrame
-from ppb.configs.config import STANDARD_COLUMNS
-from ppb.convert import _drop_additional_data
+from pydpeet.io.configs.config import STANDARD_COLUMNS
+from pydpeet.io.convert import _drop_additional_data
 
 
 class TestDropAdditionalData(unittest.TestCase):

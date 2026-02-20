@@ -19,10 +19,10 @@ class BatteryConfig:
     ignore_negative_resistance_values: bool = False # ignores negative values in internal resistance calculation,
                                                     # should only appear in Neware Cells because of a bug
 
-battery_default = BatteryConfig()
+battery_config_default = BatteryConfig()
 
 # Configs for different Cells
-am23nmc = BatteryConfig(
+lgm50lt_nmc_4800 = BatteryConfig(
     c_ref=4.8,
     max_voltage=4.2,
     min_voltage=2.5,
@@ -32,8 +32,8 @@ am23nmc = BatteryConfig(
     ignore_negative_resistance_values = True
 )
 
-tc23nmc = BatteryConfig(
-    c_ref=2.5,
+hakadi_nmc_1500 = BatteryConfig(
+    c_ref=1.5,
     max_voltage=3.6,
     min_voltage=2.0
 )

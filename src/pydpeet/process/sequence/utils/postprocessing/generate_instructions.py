@@ -2,7 +2,7 @@ import logging
 from typing import Dict
 import pandas as pd
 
-from pydpeet.process.sequence.step_analyzer import step_analyzer_seqments_and_sequences
+from pydpeet.process.sequence.step_analyzer import extract_sequences
 
 
 SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
@@ -201,7 +201,7 @@ def generate_instructions(df_primitives,
     Returns:
     list: list of instructions
     """
-    df_segments_and_sequences = step_analyzer_seqments_and_sequences(df_primitives,
+    df_segments_and_sequences = extract_sequences(df_primitives,
                                                                      SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD)
     results = _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
     instructions = []

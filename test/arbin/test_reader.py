@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from numpy.ma.testutils import assert_equal
-from ppb.zyklisierer.arbin.reader import to_DataFrame, read_sheets
+from pydpeet.io.device.arbin_8_00_PV221201.reader import to_dataframe, read_sheets
 
 
 class ArbinTests(unittest.TestCase):
@@ -10,7 +10,7 @@ class ArbinTests(unittest.TestCase):
 
         for value in ["invalid", None, ""]:
             try:
-                _, _ = to_DataFrame(value)
+                _, _ = to_dataframe(value)
                 self.fail()
             except FileNotFoundError:
                 pass

@@ -26,7 +26,7 @@ from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction impo
 from pydpeet.process.sequence.utils.configs.CONFIG_Fallback import FALLBACK_CONFIG
 
 
-def step_analyzer_primitives(
+def add_primitives(
         df: pd.DataFrame,
         STEP_ANALYZER_PRIMITIVES_CONFIG: Dict = None,
         SEGMENTS_TO_DETECT_CONFIG: List[Tuple[str, float]] = None,
@@ -192,7 +192,7 @@ def step_analyzer_primitives(
         if len(df_step) > 100_000 or FORCE_PRECOMPILATION:
             with log_time("precompiling step_analyzer_primitives and df_primitives_correction",
                           SHOW_RUNTIME=SHOW_RUNTIME):
-                precompilation_step_analyzer()
+                _precompile_step_analyzer()
 
         else:
             logger.warning(f"Input dataframe is small ({len(df_step)} < 100_000 rows. Skipping precompilation unless you set FORCE_PRECOMPILATION = True.")
@@ -289,10 +289,10 @@ def step_analyzer_primitives(
     return df_primitives
 
 
-def step_analyzer_seqments_and_sequences(df_primitives: pd.DataFrame,
-                                         SEGMENT_SEQUENCE_CONFIG: dict = None,
-                                         SHOW_RUNTIME: bool = True
-                                         ) -> pd.DataFrame:
+def extract_sequences(df_primitives: pd.DataFrame,
+                      SEGMENT_SEQUENCE_CONFIG: dict = None,
+                      SHOW_RUNTIME: bool = True
+                      ) -> pd.DataFrame:
     """
 
     Create a DataFrame of segments and sequences from a DataFrame of primitives. (ID, longest sequence, segments/sequence)
@@ -346,7 +346,7 @@ def step_analyzer_seqments_and_sequences(df_primitives: pd.DataFrame,
     return df_segments_and_sequences
 
 
-def precompilation_step_analyzer():
+def _precompile_step_analyzer():
     """
     Precompilation of the step analyzer function using dummy data.
 
@@ -363,10 +363,10 @@ def precompilation_step_analyzer():
          THRESHOLDS_PRIMITIVE_ANNOTATION, DATA_COLUMNS,  SEGMENT_SEQUENCE_CONFIG
     # precompile using dummy data
     _project_dir = os.path.dirname(os.path.abspath(__file__))
-    _res_dir = os.path.join(_project_dir, 'res')
-    _input_path = os.path.join(_res_dir, "TEST_INPUT_Daniel_sampled_every_60s_with_first_last.parquet")
+    _res_dir = os.path.join(_project_dir, '../../../res')
+    _input_path = os.path.join(_res_dir, "precompile_dummy_data.parquet")
     _df_file = pd.read_parquet(_input_path)
-    _df_primitives = step_analyzer_primitives(df=_df_file,
+    _df_primitives = add_primitives(df=_df_file,
                                               STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE,
                                               SHOW_RUNTIME=False,
                                               check_CV_0Aend_segments_bool=True,
@@ -384,6 +384,6 @@ def precompilation_step_analyzer():
                                               data_columns=DATA_COLUMNS,
                                               thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION)
 
-    _ = step_analyzer_seqments_and_sequences(df_primitives=_df_primitives,
+    _ = extract_sequences(df_primitives=_df_primitives,
                                              SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG,
                                              SHOW_RUNTIME=False)

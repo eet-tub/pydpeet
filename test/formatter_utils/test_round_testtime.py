@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pandas
 
 
-from ppb.utils.formatter_utils import round_testtime
+from pydpeet.io.utils.formatter_utils import round_testtime
 
 
 class TestRoundTesttime(unittest.TestCase):
