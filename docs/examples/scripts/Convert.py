@@ -1,16 +1,6 @@
 import pydpeet as eet
 import matplotlib.pyplot as plt
 
-# import sys
-# from pathlib import Path
-# ROOT = Path(__file__).resolve().parents[4]
-# sys.path.insert(0, str(ROOT))
+eet.utils.set_logging_style(level="INFO", formatting_string="%(levelname)s | %(pathname)s:%(lineno)d | %(message)s")
 
-from pathlib import Path
-from tools.paths import resource_path  
-
-p = resource_path("sample_data", "neware_sample.csv", start=Path(__file__))
-
-# eet.convert.convert.convert_file(Config = 'Neware')
-
-eet.convert_file(config = 'Neware', input_path = p)
+Data = eet.read(config = 'Neware_', input_path = r"..\..\res\raw\Cal_Ageing_Checkup1.xlsx")

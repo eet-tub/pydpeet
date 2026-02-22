@@ -5,7 +5,7 @@ import pandas
 from pydpeet.io.configs.config import DataOutputFiletype
 
 
-def export(data_input: pandas.DataFrame,output_path: str,output_file_name: str,data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet):
+def write(data_input: pandas.DataFrame,output_path: str,output_file_name: str,data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet):
     """
     Export the given DataFrame to the given output path.
 

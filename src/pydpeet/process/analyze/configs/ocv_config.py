@@ -10,7 +10,7 @@ THRESHOLD_DICT_Custom = [  # ARBIN_OLD
     3,  # FS_CURRENT
 ]
 # use THRESHOLD_DICT = THRESHOLD_DICT_Custom if you don't want to use a predefined dictionary
-THRESHOLD_DICT = NEWARE_CT_4008Q_5V12A_S1.threshold_dict_neware
+THRESHOLD_DICT = NEWARE_CT_4008Q_5V12A_S1 #.threshold_dict_neware
 MIN_DEFINITIVE_VOLTAGE_DIFFERENCE, MIN_DEFINITIVE_CURRENT_DIFFERENCE = calculate_minimum_definitive_differences(*THRESHOLD_DICT)
 
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
