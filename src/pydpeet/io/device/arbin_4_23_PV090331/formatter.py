@@ -1,6 +1,6 @@
 import pandas
 
-from pydpeet.convert.utils.formatter_utils import round_testtime
+from pydpeet.io.utils.formatter_utils import round_testtime
 
 
 def get_data_into_format(dataFrame: pandas.DataFrame):

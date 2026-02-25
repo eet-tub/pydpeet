@@ -358,7 +358,7 @@ def _precompile_step_analyzer():
 
     # precompile using dummy data
     _project_dir = os.path.dirname(os.path.abspath(__file__))
-    _res_dir = os.path.join(_project_dir, "../../../res")
+    _res_dir = os.path.join(_project_dir, "../../res")
     _input_path = os.path.join(_res_dir, "precompile_dummy_data.parquet")
     _df_file = pd.read_parquet(_input_path)
     _df_primitives = add_primitives(

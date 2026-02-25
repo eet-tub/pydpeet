@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import logging
 import os
 from pathlib import Path
 
-from __future__ import annotations
+
 from pathlib import Path
 from typing import Union
 

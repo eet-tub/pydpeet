@@ -1,15 +1,18 @@
+from __future__ import annotations
+
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 
-from __future__ import annotations
+
 from pathlib import Path
 from typing import Union
 
 from pandas import DataFrame, Index
 
 from pydpeet.io.configs.config import Config, READER_CONFIGS, MAPPER_CONFIGS, STANDARD_COLUMNS, FORMATTER_CONFIGS
-from pydpeet.io.write import export
+from pydpeet.io.write import write
 from pydpeet.io.map import mapping
 from pydpeet.io.utils.ext_path import ExtPath
 from pydpeet.io.utils.load_custom_module import load_custom_module
@@ -267,7 +270,7 @@ def _process_file_and_export(
     try:
         df = convert_file(config, file_path, keep_all_additional_data, custom_folder_path)
         output_filename = f"{os.path.splitext(filename)[0]}_{config_name}_{current_date}"
-        export(df, output_path, output_filename, data_output_filetype)
+        write(df, output_path, output_filename, data_output_filetype)
         logging.info(f"Successfully processed and exported: {output_filename}")
     except Exception as e:
         logging.warning(f"Issue processing file {filename}: {e}")
