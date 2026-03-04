@@ -3,7 +3,7 @@ import pandas as pd
 from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast, testtime_hours_to_seconds_with_string_interpretation, typecast
 
 
-def get_data_into_format(data_frame: pd.DataFrame) -> pd.DataFrame:
+def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     """
     Format a DataFrame from a Neware cycler into a standard format.
 
@@ -19,8 +19,9 @@ def get_data_into_format(data_frame: pd.DataFrame) -> pd.DataFrame:
     pd.DataFrame
         Formatted DataFrame
     """
-    testtime_hours_to_seconds_with_string_interpretation(data_frame, True)
-    data_frame = absolute_time_timedate_typecast(data_frame)
-    typecast(data_frame, "StepID", int)
-    typecast(data_frame, "Temperature[°C]", float)
-    return data_frame
+    testtime_hours_to_seconds_with_string_interpretation(df, True)
+    df = absolute_time_timedate_typecast(df)
+    typecast(df, "StepID", int)
+    typecast(df, "Temperature[°C]", float)
+
+    return df

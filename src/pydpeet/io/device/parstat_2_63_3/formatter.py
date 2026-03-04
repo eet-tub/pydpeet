@@ -1,9 +1,9 @@
-import pandas
+import pandas as pd
 
 from pydpeet.io.utils.formatter_utils import round_testtime, typecast
 
 
-def get_data_into_format(data_frame: pandas.DataFrame) -> pandas.DataFrame:
+def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     """
     Format the given DataFrame into a standard format.
 
@@ -22,12 +22,13 @@ def get_data_into_format(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     pandas.DataFrame
         Formatted DataFrame
     """
-    data_frame = round_testtime(data_frame)
-    typecast(data_frame, "StepID", int)
-    typecast(data_frame, "Voltage[V]", float)
-    typecast(data_frame, "Current[A]", float)
-    typecast(data_frame, "Testtime[s]", float)
-    typecast(data_frame, "EISFreq[Hz]", float)
-    typecast(data_frame, "Zre[Ohm]", float)
-    typecast(data_frame, "Zim[Ohm]", float)
-    return data_frame
+    df = round_testtime(df)
+    typecast(df, "StepID", int)
+    typecast(df, "Voltage[V]", float)
+    typecast(df, "Current[A]", float)
+    typecast(df, "Testtime[s]", float)
+    typecast(df, "EISFreq[Hz]", float)
+    typecast(df, "Zre[Ohm]", float)
+    typecast(df, "Zim[Ohm]", float)
+
+    return df

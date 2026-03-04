@@ -4,7 +4,7 @@ from io import StringIO
 import pandas as pd
 
 
-def to_dataframe(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
     Parses the input file from the basytec cycler into a pandas DataFrame.
     It first converts the data portion to CSV format in memory.

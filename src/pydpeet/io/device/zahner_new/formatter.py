@@ -1,9 +1,9 @@
-import pandas
+import pandas as pd
 
 from pydpeet.io.utils.formatter_utils import nan_to_none_in_column, round_testtime, typecast
 
 
-def get_data_into_format_zahner_1(dataFrame: pandas.DataFrame) -> pandas.DataFrame:
+def get_data_into_format_zahner_1(df: pd.DataFrame) -> pd.DataFrame:
     """
     Rounds the values in the "Testtime[s]" column of the DataFrame to 5 decimal places, replaces NaN values with None, and typecasts the "StepID" and "EISFreq[Hz]" columns to int and float, respectively.
 
@@ -17,15 +17,15 @@ def get_data_into_format_zahner_1(dataFrame: pandas.DataFrame) -> pandas.DataFra
     pandas.DataFrame
         Modified DataFrame
     """
-    round_testtime(dataFrame)
-    nan_to_none_in_column(dataFrame, "Testtime[s]")
-    typecast(dataFrame, "StepID", int)
-    typecast(dataFrame, "EISFreq[Hz]", float)
+    round_testtime(df)
+    nan_to_none_in_column(df, "Testtime[s]")
+    typecast(df, "StepID", int)
+    typecast(df, "EISFreq[Hz]", float)
 
-    return dataFrame
+    return df
 
 
-def get_data_into_format_zahner_2(dataFrame: pandas.DataFrame) -> pandas.DataFrame:
+def get_data_into_format_zahner_2(df: pd.DataFrame) -> pd.DataFrame:
     """
     Rounds the values in the "Testtime[s]" column of the DataFrame to 5 decimal places, replaces NaN values with None, and typecasts the "StepID", "Voltage[V]", and "Current[A]" columns to int, float, and float, respectively.
 
@@ -39,16 +39,16 @@ def get_data_into_format_zahner_2(dataFrame: pandas.DataFrame) -> pandas.DataFra
     pandas.DataFrame
         Modified DataFrame
     """
-    dataFrame = round_testtime(dataFrame)
-    dataFrame = nan_to_none_in_column(dataFrame, "Testtime[s]")
-    typecast(dataFrame, "StepID", int)
-    typecast(dataFrame, "Voltage[V]", float)
-    typecast(dataFrame, "Current[A]", float)
+    df = round_testtime(df)
+    df = nan_to_none_in_column(df, "Testtime[s]")
+    typecast(df, "StepID", int)
+    typecast(df, "Voltage[V]", float)
+    typecast(df, "Current[A]", float)
 
-    return dataFrame
+    return df
 
 
-def get_data_into_format_zahner_3(dataFrame: pandas.DataFrame) -> pandas.DataFrame:
+def get_data_into_format_zahner_3(df: pd.DataFrame) -> pd.DataFrame:
     """
     Rounds the values in the "Testtime[s]" column of the DataFrame to 5 decimal places, replaces NaN values with None, and typecasts the "StepID", "Voltage[V]", "Current[A]", and "EISFreq[Hz]" columns to int, float, float, and float, respectively.
 
@@ -62,11 +62,11 @@ def get_data_into_format_zahner_3(dataFrame: pandas.DataFrame) -> pandas.DataFra
     pandas.DataFrame
         Modified DataFrame
     """
-    dataFrame = round_testtime(dataFrame)
-    dataFrame = nan_to_none_in_column(dataFrame, "Testtime[s]")
-    typecast(dataFrame, "StepID", int)
-    typecast(dataFrame, "Voltage[V]", float)
-    typecast(dataFrame, "Current[A]", float)
-    typecast(dataFrame, "EISFreq[Hz]", float)
+    df = round_testtime(df)
+    df = nan_to_none_in_column(df, "Testtime[s]")
+    typecast(df, "StepID", int)
+    typecast(df, "Voltage[V]", float)
+    typecast(df, "Current[A]", float)
+    typecast(df, "EISFreq[Hz]", float)
 
-    return dataFrame
+    return df

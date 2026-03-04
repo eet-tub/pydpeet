@@ -1,5 +1,4 @@
-# Define the mapping from current names to standardized names
-# digatron LiVsBlei
+# Map raw-data column names (left) to standardized column names (right)
 COLUMN_MAP = {
     "Zreal1": "Zre[Ohm]",
     "Zimg1": "Zim[Ohm]",
@@ -7,12 +6,13 @@ COLUMN_MAP = {
     "Schritt Nr.": "StepID",
     "Spannung": "Voltage[V]",
     "Strom": "Current[A]",
-    "Progr. Zeit": "Testtime[s]"
+    "Progr. Zeit": "Testtime[s]",
 }
 
+# Default columns of the standardized format
+# which are not present in the raw data files.
 MISSING_REQUIRED_COLUMNS = [
     "Temperature[°C]",
     "EISFreq[Hz]",
-    "DC_Current[A]"
+    "DC_Current[A]",
 ]
-

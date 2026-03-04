@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def to_dataframe(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
     Parses the input file from the Digatron Cycler into a pandas DataFrame.
 
@@ -23,6 +23,7 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
 
         # Extract headers and remaining data
         headers = line.strip().split(",")
+        # TODO: Why is this still here?
         # for i in range(4):
         #    line = file.readline()
         #    metadata.append(line.strip())

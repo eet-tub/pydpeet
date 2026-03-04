@@ -1,4 +1,4 @@
-# Define the mapping from current names to standardized names
+# Map raw-data column names (left) to standardized column names (right)
 COLUMN_MAP = {
     "step_id": "StepID",
     "Voltage(V)": "Voltage[V]",
@@ -8,4 +8,11 @@ COLUMN_MAP = {
     "Date": "Absolute Time[yyyy-mm-dd hh:mm:ss]",
 }
 
-MISSING_REQUIRED_COLUMNS = ["EISFreq[Hz]", "Zre[Ohm]", "Zim[Ohm]", "DC_Current[A]"]
+# Default columns of the standardized format
+# which are not present in the raw data files.
+MISSING_REQUIRED_COLUMNS = [
+    "EISFreq[Hz]",
+    "Zre[Ohm]",
+    "Zim[Ohm]",
+    "DC_Current[A]",
+]

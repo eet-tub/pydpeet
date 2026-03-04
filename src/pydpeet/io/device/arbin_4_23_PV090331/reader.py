@@ -3,7 +3,7 @@ import pandas as pd
 from pydpeet.io.configs.const import PANDAS_EXCEL_ENGINE
 
 
-def to_dataframe(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
     Parses the input file from the Arbin Old Cycler into a pandas DataFrame.
 
@@ -13,14 +13,13 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     Returns:
     (pandas.DataFrame, str): A tuple containing the DataFrame with data and metadata as a string.
     """
-
     # load Excel data
     excel_data = pd.ExcelFile(input_path, engine=PANDAS_EXCEL_ENGINE)
 
     return read_sheets(excel_data)
 
 
-def read_sheets(excel_file: pd.ExcelFile) -> (pd.DataFrame, str):
+def read_sheets(excel_file: pd.ExcelFile) -> tuple[pd.DataFrame, str]:
     # variables for the dataframe and String
     """
     Reads data from all sheets in an Excel file and returns them as a tuple of a DataFrame and a string.

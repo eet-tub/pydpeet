@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def to_dataframe(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
     Parses the input file from the Parstat Cycler into a pandas DataFrame.
 
