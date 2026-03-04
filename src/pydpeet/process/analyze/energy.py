@@ -35,8 +35,8 @@ def add_cumulative_energy(df, config: BatteryConfig = None, verbose=True):
             st.log("added Power[W] column")
 
     with StepTimer(verbose) as st:
-        _check_columns(df, ["Testtime[s]", "Power[W]"])
-        df["CumulativeEnergy[Wh]"] = integrate.cumulative_trapezoid(df["Power[W]"], x=df["Testtime[s]"], initial=0) / 3600
+        _check_columns(df, ["Test_Time[s]", "Power[W]"])
+        df["CumulativeEnergy[Wh]"] = integrate.cumulative_trapezoid(df["Power[W]"], x=df["Test_Time[s]"], initial=0) / 3600
         st.log("calculated CumulativeEnergy[Wh]")
 
     return df

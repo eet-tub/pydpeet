@@ -41,7 +41,7 @@ def typecast(data_frame: pandas.DataFrame, column_name: str, datatype) -> pandas
 
 def testtime_hours_to_seconds_with_string_interpretation(data_frame: pandas.DataFrame, astype_string: bool) -> pandas.DataFrame | None:
     """
-    Convert "Testtime[s]" column from hours to seconds with string interpretation. (assumes hours are in "HH:MM:SS.MS" format)
+    Convert "Test_Time[s]" column from hours to seconds with string interpretation. (assumes hours are in "HH:MM:SS.MS" format)
 
     Parameters
     ----------
@@ -62,12 +62,12 @@ def testtime_hours_to_seconds_with_string_interpretation(data_frame: pandas.Data
             raise ValueError(f"{data_frame} is None")
         if not isinstance(astype_string, bool):
             raise ValueError(f"{astype_string} is not a boolean")
-        if "Testtime[s]" not in data_frame.columns:
+        if "Test_Time[s]" not in data_frame.columns:
             raise ValueError(f"Testtime[s] is not in {data_frame.columns}")
         if astype_string:
-            data_frame["Testtime[s]"] = data_frame["Testtime[s]"].astype(str).apply(_time_to_seconds)
+            data_frame["Test_Time[s]"] = data_frame["Test_Time[s]"].astype(str).apply(_time_to_seconds)
         else:
-            data_frame["Testtime[s]"] = data_frame["Testtime[s]"].apply(_time_to_seconds)
+            data_frame["Test_Time[s]"] = data_frame["Test_Time[s]"].apply(_time_to_seconds)
     except Exception:
         logging.warning("Error fixing Testtime[s]")
     return data_frame
@@ -191,7 +191,7 @@ def replace_empty_with_none_in_standard_columns(data_frame: pandas.DataFrame):
 
 def testtime_hours_to_seconds_direct(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     """
-    Convert "Testtime[s]" column from hours to seconds.
+    Convert "Test_Time[s]" column from hours to seconds.
 
     Parameters
     ----------
@@ -206,9 +206,9 @@ def testtime_hours_to_seconds_direct(data_frame: pandas.DataFrame) -> pandas.Dat
     try:
         if data_frame is None:
             raise ValueError("dataFrame is None")
-        if "Testtime[s]" not in data_frame.columns:
+        if "Test_Time[s]" not in data_frame.columns:
             raise ValueError("Testtime[s] is not in dataFrame.columns")
-        data_frame["Testtime[s]"] = data_frame["Testtime[s]"].apply(_convert_to_hours_to_seconds_direct_if_possible)
+        data_frame["Test_Time[s]"] = data_frame["Test_Time[s]"].apply(_convert_to_hours_to_seconds_direct_if_possible)
     except Exception as e:
         logging.warning(f"Error fixing Testtime[s] (converting hours to seconds). Reason: {e}")
     return data_frame
@@ -223,17 +223,17 @@ def _convert_to_hours_to_seconds_direct_if_possible(x):
 
 def round_testtime(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     """
-    Round the values in the "Testtime[s]" column of the DataFrame to 5 decimal places.
+    Round the values in the "Test_Time[s]" column of the DataFrame to 5 decimal places.
 
     Parameters
     ----------
     data_frame : pandas.DataFrame
-        DataFrame containing the "Testtime[s]" column to be rounded.
+        DataFrame containing the "Test_Time[s]" column to be rounded.
 
     Returns
     -------
     pandas.DataFrame
-        Modified DataFrame with rounded "Testtime[s]" values.
+        Modified DataFrame with rounded "Test_Time[s]" values.
     """
 
     try:
@@ -241,10 +241,10 @@ def round_testtime(data_frame: pandas.DataFrame) -> pandas.DataFrame:
             raise ValueError("dataFrame is None")
         if data_frame.empty:
             raise ValueError("dataframe is empty")
-        if "Testtime[s]" not in data_frame.columns:
+        if "Test_Time[s]" not in data_frame.columns:
             raise ValueError("Testtime[s] is not in dataFrame.columns")
 
-        data_frame["Testtime[s]"] = round(data_frame["Testtime[s]"].astype(float), 5)
+        data_frame["Test_Time[s]"] = round(data_frame["Test_Time[s]"].astype(float), 5)
     except Exception as e:
         logging.warning(f"Error fixing Testtime[s] (rounding). Reason: {e}")
     return data_frame
@@ -283,11 +283,11 @@ def nan_to_none_in_column(dataFrame: pandas.DataFrame, column_name: str) -> pand
 
 def move_strings_from_column_to_metadata(data_frame: pandas.DataFrame, column_name: str) -> pandas.DataFrame | None:
     """
-    Move strings from a column into the "Metadata" column and replace them with None.
+    Move strings from a column into the "Meta_Data" column and replace them with None.
 
     This function takes a DataFrame and a column name as input, and moves all strings in that column to the
-    "Metadata" column. The strings are joined together with a newline character and added to the existing
-    "Metadata" content. The original column is then replaced with None values.
+    "Meta_Data" column. The strings are joined together with a newline character and added to the existing
+    "Meta_Data" content. The original column is then replaced with None values.
 
     Parameters
     ----------
@@ -299,7 +299,7 @@ def move_strings_from_column_to_metadata(data_frame: pandas.DataFrame, column_na
     Returns
     -------
     pandas.DataFrame
-        Modified DataFrame with strings moved to "Metadata" and replaced with None in the original column.
+        Modified DataFrame with strings moved to "Meta_Data" and replaced with None in the original column.
     """
     concatenated_string = "\n"
     try:
@@ -309,13 +309,13 @@ def move_strings_from_column_to_metadata(data_frame: pandas.DataFrame, column_na
             raise ValueError(f"column_name is not a string. Type is {type(column_name)}")
         if column_name not in data_frame.columns:
             raise ValueError(f"{column_name} is not in {data_frame.columns}")
-        if "Metadata" not in data_frame.columns:
+        if "Meta_Data" not in data_frame.columns:
             raise ValueError("Metadata Column doesn't exsist")
 
         strings = data_frame[column_name].apply(lambda x: x if isinstance(x, str) else None)
         concatenated_string = concatenated_string.join(filter(None, strings))
 
-        data_frame.loc[0, "Metadata"] = str(data_frame.loc[0, "Metadata"]) + "\n\n" + concatenated_string
+        data_frame.loc[0, "Meta_Data"] = str(data_frame.loc[0, "Meta_Data"]) + "\n\n" + concatenated_string
         data_frame[column_name] = data_frame[column_name].apply(lambda x: None if isinstance(x, str) else x).astype(object)
         data_frame[column_name] = data_frame[column_name].replace({np.nan: None})
     except Exception:
@@ -325,10 +325,10 @@ def move_strings_from_column_to_metadata(data_frame: pandas.DataFrame, column_na
 
 def fix_time_format(data_frame: pandas.DataFrame, input_format: str = None) -> pandas.DataFrame | None:
     """
-    Fix the format of the "Absolute Time[yyyy-mm-dd hh:mm:ss]" column.
+    Fix the format of the "Date_Time" column.
 
     This function takes a DataFrame and an optional input format as input, and
-    attempts to convert the "Absolute Time[yyyy-mm-dd hh:mm:ss]" column to a
+    attempts to convert the "Date_Time" column to a
     datetime object using the given input format. If the input format is not
     given, the function will try to infer the format from the data. The
     resulting datetime object is then formatted as a string in the format
@@ -346,10 +346,10 @@ def fix_time_format(data_frame: pandas.DataFrame, input_format: str = None) -> p
     Returns
     -------
     pandas.DataFrame
-        Modified DataFrame with the "Absolute Time[yyyy-mm-dd hh:mm:ss]" column
+        Modified DataFrame with the "Date_Time" column
         converted to the correct format.
     """
-    column_name = "Absolute Time[yyyy-mm-dd hh:mm:ss]"
+    column_name = "Date_Time"
 
     try:
         if data_frame is None:
@@ -358,7 +358,7 @@ def fix_time_format(data_frame: pandas.DataFrame, input_format: str = None) -> p
             raise ValueError(f"input_format is not a string. Type is {type(column_name)}")
         if column_name not in data_frame.columns:
             raise ValueError(f"{column_name} is not in {data_frame.columns}")
-        if "Absolute Time[yyyy-mm-dd hh:mm:ss]" not in data_frame.columns:
+        if "Date_Time" not in data_frame.columns:
             raise ValueError("Absolute Time[yyyy-mm-dd hh:mm:ss] Column doesn't exsist")
         try:
             data_frame[column_name] = pandas.to_datetime(data_frame[column_name], format=input_format, errors="coerce")
@@ -375,7 +375,7 @@ def fix_time_format(data_frame: pandas.DataFrame, input_format: str = None) -> p
 
 def absolute_time_timedate_typecast(data_frame: pandas.DataFrame) -> pandas.DataFrame:
     """
-    Convert the "Absolute Time[yyyy-mm-dd hh:mm:ss]" column in the DataFrame to a datetime object.
+    Convert the "Date_Time" column in the DataFrame to a datetime object.
 
     This function attempts to typecast the specified column in the DataFrame to a pandas datetime object.
 
@@ -387,14 +387,14 @@ def absolute_time_timedate_typecast(data_frame: pandas.DataFrame) -> pandas.Data
     Returns
     -------
     pandas.DataFrame
-        The DataFrame with the "Absolute Time[yyyy-mm-dd hh:mm:ss]" column converted to datetime objects.
+        The DataFrame with the "Date_Time" column converted to datetime objects.
     """
     try:
         if data_frame is None:
             raise ValueError("data_frame is None")
-        if "Absolute Time[yyyy-mm-dd hh:mm:ss]" not in data_frame.columns:
+        if "Date_Time" not in data_frame.columns:
             raise ValueError("Absolute Time[yyyy-mm-dd hh:mm:ss] Column doesn't exsist")
-        data_frame["Absolute Time[yyyy-mm-dd hh:mm:ss]"] = pandas.to_datetime(data_frame["Absolute Time[yyyy-mm-dd hh:mm:ss]"], errors="coerce")
+        data_frame["Date_Time"] = pandas.to_datetime(data_frame["Date_Time"], errors="coerce")
     except Exception:
         logging.warning("Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss]")
     return data_frame

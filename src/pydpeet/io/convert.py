@@ -4,23 +4,18 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-
-
-from pathlib import Path
 from typing import Union
 
+import pandas as pd
 from pandas import DataFrame, Index
 
-from pydpeet.io.configs.config import Config, READER_CONFIGS, MAPPER_CONFIGS, STANDARD_COLUMNS, FORMATTER_CONFIGS
-from pydpeet.io.write import write
+from pydpeet.io.configs.config import FORMATTER_CONFIGS, MAPPER_CONFIGS, READER_CONFIGS, STANDARD_COLUMNS, Config
+from pydpeet.io.device.neware_8_0_0_516.reader import find_main_files
 from pydpeet.io.map import mapping
 from pydpeet.io.utils.ext_path import ExtPath
 from pydpeet.io.utils.load_custom_module import load_custom_module
 from pydpeet.io.utils.timing import measure_time
-from pydpeet.io.device.neware_8_0_0_516.reader import find_main_files
-import pandas as pd
-
-from typing import Union
+from pydpeet.io.write import write
 
 ConfigLike = Union[Config, str]
 PathLike = Union[str, Path]
@@ -85,7 +80,7 @@ def convert_file(config: ConfigLike,
     """
     
     if isinstance(config, str):
-        config = Config.from_string(config)    
+        config = Config.from_string(config)
     if Config.not_exists(config):
         raise ValueError("config must be provided")
     if ExtPath.is_not_valid(input_path):
@@ -153,7 +148,6 @@ def convert_files_in_directory(
         files = find_main_files(input_path)
     else:
         files = os.listdir(input_path)
-
 
     if output_path is None:
         dfs = []
@@ -276,8 +270,7 @@ def _process_file_and_export(
         logging.warning(f"Issue processing file {filename}: {e}")
 
 
-def _convert_file_to_pandas_data_frame(config: Config, input_path: str, custom_folder: str = None
-                                       ) -> tuple[DataFrame, str]:
+def _convert_file_to_pandas_data_frame(config: Config, input_path: str, custom_folder: str = None) -> tuple[DataFrame, str]:
     """
     Convert a file to a pandas DataFrame using the given configuration.
 
@@ -386,7 +379,7 @@ def _add_metadata_to_dataframe(data_frame: DataFrame, meta_data: str) -> DataFra
     """
     Add the given meta data as a column in the DataFrame.
 
-    The first row of the "Metadata" column is set to the given meta data. All
+    The first row of the "Meta_Data" column is set to the given meta data. All
     other rows are set to None.
 
     Parameters
@@ -399,15 +392,15 @@ def _add_metadata_to_dataframe(data_frame: DataFrame, meta_data: str) -> DataFra
     Returns
     -------
     DataFrame
-        The modified DataFrame with the added "Metadata" column.
+        The modified DataFrame with the added "Meta_Data" column.
     """
     logging.info("adding metadata to Dataframe...")
 
     if data_frame is None:
         raise ValueError("Data frame is None.")
 
-    data_frame["Metadata"] = None  # NO, this is faster then .loc
-    data_frame.loc[0, "Metadata"] = str(meta_data)
+    data_frame["Meta_Data"] = None  # NO, this is faster then .loc
+    data_frame.loc[0, "Meta_Data"] = str(meta_data)
     return data_frame
 
 
@@ -494,7 +487,7 @@ def _rename_duplicate_extra_columns(columns: Index) -> Index:
             duplicate_counts[col_name] += 1
 
     if any(count > 0 for count in duplicate_counts.values()):
-        logging.warning(f"Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.")
+        logging.warning("Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.")
     return Index(result)
 
 

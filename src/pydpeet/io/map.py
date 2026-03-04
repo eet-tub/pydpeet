@@ -35,7 +35,7 @@ def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -
         raise ValueError("column_map is not a dictionary")
     if type(missing_columns) is not list:
         raise ValueError("missing_columns is not a list")
-    standard_columns_excluding_metadata = [col for col in STANDARD_COLUMNS if not col.startswith("Metadata")]
+    standard_columns_excluding_metadata = [col for col in STANDARD_COLUMNS if not col.startswith("Meta_Data")]
     if not all(col in list(column_map.values()) + missing_columns for col in standard_columns_excluding_metadata):
         raise ValueError("column_map and missing_columns do not contain all standard columns")
     if any(col not in STANDARD_COLUMNS for col in list(column_map.values()) + missing_columns):

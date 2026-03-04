@@ -21,7 +21,7 @@ def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     """
     testtime_hours_to_seconds_with_string_interpretation(df, True)
     df = absolute_time_timedate_typecast(df)
-    typecast(df, "StepID", int)
+    typecast(df, "Step_Count", int)
     typecast(df, "Temperature[°C]", float)
 
     return df

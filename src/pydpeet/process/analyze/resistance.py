@@ -32,7 +32,7 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
     Returns:
     pandas.DataFrame: DataFrame with added 'internal_resistance[ohm]', 'delta_t', 'delta_current', and 'delta_voltage' columns
     """
-    required_cols = ["Testtime[s]", "Current[A]", "Voltage[V]"]
+    required_cols = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
     _check_columns(df, required_cols)
 
     if config is None:
@@ -49,7 +49,7 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
 
     # Calculate differences
     with StepTimer(verbose) as st:
-        delta_t = df["Testtime[s]"].diff()
+        delta_t = df["Test_Time[s]"].diff()
         delta_current = df["Current[A]"].diff()
         delta_voltage = df["Voltage[V]"].diff()
         st.log("calculated delta_t, delta_I, delta_V")

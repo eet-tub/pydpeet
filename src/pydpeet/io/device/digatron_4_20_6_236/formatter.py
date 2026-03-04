@@ -6,7 +6,7 @@ from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast, fi
 def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     """
     Applies a series of transformations to the input DataFrame to
-    ensure that the "Absolute Time[yyyy-mm-dd hh:mm:ss]" column is in the correct
+    ensure that the "Date_Time" column is in the correct
     datetime format. The time format is initially fixed using the specified
     input format, and then typecast to pandas datetime objects.
 
@@ -18,7 +18,7 @@ def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        The formatted DataFrame with the "Absolute Time[yyyy-mm-dd hh:mm:ss]"
+        The formatted DataFrame with the "Date_Time"
         column converted to datetime objects.
     """
     fix_time_format(df, input_format="%d.%m.%Y %H:%M:%S")

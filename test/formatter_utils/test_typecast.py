@@ -10,11 +10,11 @@ from pydpeet.io.utils.formatter_utils import typecast
 class TestTypecastFunction(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_to_int(self, mock_stdout):
-        data = {"StepID": ["1", "2", "3"]}
+        data = {"Step_Count": ["1", "2", "3"]}
         df = pandas.DataFrame(data)
-        result = typecast(df, "StepID", int)
-        self.assertEqual(result["StepID"].dtype, int)
-        column_name = "StepID"
+        result = typecast(df, "Step_Count", int)
+        self.assertEqual(result["Step_Count"].dtype, int)
+        column_name = "Step_Count"
         datatype = int
         self.assertNotEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m")
 

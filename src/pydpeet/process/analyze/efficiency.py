@@ -54,13 +54,13 @@ def add_efficiency_coulomb(
         df_blocks_discharge = [df_blocks_discharge]
 
     # Determine which time column to use
-    if "Testtime[s]" in df.columns:
-        time_col = "Testtime[s]"
+    if "Test_Time[s]" in df.columns:
+        time_col = "Test_Time[s]"
         parse_time = False
         tolerance_val = max_time_diff_in_secs  # already seconds
-    elif "Absolute Time[yyyy-mm-dd hh:mm:ss]" in df.columns:
+    elif "Date_Time" in df.columns:
         warnings.warn("Absolute Time[yyyy-mm-dd hh:mm:ss] is used as time column, because there is no 'Testtime[s]' given.")
-        time_col = "Absolute Time[yyyy-mm-dd hh:mm:ss]"
+        time_col = "Date_Time"
         parse_time = True
         tolerance_val = pd.Timedelta(seconds=max_time_diff_in_secs)
     else:

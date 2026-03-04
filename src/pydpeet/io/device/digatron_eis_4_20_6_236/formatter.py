@@ -18,13 +18,13 @@ def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
         The formatted DataFrame
     """
     df = replace_empty_with_none_in_standard_columns(df)
-    typecast(df, "StepID", int)
+    typecast(df, "Step_Count", int)
     df = apply_convert_to_float_if_possible(df, "Voltage[V]")
     df = apply_convert_to_float_if_possible(df, "Current[A]")
     df = round_testtime(df)
     df = absolute_time_timedate_typecast(df)
-    typecast(df, "Zre[Ohm]", float)
-    typecast(df, "Zim[Ohm]", float)
+    typecast(df, "EIS_Z_Real[Ohm]", float)
+    typecast(df, "EIS_Z_Imag[Ohm]", float)
     df = nan_to_none_in_column(df, "Current[A]")
     df = move_strings_from_column_to_metadata(df, "Voltage[V]")
 

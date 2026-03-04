@@ -11,12 +11,12 @@ def get_data_into_format_zahner_1(df: pd.DataFrame) -> pd.DataFrame:
 
     The modifications are as follows:
 
-    - The "Testtime[s]" column is rounded to 5 decimal places.
-    - NaN values in the "Testtime[s]" column are replaced with None.
-    - The "StepID" column is typecast to int.
-    - The "EISFreq[Hz]" column is typecast to float.
-    - The "Zre[Ohm]" column is typecast to float.
-    - The "Zim[Ohm]" column is typecast to float.
+    - The "Test_Time[s]" column is rounded to 5 decimal places.
+    - NaN values in the "Test_Time[s]" column are replaced with None.
+    - The "Step_Count" column is typecast to int.
+    - The "EIS_f[Hz]" column is typecast to float.
+    - The "EIS_Z_Real[Ohm]" column is typecast to float.
+    - The "EIS_Z_Imag[Ohm]" column is typecast to float.
 
     Parameters
     ----------
@@ -29,11 +29,11 @@ def get_data_into_format_zahner_1(df: pd.DataFrame) -> pd.DataFrame:
         Modified DataFrame.
     """
     df = round_testtime(df)
-    df = nan_to_none_in_column(df, "Testtime[s]")
-    typecast(df, "StepID", int)
-    typecast(df, "EISFreq[Hz]", float)
-    typecast(df, "Zre[Ohm]", float)
-    typecast(df, "Zim[Ohm]", float)
+    df = nan_to_none_in_column(df, "Test_Time[s]")
+    typecast(df, "Step_Count", int)
+    typecast(df, "EIS_f[Hz]", float)
+    typecast(df, "EIS_Z_Real[Ohm]", float)
+    typecast(df, "EIS_Z_Imag[Ohm]", float)
 
     return df
 
@@ -46,12 +46,12 @@ def get_data_into_format_zahner_2(df: pd.DataFrame) -> pd.DataFrame:
 
     The modifications are as follows:
 
-    - The "Testtime[s]" column is rounded to 5 decimal places.
-    - NaN values in the "Testtime[s]" column are replaced with None.
-    - The "StepID" column is typecast to int.
+    - The "Test_Time[s]" column is rounded to 5 decimal places.
+    - NaN values in the "Test_Time[s]" column are replaced with None.
+    - The "Step_Count" column is typecast to int.
     - The "Voltage[V]" column is typecast to float.
     - The "Current[A]" column is typecast to float.
-    - The "Testtime[s]" column is typecast to float.
+    - The "Test_Time[s]" column is typecast to float.
 
     Parameters
     ----------
@@ -64,10 +64,10 @@ def get_data_into_format_zahner_2(df: pd.DataFrame) -> pd.DataFrame:
         Modified DataFrame.
     """
     df = round_testtime(df)
-    df = nan_to_none_in_column(df, "Testtime[s]")
-    typecast(df, "StepID", int)
+    df = nan_to_none_in_column(df, "Test_Time[s]")
+    typecast(df, "Step_Count", int)
     typecast(df, "Voltage[V]", float)
     typecast(df, "Current[A]", float)
-    typecast(df, "Testtime[s]", float)
+    typecast(df, "Test_Time[s]", float)
 
     return df

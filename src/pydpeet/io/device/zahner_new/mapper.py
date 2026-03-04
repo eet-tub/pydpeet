@@ -1,50 +1,50 @@
 # Map raw-data column names (left) to standardized column names (right)
 COLUMN_MAP_1 = {
-    r"Frequency/Hz": "EISFreq[Hz]",
-    "Number": "StepID",
+    r"Frequency/Hz": "EIS_f[Hz]",
+    "Number": "Step_Count",
 }
 
 COLUMN_MAP_2 = {
-    "step": "StepID",
+    "step": "Step_Count",
     "voltage V": "Voltage[V]",
-    "time s": "Testtime[s]",
+    "time s": "Test_Time[s]",
     "current A": "Current[A]",
 }
 
 COLUMN_MAP_3 = {
-    "Number": "StepID",
+    "Number": "Step_Count",
     "Voltage/V": "Voltage[V]",
     "Current/A": "Current[A]",
-    "Time/s": "Testtime[s]",
-    "Frequency/Hz": "EISFreq[Hz]",
+    "Time/s": "Test_Time[s]",
+    "Frequency/Hz": "EIS_f[Hz]",
 }
 
 # Default columns of the standardized format
 # which are not present in the raw data files.
 MISSING_REQUIRED_COLUMNS_1 = [
-    "Testtime[s]",
+    "Test_Time[s]",
     "Voltage[V]",
     "Current[A]",
-    "Absolute Time[yyyy-mm-dd hh:mm:ss]",
+    "Date_Time",
     "Temperature[°C]",
-    "DC_Current[A]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
+    "EIS_DC[A]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
 ]
 
 MISSING_REQUIRED_COLUMNS_2 = [
-    "DC_Current[A]",
+    "EIS_DC[A]",
     "Temperature[°C]",
-    "Absolute Time[yyyy-mm-dd hh:mm:ss]",
-    "EISFreq[Hz]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
+    "Date_Time",
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
 ]
 
 MISSING_REQUIRED_COLUMNS_3 = [
     "Temperature[°C]",
-    "Absolute Time[yyyy-mm-dd hh:mm:ss]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
-    "DC_Current[A]",
+    "Date_Time",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]",
 ]

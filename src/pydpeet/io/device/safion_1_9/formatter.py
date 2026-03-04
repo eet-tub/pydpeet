@@ -17,9 +17,9 @@ def get_data_into_format(df: pd.DataFrame) -> pd.DateFrame:
     pandas.DataFrame
         Formatted DataFrame.
     """
-    typecast(df, "StepID", int)
-    typecast(df, "EISFreq[Hz]", float)
-    typecast(df, "Zre[Ohm]", float)
-    typecast(df, "Zim[Ohm]", float)
+    typecast(df, "Step_Count", int)
+    typecast(df, "EIS_f[Hz]", float)
+    typecast(df, "EIS_Z_Real[Ohm]", float)
+    typecast(df, "EIS_Z_Imag[Ohm]", float)
 
     return df

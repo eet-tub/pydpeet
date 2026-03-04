@@ -107,13 +107,13 @@ def drop_duplicate_testtime(df, keep="first"):
     keep='last' keeps the last,
     keep=False removes all duplicates entirely.
     """
-    if "Testtime[s]" not in df.columns:
+    if "Test_Time[s]" not in df.columns:
         raise ValueError("No 'Testtime[s]' column in DataFrame")
 
     n_before = len(df)
-    df_clean = df.drop_duplicates(subset=["Testtime[s]"], keep=keep).copy()
+    df_clean = df.drop_duplicates(subset=["Test_Time[s]"], keep=keep).copy()
     n_after = len(df_clean)
 
     logging.warning(f"Dropped {n_before - n_after} duplicate rows (kept={keep}).")
 
-    return df_clean.sort_values("Testtime[s]").reset_index(drop=True)
+    return df_clean.sort_values("Test_Time[s]").reset_index(drop=True)

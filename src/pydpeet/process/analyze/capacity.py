@@ -34,7 +34,7 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
         :param THRESHOLD_DICT: threshold dictionary for neware params
     """
     # Check if the required columns are present
-    required_cols = ["Testtime[s]", "Current[A]", "Voltage[V]"]
+    required_cols = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
     _check_columns(df, required_cols)
 
     if config is None:
@@ -97,11 +97,11 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
             continue
 
         block = block.copy()
-        time_diff = block["Testtime[s]"].diff() / 3600
+        time_diff = block["Test_Time[s]"].diff() / 3600
         block["Capacity[Ah]"] = (block["Current[A]"] * time_diff).cumsum()
 
         if len(block) > 0:
-            time_seconds = block["Testtime[s]"].values
+            time_seconds = block["Test_Time[s]"].values
             current = block["Current[A]"].values
             with StepTimer(verbose) as st:
                 capacity_ah = integrate.cumulative_trapezoid(abs(current), time_seconds, initial=0) / 3600
@@ -136,7 +136,7 @@ def add_charge_throughput(df, inplace=False, calculate_tests_individually=False,
     The 'ChargeThroughput[Ah]' column represents the cumulative charge (in Ah) with sign (i.e., loaded + / unloaded -)
     The 'AbsoluteChargeThroughput[Ah]' column represents the cumulative absolute charge (in Ah)
     """
-    time_col = "Testtime[s]"
+    time_col = "Test_Time[s]"
     current_col = "Current[A]"
     testindex_col = "TestIndex"
 

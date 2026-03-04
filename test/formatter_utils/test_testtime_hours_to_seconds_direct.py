@@ -34,16 +34,16 @@ class TestTesttimeHoursToSecondsDirect(unittest.TestCase):
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_testtime_is_empty(self, mock_stdout):
-        data = pandas.DataFrame({"Testtime[s]": [""], "A": [2.0]})
-        expected = pandas.DataFrame({"Testtime[s]": [""], "A": [2.0]})
+        data = pandas.DataFrame({"Test_Time[s]": [""], "A": [2.0]})
+        expected = pandas.DataFrame({"Test_Time[s]": [""], "A": [2.0]})
         result = testtime_hours_to_seconds_direct(data)
         pandas.testing.assert_frame_equal(expected, result)
         self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error fixing Testtime[s] (converting hours to seconds). Reason: could not convert string to float: '' \033[0m\n")
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_convert_testtime(self, mock_stdout):
-        data = pandas.DataFrame({"Testtime[s]": [25.5]})
-        expected = pandas.DataFrame({"Testtime[s]": [91800.0]})
+        data = pandas.DataFrame({"Test_Time[s]": [25.5]})
+        expected = pandas.DataFrame({"Test_Time[s]": [91800.0]})
         result = testtime_hours_to_seconds_direct(data)
         pandas.testing.assert_frame_equal(expected, result)
         self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error fixing Testtime[s] (converting hours to seconds). Reason: Testtime[s] is empty can't apply time_to_seconds \033[0m\n")
