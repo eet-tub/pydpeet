@@ -147,7 +147,7 @@ def apply_convert_to_float_if_possible(
     return df
 
 
-def _convert_to_float_if_possible(x) -> float | any:
+def _convert_to_float_if_possible(x) -> float:
     """
     Try to convert a value to a float if possible.
 
@@ -224,7 +224,7 @@ def testtime_hours_to_seconds_direct(df: pd.DataFrame) -> pd.DataFrame | None:
     return df
 
 
-def _convert_to_hours_to_seconds_direct_if_possible(x) -> float | any:
+def _convert_to_hours_to_seconds_direct_if_possible(x) -> float:
     # TODO: Docstring
     try:
         return np.float64(x) * 3600
