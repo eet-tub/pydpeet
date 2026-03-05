@@ -1,6 +1,6 @@
 import numpy as np
-import pandas as pd
 from numba import njit
+
 
 @njit(cache=True)
 def _compute_segment_lengths_numba(segment_ids, times, max_id):
@@ -50,7 +50,7 @@ def _add_segment_lengths(df, column_name):
     """
     segment_name = f"Segment_{column_name}"
     segment_ids = df[segment_name].to_numpy(dtype=np.int32)
-    times = df["Testtime[s]"].to_numpy(dtype=np.float64)
+    times = df["Test_Time[s]"].to_numpy(dtype=np.float64)
 
     max_id = segment_ids.max()
     durations = _compute_segment_lengths_numba(segment_ids, times, max_id)

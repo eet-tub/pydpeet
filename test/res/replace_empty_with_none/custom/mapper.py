@@ -1,18 +1,18 @@
 # Define the mapping from current names to standardized names
 # digatron LiVsBlei
 COLUMN_MAP = {
-    "Zreal1": "Zre[Ohm]",
-    "Zimg1": "Zim[Ohm]",
-    "Zeitstempel": "Absolute Time[yyyy-mm-dd hh:mm:ss]",
-    "Schritt Nr.": "StepID",
+    "Zreal1": "EIS_Z_Real[Ohm]",
+    "Zimg1": "EIS_Z_Imag[Ohm]",
+    "Zeitstempel": "Date_Time",
+    "Schritt Nr.": "Step_Count",
     "Spannung": "Voltage[V]",
     "Strom": "Current[A]",
-    "Progr. Zeit": "Testtime[s]"
+    "Progr. Zeit": "Test_Time[s]"
 }
 
 MISSING_REQUIRED_COLUMNS = [
     "Temperature[°C]",
-    "EISFreq[Hz]",
-    "DC_Current[A]"
+    "EIS_f[Hz]",
+    "EIS_DC[A]"
 ]
 

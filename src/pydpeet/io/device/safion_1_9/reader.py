@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def to_dataframe(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
     Parses the input file from the Safion Cycler into a pandas DataFrame.
 
@@ -11,7 +11,6 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     Returns:
     (pandas.DataFrame, str): A tuple containing the DataFrame with data and metadata as a string.
     """
-
     # Initialize variables
     meta_data_string = ""
     excitation_data = []

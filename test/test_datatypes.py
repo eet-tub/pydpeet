@@ -8,17 +8,17 @@ from test.utils import RES_PATH, with_zip_files
 class MyTestCase(unittest.TestCase):
     # Define the expected data types
     _EXPECTED_DATATYPES = {
-        "Metadata": object,
-        "StepID": int,
+        "Meta_Data": object,
+        "Step_Count": int,
         "Voltage[V]": float,
         "Current[A]": float,
         "Temperature[\u00b0C]": float,
-        "Testtime[s]": float,
-        "Absolute Time[yyyy-mm-dd hh:mm:ss]": object,
-        "EISFreq[Hz]": float,
-        "Zre[Ohm]": float,
-        "Zim[Ohm]": float,
-        "DC_Current[A]": float,
+        "Test_Time[s]": float,
+        "Date_Time": object,
+        "EIS_f[Hz]": float,
+        "EIS_Z_Real[Ohm]": float,
+        "EIS_Z_Imag[Ohm]": float,
+        "EIS_DC[A]": float,
     }
 
     def test_expected_datatypes_arbin(self):

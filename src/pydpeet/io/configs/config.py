@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from enum import Enum, auto
-from typing import Callable
 
 from pandas import DataFrame
 # Arbin, MITS Pro v8.00.13 (PV221201)
@@ -60,7 +60,6 @@ class Config(Enum):
     Arbin_4_23_PV090331 = auto()
     Custom = auto()
 
-    
     @classmethod
     def from_string(cls, value: str) -> "Config":
         if not isinstance(value, str):
@@ -119,84 +118,75 @@ class Config(Enum):
 
 
 STANDARD_COLUMNS = [
-    "Metadata",
-    "StepID",
+    "Meta_Data",
+    "Step_Count",
     "Voltage[V]",
     "Current[A]",
     "Temperature[°C]",
-    "Testtime[s]",
-    "Absolute Time[yyyy-mm-dd hh:mm:ss]",
-    "EISFreq[Hz]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
-    "DC_Current[A]"
+    "Test_Time[s]",
+    "Date_Time",
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]"
 ]
 
-READER_CONFIGS: dict[Config, Callable[[str], DataFrame]] = \
-    {
-        # zahner readers
-        Config.Zahner_1: zahner_reader.to_dataframe,
-        Config.Zahner_2: zahner_reader.to_dataframe,
+READER_CONFIGS: dict[Config, Callable[[str], DataFrame]] = {
+    # zahner readers
+    Config.Zahner_1: zahner_reader.to_dataframe,
+    Config.Zahner_2: zahner_reader.to_dataframe,
+    # zahner New readers
+    Config.Zahner_new_1: zahner_new_reader.to_dataframe,
+    Config.Zahner_new_2: zahner_new_reader.to_dataframe,
+    Config.Zahner_new_3: zahner_new_reader.to_dataframe,
+    # Other readers
+    Config.Safion_1_9: safion_1_9_reader.to_dataframe,
+    Config.Parstat_2_63_3: parstat_2_63_3_reader.to_dataframe,
+    Config.Neware_8_0_0_516: neware_8_0_0_516_reader.to_dataframe,
+    Config.Digatron_4_20_6_236: digatron_4_20_6_236_reader.to_dataframe,
+    Config.Digatron_EIS_4_20_6_236: digatron_eis_4_20_6_236_reader.to_dataframe,
+    Config.BaSyTec_6_3_1_0: basytec_6_3_1_0_reader.to_dataframe,
+    Config.Arbin_8_00_PV221201: arbin_8_00_PV221201_reader.to_dataframe,
+    Config.Arbin_4_23_PV090331: arbin_4_23_PV090331_reader.to_dataframe,
+}
 
-        # zahner New readers
-        Config.Zahner_new_1: zahner_new_reader.to_dataframe,
-        Config.Zahner_new_2: zahner_new_reader.to_dataframe,
-        Config.Zahner_new_3: zahner_new_reader.to_dataframe,
+MAPPER_CONFIGS: dict[Config, tuple[dict[str, str], list[str]]] = {
+    # zahner mappers
+    Config.Zahner_1: (zahner_mapper.COLUMN_MAP_1, zahner_mapper.MISSING_REQUIRED_COLUMNS_1),
+    Config.Zahner_2: (zahner_mapper.COLUMN_MAP_2, zahner_mapper.MISSING_REQUIRED_COLUMNS_2),
+    # zahner New mappers
+    Config.Zahner_new_1: (zahner_new_mapper.COLUMN_MAP_1, zahner_new_mapper.MISSING_REQUIRED_COLUMNS_1),
+    Config.Zahner_new_2: (zahner_new_mapper.COLUMN_MAP_2, zahner_new_mapper.MISSING_REQUIRED_COLUMNS_2),
+    Config.Zahner_new_3: (zahner_new_mapper.COLUMN_MAP_3, zahner_new_mapper.MISSING_REQUIRED_COLUMNS_3),
+    # Other mappers
+    Config.Safion_1_9: (safion_1_9_mapper.COLUMN_MAP, safion_1_9_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Parstat_2_63_3: (parstat_2_63_3_mapper.COLUMN_MAP, parstat_2_63_3_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Neware_8_0_0_516: (neware_8_0_0_516_mapper.COLUMN_MAP, neware_8_0_0_516_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Digatron_4_20_6_236: (digatron_4_20_6_236_mapper.COLUMN_MAP, digatron_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Digatron_EIS_4_20_6_236: (digatron_eis_4_20_6_236_mapper.COLUMN_MAP, digatron_eis_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.BaSyTec_6_3_1_0: (basytec_6_3_1_0_mapper.COLUMN_MAP, basytec_6_3_1_0_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Arbin_8_00_PV221201: (arbin_8_00_PV221201_mapper.COLUMN_MAP, arbin_8_00_PV221201_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Arbin_4_23_PV090331: (arbin_4_23_PV090331_mapper.COLUMN_MAP, arbin_4_23_PV090331_mapper.MISSING_REQUIRED_COLUMNS),
+}
 
-        # Other readers
-        Config.Safion_1_9: safion_1_9_reader.to_dataframe,
-        Config.Parstat_2_63_3: parstat_2_63_3_reader.to_dataframe,
-        Config.Neware_8_0_0_516: neware_8_0_0_516_reader.to_dataframe,
-        Config.Digatron_4_20_6_236: digatron_4_20_6_236_reader.to_dataframe,
-        Config.Digatron_EIS_4_20_6_236: digatron_eis_4_20_6_236_reader.to_dataframe,
-        Config.BaSyTec_6_3_1_0: basytec_6_3_1_0_reader.to_dataframe,
-        Config.Arbin_8_00_PV221201: arbin_8_00_PV221201_reader.to_dataframe,
-        Config.Arbin_4_23_PV090331: arbin_4_23_PV090331_reader.to_dataframe,
-    }
-
-MAPPER_CONFIGS: dict[Config, tuple[dict[str, str], list[str]]] = \
-    {
-        # zahner mappers
-        Config.Zahner_1: (zahner_mapper.COLUMN_MAP_1, zahner_mapper.MISSING_REQUIRED_COLUMNS_1),
-        Config.Zahner_2: (zahner_mapper.COLUMN_MAP_2, zahner_mapper.MISSING_REQUIRED_COLUMNS_2),
-
-        # zahner New mappers
-        Config.Zahner_new_1: (zahner_new_mapper.COLUMN_MAP_1, zahner_new_mapper.MISSING_REQUIRED_COLUMNS_1),
-        Config.Zahner_new_2: (zahner_new_mapper.COLUMN_MAP_2, zahner_new_mapper.MISSING_REQUIRED_COLUMNS_2),
-        Config.Zahner_new_3: (zahner_new_mapper.COLUMN_MAP_3, zahner_new_mapper.MISSING_REQUIRED_COLUMNS_3),
-
-        # Other mappers
-        Config.Safion_1_9: (safion_1_9_mapper.COLUMN_MAP, safion_1_9_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.Parstat_2_63_3: (parstat_2_63_3_mapper.COLUMN_MAP, parstat_2_63_3_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.Neware_8_0_0_516: (neware_8_0_0_516_mapper.COLUMN_MAP, neware_8_0_0_516_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.Digatron_4_20_6_236: (digatron_4_20_6_236_mapper.COLUMN_MAP, digatron_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.Digatron_EIS_4_20_6_236: (digatron_eis_4_20_6_236_mapper.COLUMN_MAP, digatron_eis_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.BaSyTec_6_3_1_0: (basytec_6_3_1_0_mapper.COLUMN_MAP, basytec_6_3_1_0_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.Arbin_8_00_PV221201: (arbin_8_00_PV221201_mapper.COLUMN_MAP, arbin_8_00_PV221201_mapper.MISSING_REQUIRED_COLUMNS),
-        Config.Arbin_4_23_PV090331: (arbin_4_23_PV090331_mapper.COLUMN_MAP, arbin_4_23_PV090331_mapper.MISSING_REQUIRED_COLUMNS),
-    }
-
-FORMATTER_CONFIGS: dict[Config, Callable[[DataFrame], DataFrame]] = \
-    {
-        # zahner formatters
-        Config.Zahner_1: zahner_formatter.get_data_into_format_zahner_1,
-        Config.Zahner_2: zahner_formatter.get_data_into_format_zahner_2,
-
-        # zahner New formatters
-        Config.Zahner_new_1: zahner_new_formatter.get_data_into_format_zahner_1,
-        Config.Zahner_new_2: zahner_new_formatter.get_data_into_format_zahner_2,
-        Config.Zahner_new_3: zahner_new_formatter.get_data_into_format_zahner_3,
-
-        # Other formatters
-        Config.Safion_1_9: safion_1_9_formatter.get_data_into_format,
-        Config.Parstat_2_63_3: parstat_2_63_3_formatter.get_data_into_format,
-        Config.Neware_8_0_0_516: neware_8_0_0_516_formatter.get_data_into_format,
-        Config.Digatron_4_20_6_236: digatron_4_20_6_236_formatter.get_data_into_format,
-        Config.Digatron_EIS_4_20_6_236: digatron_eis_4_20_6_236_formatter.get_data_into_format,
-        Config.BaSyTec_6_3_1_0: basytec_6_3_1_0_formatter.get_data_into_format,
-        Config.Arbin_8_00_PV221201: arbin_8_00_PV221201_formatter.get_data_into_format,
-        Config.Arbin_4_23_PV090331: arbin_4_23_PV090331_formatter.get_data_into_format,
-    }
+FORMATTER_CONFIGS: dict[Config, Callable[[DataFrame], DataFrame]] = {
+    # zahner formatters
+    Config.Zahner_1: zahner_formatter.get_data_into_format_zahner_1,
+    Config.Zahner_2: zahner_formatter.get_data_into_format_zahner_2,
+    # zahner New formatters
+    Config.Zahner_new_1: zahner_new_formatter.get_data_into_format_zahner_1,
+    Config.Zahner_new_2: zahner_new_formatter.get_data_into_format_zahner_2,
+    Config.Zahner_new_3: zahner_new_formatter.get_data_into_format_zahner_3,
+    # Other formatters
+    Config.Safion_1_9: safion_1_9_formatter.get_data_into_format,
+    Config.Parstat_2_63_3: parstat_2_63_3_formatter.get_data_into_format,
+    Config.Neware_8_0_0_516: neware_8_0_0_516_formatter.get_data_into_format,
+    Config.Digatron_4_20_6_236: digatron_4_20_6_236_formatter.get_data_into_format,
+    Config.Digatron_EIS_4_20_6_236: digatron_eis_4_20_6_236_formatter.get_data_into_format,
+    Config.BaSyTec_6_3_1_0: basytec_6_3_1_0_formatter.get_data_into_format,
+    Config.Arbin_8_00_PV221201: arbin_8_00_PV221201_formatter.get_data_into_format,
+    Config.Arbin_4_23_PV090331: arbin_4_23_PV090331_formatter.get_data_into_format,
+}
 
 
 class DataOutputFiletype(Enum):

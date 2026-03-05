@@ -1,33 +1,34 @@
-# Define the mapping from current names to standardized names
+# Map raw-data column names (left) to standardized column names (right)
 COLUMN_MAP_1 = {
-    "Frequency/Hz": "EISFreq[Hz]",
-    "Number": "StepID",
-    r"R/": "Zre[Ohm]",
-    r"I/": "Zim[Ohm]"
+    "Frequency/Hz": "EIS_f[Hz]",
+    "Number": "Step_Count",
+    r"R/": "EIS_Z_Real[Ohm]",
+    r"I/": "EIS_Z_Imag[Ohm]",
 }
 
 COLUMN_MAP_2 = {
-    "step": "StepID",
+    "step": "Step_Count",
     "voltage V": "Voltage[V]",
-    "time s": "Testtime[s]",
-    "current A": "Current[A]"
+    "time s": "Test_Time[s]",
+    "current A": "Current[A]",
 }
 
+# Default columns of the standardized format
+# which are not present in the raw data files.
 MISSING_REQUIRED_COLUMNS_1 = [
-    "Testtime[s]",
+    "Test_Time[s]",
     "Voltage[V]",
     "Current[A]",
-    "Absolute Time[yyyy-mm-dd hh:mm:ss]",
+    "Date_Time",
     "Temperature[°C]",
-    "DC_Current[A]"
+    "EIS_DC[A]",
 ]
 
 MISSING_REQUIRED_COLUMNS_2 = [
-    "DC_Current[A]",
+    "EIS_DC[A]",
     "Temperature[°C]",
-    "Absolute Time[yyyy-mm-dd hh:mm:ss]",
-    "EISFreq[Hz]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
-
+    "Date_Time",
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
 ]

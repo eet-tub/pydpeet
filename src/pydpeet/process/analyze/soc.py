@@ -208,7 +208,7 @@ def add_soc(
     if not methods:
         raise ValueError("No SOC methods supplied (methods or standard_method).")
     # Required columns check
-    for col in ["Testtime[s]", "Current[A]", "Voltage[V]"]:
+    for col in ["Test_Time[s]", "Current[A]", "Voltage[V]"]:
         if col not in df.columns:
             raise ValueError(f"Column: {col} is missing! Can't proceed")
 
@@ -268,7 +268,7 @@ def add_soc(
             if block.empty:
                 continue
             # ensure deterministic order for precomputation
-            block_sorted = block.sort_values("Testtime[s]")  # keep original index values
+            block_sorted = block.sort_values("Test_Time[s]")  # keep original index values
 
             # Precompute arrays on the sorted block
             with StepTimer(verbose) as st:
@@ -279,7 +279,7 @@ def add_soc(
                     capacity_values = np.full(len(block_sorted), np.nan, dtype=np.float64)
 
                 delta_soc, current_arr, abs_current, voltage_arr, c_ref_as = precompute_block_arrays_soc_methods(
-                    block_sorted["Testtime[s]"].values,
+                    block_sorted["Test_Time[s]"].values,
                     block_sorted["Current[A]"].values,
                     block_sorted["Voltage[V]"].values,
                     capacity_values,
@@ -329,7 +329,7 @@ def add_soc(
 
         with StepTimer(verbose) as st:
             delta_soc, current_arr, abs_current, voltage_arr, c_ref_as = precompute_block_arrays_soc_methods(
-                df["Testtime[s]"].values,
+                df["Test_Time[s]"].values,
                 df["Current[A]"].values,
                 df["Voltage[V]"].values,
                 df["Capacity[Ah]"].values,

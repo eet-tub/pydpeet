@@ -26,32 +26,32 @@ class TestRoundTesttime(unittest.TestCase):
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_rounding_testtime_as_str(self, mock_stdout):
-        data = pandas.DataFrame({"Testtime[s]": ["12.56416565165", "255.16816586565416546"]})
-        expected = pandas.DataFrame({"Testtime[s]": [12.56417, 255.168175]})
+        data = pandas.DataFrame({"Test_Time[s]": ["12.56416565165", "255.16816586565416546"]})
+        expected = pandas.DataFrame({"Test_Time[s]": [12.56417, 255.168175]})
         result = round_testtime(data)
         pandas.testing.assert_frame_equal(expected, result)
         self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error fixing Testtime[s] (rounding). Reason: dataframe is empty \033[0m\n")
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_rounding_testtime(self, mock_stdout):
-        data = pandas.DataFrame({"Testtime[s]": [12.56416565165, 255.16816586565416546]})
-        expected = pandas.DataFrame({"Testtime[s]": [12.56417, 255.168175]})
+        data = pandas.DataFrame({"Test_Time[s]": [12.56416565165, 255.16816586565416546]})
+        expected = pandas.DataFrame({"Test_Time[s]": [12.56417, 255.168175]})
         result = round_testtime(data)
         pandas.testing.assert_frame_equal(expected, result)
         self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error fixing Testtime[s] (rounding). Reason: dataframe is empty \033[0m\n")
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_rounding_testtime_as_int(self, mock_stdout):
-        data = pandas.DataFrame({"Testtime[s]": [12, 255]})
-        expected = pandas.DataFrame({"Testtime[s]": [12.0, 255.0]})
+        data = pandas.DataFrame({"Test_Time[s]": [12, 255]})
+        expected = pandas.DataFrame({"Test_Time[s]": [12.0, 255.0]})
         result = round_testtime(data)
         pandas.testing.assert_frame_equal(expected, result)
         self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error fixing Testtime[s] (rounding). Reason: dataframe is empty \033[0m\n")
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_rounding_testtime_as_str_wrong_format(self, mock_stdout):
-        data = pandas.DataFrame({"Testtime[s]": ["abc", "bca"]})
-        expected = pandas.DataFrame({"Testtime[s]": ["abc", "bca"]})
+        data = pandas.DataFrame({"Test_Time[s]": ["abc", "bca"]})
+        expected = pandas.DataFrame({"Test_Time[s]": ["abc", "bca"]})
         result = round_testtime(data)
         pandas.testing.assert_frame_equal(expected, result)
         self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error fixing Testtime[s] (rounding). Reason: could not convert string to float: 'abc' \033[0m\n")

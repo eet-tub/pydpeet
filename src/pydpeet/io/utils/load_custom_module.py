@@ -1,8 +1,15 @@
 import os
-from importlib.util import module_from_spec, spec_from_file_location
+from importlib.util import (
+    module_from_spec,
+    spec_from_file_location
+)
+from types import ModuleType
 
 
-def load_custom_module(folder_path: str, module_name: str):
+def load_custom_module(
+        folder_path: str,
+        module_name: str
+) -> ModuleType:
     """
     Loads a custom Python module from a specified folder.
 
@@ -22,4 +29,5 @@ def load_custom_module(folder_path: str, module_name: str):
     spec = spec_from_file_location(module_name, module_path)
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
+
     return module

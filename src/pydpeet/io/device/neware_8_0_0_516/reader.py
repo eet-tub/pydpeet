@@ -6,15 +6,14 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from plistlib import InvalidFileException
 
-import pandas
-from pandas import DataFrame
+import pandas as pd
 
 from pydpeet.io.configs.const import PANDAS_EXCEL_ENGINE
 
 _BASE_CHILD_FILE_PATTERN = r"_(\d+).(xlsx|xls)"
 
 
-def to_dataframe(input_path: str) -> (DataFrame, str):
+def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
     Parses the input file from the Neware Cycler into a pandas DataFrame.
 
@@ -38,10 +37,11 @@ def to_dataframe(input_path: str) -> (DataFrame, str):
         cycle_step_test_future = executor.submit(_handle_cycle_step_test, sheets["cycle"], sheets["step"], test_sheet)
 
         merged = _handle_final(cycle_step_test_future.result(), record_auxvol_auxtemp_future.result())
+
         return merged, future_meta_data.result()
 
 
-def _read_sheets(main_file_path: str) -> dict[str, DataFrame] | None:
+def _read_sheets(main_file_path: str) -> dict[str, pd.DataFrame] | None:
     """
     Reads the main Excel file and its children into a dictionary of DataFrames.
 
@@ -83,6 +83,7 @@ def _find_children(main_file_path) -> list[str]:
     main_file_dir = os.path.dirname(main_file_path)
     child_file_paths = [child_file_path for file_name in os.listdir(main_file_dir) if ((child_file_path := os.path.join(main_file_dir, file_name)).endswith(".xlsx") or child_file_path.endswith(".xls")) and re.fullmatch(child_file_pattern, file_name) and child_file_path != main_file_path]
     child_file_paths.sort(key=lambda file: int(match.group(1)) if (match := re.search(_BASE_CHILD_FILE_PATTERN, file)) is not None else 0)
+
     return child_file_paths
 
 
@@ -104,7 +105,10 @@ def find_main_files(input_path: str) -> list[str]:
     return [file for file in os.listdir(input_path) if (file.endswith(".xlsx") or file.endswith(".xls")) and not re.search(_BASE_CHILD_FILE_PATTERN, file)]
 
 
-def _read_sheets_from(main_file: str, children: list[str]) -> dict[str, DataFrame] | None:
+def _read_sheets_from(
+        main_file: str,
+        children: list[str]
+) -> dict[str, pd.DataFrame] | None:
     """
     Reads sheets from the main Excel file and its children into a dictionary of DataFrames.
 
@@ -120,12 +124,12 @@ def _read_sheets_from(main_file: str, children: list[str]) -> dict[str, DataFram
     Dict[str, DataFrame] | None: A dictionary containing DataFrames for each sheet.
     """
     if len(children) == 0:
-        excel = pandas.ExcelFile(main_file, engine=PANDAS_EXCEL_ENGINE)
+        excel = pd.ExcelFile(main_file, engine=PANDAS_EXCEL_ENGINE)
         return {sheet_name: excel.parse(sheet_name) for sheet_name in excel.sheet_names}
 
     with ThreadPoolExecutor() as executor:
-        main_file_future = executor.submit(pandas.ExcelFile, main_file, engine=PANDAS_EXCEL_ENGINE)
-        children_excels = list(executor.map(lambda child: pandas.ExcelFile(child, engine=PANDAS_EXCEL_ENGINE), children))
+        main_file_future = executor.submit(pd.ExcelFile, main_file, engine=PANDAS_EXCEL_ENGINE)
+        children_excels = list(executor.map(lambda child: pd.ExcelFile(child, engine=PANDAS_EXCEL_ENGINE), children))
         main_file = main_file_future.result()
         main_sheets_future = executor.submit(main_file.parse, main_file.sheet_names)
         children_sheets = list(executor.map(lambda child: child.parse(child.sheet_names), children_excels))
@@ -134,12 +138,16 @@ def _read_sheets_from(main_file: str, children: list[str]) -> dict[str, DataFram
             for child_sheet_name, child_sheet in child_sheets.items():
                 for main_sheet_name, main_sheet in main_sheets.items():
                     if child_sheet_name == main_sheet_name:
-                        main_sheets[main_sheet_name] = pandas.concat([main_sheet, child_sheet], ignore_index=True)
+                        main_sheets[main_sheet_name] = pd.concat([main_sheet, child_sheet], ignore_index=True)
 
         return main_sheets
 
 
-def _extract_meta_data(unit_sheet: DataFrame, test_sheet: DataFrame, log_sheet: DataFrame) -> str:
+def _extract_meta_data(
+        unit_sheet: pd.DataFrame,
+        test_sheet: pd.DataFrame,
+        log_sheet: pd.DataFrame
+) -> str:
     """
     Extracts and concatenates metadata from the provided DataFrames.
 
@@ -160,14 +168,18 @@ def _extract_meta_data(unit_sheet: DataFrame, test_sheet: DataFrame, log_sheet: 
     meta_data = [unit_sheet.to_string(index=False)]
     for _, row in test_sheet.iterrows():
         if "Step Plan" in row.values:
-            meta_data.append(pandas.concat([test_sheet, DataFrame([row])], ignore_index=True).to_string(index=False))
+            meta_data.append(pd.concat([test_sheet, pd.DataFrame([row])], ignore_index=True).to_string(index=False))
             break
     meta_data.append(log_sheet.to_string(index=False))
 
     return "\n".join(meta_data)
 
 
-def _handle_cycle_step_test(cycle_sheet: DataFrame, step_sheet: DataFrame, test_sheet: DataFrame) -> DataFrame:
+def _handle_cycle_step_test(
+        cycle_sheet: pd.DataFrame,
+        step_sheet: pd.DataFrame,
+        test_sheet: pd.DataFrame
+) -> pd.DataFrame:
     """
     Handles the cycle, step, and test sheets by merging them together.
 
@@ -187,14 +199,15 @@ def _handle_cycle_step_test(cycle_sheet: DataFrame, step_sheet: DataFrame, test_
     logging.info("Handling sheets cycle, step and test...")
     logging.info("merging cycle and step...")
 
-    cycle_step_test = pandas.merge(cycle_sheet, step_sheet, left_on="Cycle Index", right_on="Cycle Index", how="left")
+    cycle_step_test = pd.merge(cycle_sheet, step_sheet, left_on="Cycle Index", right_on="Cycle Index", how="left")
     test = _handle_test(test_sheet)
 
     logging.info("merging cycle_step_test and test...")
-    return pandas.merge(cycle_step_test, test, left_on="Step Index", right_on="Step Index", how="left")
+
+    return pd.merge(cycle_step_test, test, left_on="Step Index", right_on="Step Index", how="left")
 
 
-def _handle_test(test: DataFrame) -> DataFrame:
+def _handle_test(test: pd.DataFrame) -> pd.DataFrame:
     """
     Handles the test sheet by selecting the relevant columns and renaming them to fit the standard.
 
@@ -212,8 +225,8 @@ def _handle_test(test: DataFrame) -> DataFrame:
     logging.info("handling test sheet...")
 
     headers_idx = test[test.apply(lambda row: row.astype(str).str.contains("Step Index").any(), axis=1)].index[0]
-    data = DataFrame(test.iloc[headers_idx + 1 :].values, columns=test.iloc[headers_idx])
-    data["Step Index"] = pandas.to_numeric(data["Step Index"], errors="coerce")
+    data = pd.DataFrame(test.iloc[headers_idx + 1 :].values, columns=test.iloc[headers_idx])
+    data["Step Index"] = pd.to_numeric(data["Step Index"], errors="coerce")
     data.rename(
         columns={
             "Energy(Wh)": "Energy(Wh) - Test",
@@ -233,7 +246,7 @@ def _capture_settingwithcopy_debug():
     original = warnings.showwarning
 
     def _handler(message, category, filename, lineno, file=None, line=None):
-        if category is pandas.errors.SettingWithCopyWarning:
+        if category is pd.errors.SettingWithCopyWarning:
             logging.debug("%s:%d: %s", filename, lineno, message)
         else:
             original(message, category, filename, lineno, file, line)
@@ -245,7 +258,11 @@ def _capture_settingwithcopy_debug():
         warnings.showwarning = original
 
 
-def _handle_record_auxvol_auxtemp(df_record: DataFrame, df_auxvol: DataFrame | None, df_auxtemp: DataFrame | None) -> DataFrame:
+def _handle_record_auxvol_auxtemp(
+        df_record: pd.DataFrame,
+        df_auxvol: pd.DataFrame | None,
+        df_auxtemp: pd.DataFrame | None
+) -> pd.DataFrame:
     """
     Processes and merges the record, auxiliary voltage, and auxiliary temperature sheets.
 
@@ -273,19 +290,23 @@ def _handle_record_auxvol_auxtemp(df_record: DataFrame, df_auxvol: DataFrame | N
         with _capture_settingwithcopy_debug():
             df_auxvol.rename(columns={"Date": "Date - auxVol", "DataPoint": "DataPoint - auxVol"}, inplace=True)
         logging.info("merging record and auxvol...")
-        result = pandas.merge(df_record, df_auxvol, left_on="DataPoint", right_on="DataPoint - auxVol", how="left")
+        result = pd.merge(df_record, df_auxvol, left_on="DataPoint", right_on="DataPoint - auxVol", how="left")
 
     if df_auxtemp is not None:
         df_auxtemp = _re_index_headers(df_auxtemp, ["DataPoint", "Date", "T1", "Aux. ΔT"], "Single cell temperature(℃)")
         with _capture_settingwithcopy_debug():
             df_auxtemp.rename(columns={"Date": "Date - auxTemp", "DataPoint": "DataPoint - auxTemp"}, inplace=True)
         logging.info("merging record_auxvol and auxtemp...")
-        result = pandas.merge(result, df_auxtemp, left_on="DataPoint", right_on="DataPoint - auxTemp", how="left")
+        result = pd.merge(result, df_auxtemp, left_on="DataPoint", right_on="DataPoint - auxTemp", how="left")
 
     return result
 
 
-def _re_index_headers(df: DataFrame, expected_headers: list[str], keyword: str):
+def _re_index_headers(
+        df: pd.DataFrame,
+        expected_headers: list[str],
+        keyword: str
+) -> pd.DataFrame:
     """
     Checks if the headers of a DataFrame need to be reindexed and reindexes them if necessary.
 
@@ -309,10 +330,14 @@ def _re_index_headers(df: DataFrame, expected_headers: list[str], keyword: str):
         df = df.iloc[1:]
     else:
         logging.info("no need to reindex headers...")
+
     return df
 
 
-def _handle_final(step: pandas.DataFrame, record: pandas.DataFrame) -> pandas.DataFrame:
+def _handle_final(
+        step: pd.DataFrame,
+        record: pd.DataFrame
+) -> pd.DataFrame:
     """
     Merges the step and record DataFrames based on the 'step_id' column.
 
@@ -335,10 +360,10 @@ def _handle_final(step: pandas.DataFrame, record: pandas.DataFrame) -> pandas.Da
 
     # Build reset mask from Time column
     time_series = record["Time"]
-    time_td = pandas.to_timedelta(time_series, errors="coerce")
-    time_num = pandas.to_numeric(time_series, errors="coerce")
+    time_td = pd.to_timedelta(time_series, errors="coerce")
+    time_num = pd.to_numeric(time_series, errors="coerce")
 
-    reset_mask = (time_td.eq(pandas.Timedelta(0)) | time_num.eq(0)).fillna(False)
+    reset_mask = (time_td.eq(pd.Timedelta(0)) | time_num.eq(0)).fillna(False)
 
     # Keep only rising edges (first True in each block)
     reset_mask &= ~reset_mask.shift(1, fill_value=False)

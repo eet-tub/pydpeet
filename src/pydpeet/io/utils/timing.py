@@ -30,6 +30,7 @@ def measure_time(func) -> Any:
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         logging.info(f"{func.__name__} executed in {end_time - start_time:.6f} seconds")
+
         return result
 
     return wrapper

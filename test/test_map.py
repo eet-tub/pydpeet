@@ -7,52 +7,52 @@ import pandas
 from pydpeet.io.map import mapping
 
 COLUMN_MAP = {
-    "Record number": "StepID",
+    "Record number": "Step_Count",
     "Voltage(V)": "Voltage[V]",
     "Current(A)": "Current[A]",
-    "Relative Time(h:min:s.ms)": "Testtime[s]",
-    "Real Time(h:min:s.ms)": "Absolute Time[yyyy-mm-dd hh:mm:ss]"
+    "Relative Time(h:min:s.ms)": "Test_Time[s]",
+    "Real Time(h:min:s.ms)": "Date_Time"
 }
 
 COLUMN_MAP_NONE = {}
 
 COLUMN_MAP_INCOMPLETE = {
-    "Record number": "StepID",
+    "Record number": "Step_Count",
     "Voltage(V)": "Voltage[V]",
     "Current(A)": "Current[A]"
 }
 
 COLUMN_MAP_TOO_MANY = {
-    "Record number": "StepID",
+    "Record number": "Step_Count",
     "Voltage(V)": "Voltage[V]",
     "Current(A)": "Current[A]",
-    "Relative Time(h:min:s.ms)": "Testtime[s]",
-    "Real Time(h:min:s.ms)": "Absolute Time[yyyy-mm-dd hh:mm:ss]",
+    "Relative Time(h:min:s.ms)": "Test_Time[s]",
+    "Real Time(h:min:s.ms)": "Date_Time",
     "TOO MANY": "TEST"
 }
 
 
 MISSING_REQUIRED_COLUMNS = [
     "Temperature[°C]",
-    "EISFreq[Hz]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
-    "DC_Current[A]"
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]"
 ]
 
 MISSING_REQUIRED_COLUMNS_NONE = []
 
 MISSING_REQUIRED_COLUMNS_INCOMPLETE = [
     "Temperature[°C]",
-    "EISFreq[Hz]",
+    "EIS_f[Hz]",
 ]
 
 MISSING_REQUIRED_COLUMNS_TOO_MANY = [
     "Temperature[°C]",
-    "EISFreq[Hz]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
-    "DC_Current[A]",
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]",
     "TOO MANY"
 ]
 

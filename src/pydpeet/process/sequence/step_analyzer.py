@@ -139,7 +139,7 @@ def add_primitives(
         raise ValueError("'Voltage[V]' column not found in input dataframe.")
     if "Current[A]" not in df_step.columns:
         raise ValueError("'Current[A]' column not found in input dataframe.")
-    if "Testtime[s]" not in df_step.columns:
+    if "Test_Time[s]" not in df_step.columns:
         raise ValueError("'Testtime[s]' column not found in input dataframe.")
     if SEGMENTS_TO_DETECT_CONFIG is None or len(SEGMENTS_TO_DETECT_CONFIG) == 0:
         raise ValueError("SEGMENTS_TO_DETECT_CONFIG is None or empty")
@@ -161,9 +161,9 @@ def add_primitives(
     # --- Data cleanup ---
     if not supress_IO_warnings:
         logger.warning("Dropping NaN values in 'Testtime[s]', dropping duplicates and sorting 'Testtime[s]' column.")
-    df_step.dropna(subset=["Testtime[s]"], inplace=True)
-    df_step.drop_duplicates(subset=["Testtime[s]"], inplace=True)
-    df_step.sort_values(by=["Testtime[s]"], inplace=True)
+    df_step.dropna(subset=["Test_Time[s]"], inplace=True)
+    df_step.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
+    df_step.sort_values(by=["Test_Time[s]"], inplace=True)
 
     # --- Guardrails & IO Warnings ---
     if not supress_IO_warnings:
@@ -327,7 +327,7 @@ def extract_sequences(
     if df_primitives is None or not isinstance(df_primitives, pd.DataFrame):
         raise ValueError("df_primitives is None or not a DataFrame")
 
-    standard_columns = ["Testtime[s]", "Voltage[V]", "Current[A]", "Power[W]", "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
+    standard_columns = ["Test_Time[s]", "Voltage[V]", "Current[A]", "Power[W]", "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
     if not set(standard_columns).issubset(set(df_primitives.columns)):
         logger.warning("df_primitives doesn't have the standard columns.")
 

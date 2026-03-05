@@ -61,9 +61,9 @@ def compute_ocv_dva_ica(
         raise ValueError("Please provide either df or df_primitives, not both!")
 
     if df is not None:
-        df.drop_duplicates(subset=["Testtime[s]"], inplace=True)
-        df.dropna(subset=["Testtime[s]"], inplace=True)
-        df = df.sort_values("Testtime[s]")
+        df.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
+        df.dropna(subset=["Test_Time[s]"], inplace=True)
+        df = df.sort_values("Test_Time[s]")
 
         df_primitives = add_primitives(
             df=df,
@@ -75,13 +75,13 @@ def compute_ocv_dva_ica(
         )
 
     if df_primitives is not None:
-        if df_primitives["Testtime[s]"].duplicated().any():
+        if df_primitives["Test_Time[s]"].duplicated().any():
             raise ValueError("Duplicated 'Testtime[s]' values found!")
 
-        if df_primitives["Testtime[s]"].isna().any():
+        if df_primitives["Test_Time[s]"].isna().any():
             raise ValueError("NaN values found in 'Testtime[s]'")
 
-        if not np.all(np.diff(df_primitives["Testtime[s]"]) > 0):
+        if not np.all(np.diff(df_primitives["Test_Time[s]"]) > 0):
             raise ValueError("'Testtime[s]' is not monotonically increasing!")
 
         logging.info("Checking if SOC exists in dataframe...")
@@ -126,7 +126,7 @@ def compute_ocv_dva_ica(
         )
 
     logging.info("Computing Capacity in Ah...")
-    capacity_Ah_points = integrate.cumulative_trapezoid((df_primitives["Current[A]"]), x=df_primitives["Testtime[s]"], initial=0) / 3600
+    capacity_Ah_points = integrate.cumulative_trapezoid((df_primitives["Current[A]"]), x=df_primitives["Test_Time[s]"], initial=0) / 3600
     df_primitives["Capacity_Ah"] = capacity_Ah_points
 
     logging.info("Labeling DVA/ICA blocks (Charge/Discharge)...")
@@ -153,7 +153,7 @@ def compute_ocv_dva_ica(
     logging.info("Computing DVA and ICA for every block...")
     all_dva_ica_curves = []
     for idx, block in enumerate(dfs_per_block):
-        df_dva_ica = df_primitives.loc[df_primitives["Testtime[s]"].isin(block["Testtime[s]"])]
+        df_dva_ica = df_primitives.loc[df_primitives["Test_Time[s]"].isin(block["Test_Time[s]"])]
 
         voltage = df_dva_ica["Voltage[V]"].to_numpy()
         capacity = df_dva_ica["Capacity_Ah"].to_numpy()

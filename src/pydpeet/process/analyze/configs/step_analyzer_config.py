@@ -159,7 +159,7 @@ DATA_COLUMNS = {
     "P": "Power[W]",
 }
 STANDARD_COLUMNS = [
-    "Testtime[s]",
+    "Test_Time[s]",
     "Voltage[V]",
     "Current[A]"
 ]

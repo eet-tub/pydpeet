@@ -3,7 +3,7 @@ import pandas as pd
 from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast, apply_convert_to_float_if_possible, move_strings_from_column_to_metadata, nan_to_none_in_column, replace_empty_with_none_in_standard_columns, round_testtime, typecast
 
 
-def get_data_into_format(data_frame: pd.DataFrame):
+def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     """
     Format the given DataFrame into a standard format.
 
@@ -17,14 +17,15 @@ def get_data_into_format(data_frame: pd.DataFrame):
     pandas.DataFrame
         The formatted DataFrame
     """
-    data_frame = replace_empty_with_none_in_standard_columns(data_frame)
-    typecast(data_frame, "StepID", int)
-    data_frame = apply_convert_to_float_if_possible(data_frame, "Voltage[V]")
-    data_frame = apply_convert_to_float_if_possible(data_frame, "Current[A]")
-    data_frame = round_testtime(data_frame)
-    data_frame = absolute_time_timedate_typecast(data_frame)
-    typecast(data_frame, "Zre[Ohm]", float)
-    typecast(data_frame, "Zim[Ohm]", float)
-    data_frame = nan_to_none_in_column(data_frame, "Current[A]")
-    data_frame = move_strings_from_column_to_metadata(data_frame, "Voltage[V]")
-    return data_frame
+    df = replace_empty_with_none_in_standard_columns(df)
+    typecast(df, "Step_Count", int)
+    df = apply_convert_to_float_if_possible(df, "Voltage[V]")
+    df = apply_convert_to_float_if_possible(df, "Current[A]")
+    df = round_testtime(df)
+    df = absolute_time_timedate_typecast(df)
+    typecast(df, "EIS_Z_Real[Ohm]", float)
+    typecast(df, "EIS_Z_Imag[Ohm]", float)
+    df = nan_to_none_in_column(df, "Current[A]")
+    df = move_strings_from_column_to_metadata(df, "Voltage[V]")
+
+    return df

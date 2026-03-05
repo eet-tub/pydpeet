@@ -1,11 +1,20 @@
 import logging
 import os
-import pandas
+
+import pandas as pd
 
 from pydpeet.io.configs.config import DataOutputFiletype
 
 
-def write(data_input: pandas.DataFrame,output_path: str,output_file_name: str,data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet):
+# TODO:
+# Adjust to accept dataframes or lists of dataframes
+# or write dedicated wrapper for list inputs
+def write(
+        data_input: pd.DataFrame,
+        output_path: str,
+        output_file_name: str,
+        data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet
+) -> None:
     """
     Export the given DataFrame to the given output path.
 
@@ -31,7 +40,7 @@ def write(data_input: pandas.DataFrame,output_path: str,output_file_name: str,da
     """
     if data_input is None:
         raise ValueError("data_frame is None")
-    if not isinstance(data_input, pandas.DataFrame):
+    if not isinstance(data_input, pd.DataFrame):
         raise TypeError(f"data_frame is not a pandas.DataFrame, but {type(data_input)}")
     if output_path is None:
         raise ValueError("output_path is None")
@@ -52,12 +61,15 @@ def write(data_input: pandas.DataFrame,output_path: str,output_file_name: str,da
         os.makedirs(abs_path)
 
     _do_export(data_input, os.path.join(abs_path, output_file_name), data_output_filetype)
+
     return
 
 
-def _do_export(data_frame: pandas.DataFrame,
-               output_path: str,
-               data_output_filetype: DataOutputFiletype):
+def _do_export(
+        df: pd.DataFrame,
+        output_path: str,
+        data_output_filetype: DataOutputFiletype
+) -> None:
     """
     Export a DataFrame to a file in the specified format.
 
@@ -80,12 +92,12 @@ def _do_export(data_frame: pandas.DataFrame,
     match data_output_filetype:
         case DataOutputFiletype.parquet:
             full_output_path = f"{output_path}_Data.parquet"
-            data_frame.to_parquet(full_output_path, index=False, engine='pyarrow')
+            df.to_parquet(full_output_path, index=False, engine="pyarrow")
         case DataOutputFiletype.csv:
             full_output_path = f"{output_path}_Data.csv"
-            data_frame.to_csv(full_output_path, index=False)
+            df.to_csv(full_output_path, index=False)
         case DataOutputFiletype.xlsx:
             full_output_path = f"{output_path}_Data.xlsx"
-            data_frame.to_excel(full_output_path, index=False)
-    return
+            df.to_excel(full_output_path, index=False)
 
+    return

@@ -36,7 +36,7 @@ def _assign_segments_with_fit(times, values, threshold):
         sum_xy += times[i] * values[i]
         count += 1
 
-        denom = count * sum_xx - sum_x ** 2
+        denom = count * sum_xx - sum_x**2
         if denom == 0:
             slope = 0.0
             intercept = values[start]
@@ -78,9 +78,9 @@ def _split_in_segments_using_incremental_linear_fit(df, column_name, threshold):
     pd.DataFrame: The original DataFrame with an added column 'Segment_<column_name>' indicating segment IDs.
 
     Assumes:
-    Column "Testtime[s]" exists and is in seconds and a float
+    Column "Test_Time[s]" exists and is in seconds and a float
     """
-    times = df["Testtime[s]"].to_numpy()
+    times = df["Test_Time[s]"].to_numpy()
     values = df[column_name].to_numpy()
     seg_ids = _assign_segments_with_fit(times, values, threshold)
     df[f"Segment_{column_name}"] = seg_ids

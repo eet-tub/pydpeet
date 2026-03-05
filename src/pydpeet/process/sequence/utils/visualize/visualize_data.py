@@ -1,7 +1,8 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import tkinter as tk
 import logging
+import tkinter as tk
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
@@ -64,9 +65,9 @@ def _visualize_phases(
     with log_time("filtering by time", show_runtime):
         mask = pd.Series(True, index=dataframe.index)
         if start_time is not None:
-            mask &= dataframe['Testtime[s]'] >= start_time
+            mask &= dataframe["Testtime[s]"] >= start_time
         if end_time is not None:
-            mask &= dataframe['Testtime[s]'] <= end_time
+            mask &= dataframe["Testtime[s]"] <= end_time
         df = dataframe.loc[mask]
 
     # 2) Normalize line colors and y-axis ranges
@@ -76,13 +77,13 @@ def _visualize_phases(
 
     # 3) Map segment colors to `Variable` values
     with log_time("mapping segment colors", show_runtime):
-        segment_colors = {var: col for var, col in zip(segment_id_cols, segment_colors)}
+        segment_colors = {var: col for var, col in zip(segment_id_cols, segment_colors, strict=False)}
 
     # 4) Set up figure
     with log_time("setting up figure", show_runtime):
         screen_w, screen_h = _SCREEN_DIMS
-        dpi = plt.rcParams['figure.dpi']
-        fig_w, fig_h = (screen_w * width_height_ratio[0])/ dpi, (screen_h * width_height_ratio[1]) / dpi
+        dpi = plt.rcParams["figure.dpi"]
+        fig_w, fig_h = (screen_w * width_height_ratio[0]) / dpi, (screen_h * width_height_ratio[1]) / dpi
 
         plt.ioff()
         fig, ax_base = plt.subplots(figsize=(fig_w, fig_h))
@@ -98,12 +99,12 @@ def _visualize_phases(
                 ax = ax_base.twinx()
                 ax.spines["right"].set_position(("axes", 1 + offset))
                 ax.spines["right"].set_visible(True)
-                ax.yaxis.set_label_position('right')
-                ax.yaxis.set_ticks_position('right')
+                ax.yaxis.set_label_position("right")
+                ax.yaxis.set_ticks_position("right")
                 offset += 0.05
 
             ax.set_ylabel(col, color=line_colors.get(col))
-            ax.tick_params(axis='y', labelcolor=line_colors.get(col))
+            ax.tick_params(axis="y", labelcolor=line_colors.get(col))
             if col in y_axis_ranges:
                 ax.set_ylim(*y_axis_ranges[col])
             axes[col] = ax
@@ -111,7 +112,7 @@ def _visualize_phases(
 
     # 5) Plot data
     with log_time("plotting data", show_runtime):
-        t = df['Testtime[s]']
+        t = df["Testtime[s]"]
         for col in columns_to_visualize:
             if col in df.columns:
                 axes[col].plot(t, df[col], label=col, color=line_colors.get(col))
@@ -135,10 +136,10 @@ def _visualize_phases(
         mid_y = (y0 + y1) / 2
 
         for _, row in stats.iterrows():
-            tmin, tmax = row['tmin'], row['tmax']
+            tmin, tmax = row["tmin"], row["tmax"]
             duration = tmax - tmin
-            variable = row['Variable']
-            color = segment_colors.get(variable, 'gray')
+            variable = row["Variable"]
+            color = segment_colors.get(variable, "gray")
 
             intervals.append((tmin, duration))
             colors.append(color)
@@ -151,15 +152,15 @@ def _visualize_phases(
 
         # Draw all vertical lines at once
         if use_lines_for_segments and vline_positions:
-            ax_base.vlines(vline_positions, y0, y1, colors='k', alpha=segment_alpha)
+            ax_base.vlines(vline_positions, y0, y1, colors="k", alpha=segment_alpha)
 
         # Draw text labels (still per segment, this is usually okay)
         for _, row in stats.iterrows():
-            tmin, tmax = row['tmin'], row['tmax']
+            tmin, tmax = row["tmin"], row["tmax"]
             duration = tmax - tmin
             x_center = tmin + duration / 2
-            variable = row['Variable']
-            id = row['ID']
+            variable = row["Variable"]
+            id = row["ID"]
 
             label_parts = []
             if show_id:
@@ -182,14 +183,15 @@ def _visualize_phases(
 
     # 8) Adding grid and legend
     with log_time("adding grid and legend", show_runtime):
-        #TODO power labels multiple times shown fix?
-        ax_base.set_xlabel('Testtime [s]')
+        # TODO power labels multiple times shown fix?
+        ax_base.set_xlabel("Testtime [s]")
         handles, labels = [], []
         for ax in axes.values():
             h, l = ax.get_legend_handles_labels()
-            handles += h; labels += l
+            handles += h
+            labels += l
         if handles:
-            ax_base.legend(handles, labels, loc='upper left')
+            ax_base.legend(handles, labels, loc="upper left")
         if show_grid:
             ax_base.grid()
         plt.tight_layout()
@@ -199,37 +201,37 @@ def visualize_phases(
     dataframe: pd.DataFrame,
     start_time: float = None,
     end_time: float = None,
-    visualize_phases_config: list(tuple[str, str]) = [
+    visualize_phases_config: list[tuple[str, str]] = [
         ("V", "blue"),
         ("I", "red"),
         ("P", "green"),
     ],
     segment_alpha: float = 0.3,
-    line_visualization_config: list(tuple[str, str, tuple[float, float]]) = [
+    line_visualization_config: list[tuple[str, str, tuple[float, float]]] = [
         ("Voltage[V]", "blue", (2.3, 4.3)),
         ("Current[A]", "red", (-10, 10)),
-        #("Power[W]", "green", (-40, 40)),
+        # ("Power[W]", "green", (-40, 40)),
     ],
     use_lines_for_segments: bool = True,
     show_column_names: bool = True,
     show_time: bool = True,
     show_id: bool = True,
     width_height_ratio: float = [1.0, 0.3],
-    show_runtime: bool = True
+    show_runtime: bool = True,
 ):
     if start_time is None:
         logging.warning("start_time is None - setting it to 0.0")
         start_time = 0.0
     if end_time is None:
         logging.warning("end_time is None - setting it to the biggest possible float")
-        end_time = float('inf')
+        end_time = float("inf")
     if dataframe is None:
         raise ValueError("dataframe is None")
     if not isinstance(dataframe, pd.DataFrame):
         raise TypeError("dataframe must be a pandas DataFrame")
     if not (isinstance(width_height_ratio, (list, tuple)) and len(width_height_ratio) == 2):
         raise ValueError("width_height_ratio must be a list or tuple of length 2")
-    if "Testtime[s]" not in dataframe.columns:
+    if "Test_Time[s]" not in dataframe.columns:
         raise ValueError("dataframe needs to have at least column 'Testtime[s]'")
     if "ID" not in dataframe.columns:
         raise ValueError("dataframe needs to have at least column 'ID'")
@@ -244,9 +246,9 @@ def visualize_phases(
         segment_alpha = 0.3
 
     if start_time is None:
-        start_time = dataframe['Testtime[s]'].min()
+        start_time = dataframe["Testtime[s]"].min()
     if end_time is None:
-        end_time = dataframe['Testtime[s]'].max()
+        end_time = dataframe["Testtime[s]"].max()
 
     segment_id_cols = [col for col, _ in visualize_phases_config]
     segment_colors = [color for _, color in visualize_phases_config]

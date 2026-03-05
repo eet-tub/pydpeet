@@ -4,33 +4,37 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-
-
-from pathlib import Path
 from typing import Union
 
+import pandas as pd
 from pandas import DataFrame, Index
 
-from pydpeet.io.configs.config import Config, READER_CONFIGS, MAPPER_CONFIGS, STANDARD_COLUMNS, FORMATTER_CONFIGS
-from pydpeet.io.write import write
+from pydpeet.io.configs.config import (
+    FORMATTER_CONFIGS,
+    MAPPER_CONFIGS,
+    READER_CONFIGS,
+    STANDARD_COLUMNS,
+    Config,
+    DataOutputFiletype
+)
+from pydpeet.io.device.neware_8_0_0_516.reader import find_main_files
 from pydpeet.io.map import mapping
 from pydpeet.io.utils.ext_path import ExtPath
 from pydpeet.io.utils.load_custom_module import load_custom_module
 from pydpeet.io.utils.timing import measure_time
-from pydpeet.io.device.neware_8_0_0_516.reader import find_main_files
-import pandas as pd
-
-from typing import Union
+from pydpeet.io.write import write
 
 ConfigLike = Union[Config, str]
 PathLike = Union[str, Path]
 
 
-def convert(config: ConfigLike,
-            input_path: object,
-            output_path: str = None,
-            keep_all_additional_data: bool = False,
-            custom_folder_path: str = None) -> DataFrame:
+def convert(
+        config: ConfigLike,
+        input_path: object,
+        output_path: str = None,
+        keep_all_additional_data: bool = False,
+        custom_folder_path: str = None
+) -> pd.DataFrame:
     if isinstance(input_path, str):
         if os.path.isfile(input_path):
             return convert_file(config, input_path, output_path, keep_all_additional_data, custom_folder_path)
@@ -55,12 +59,15 @@ def convert(config: ConfigLike,
         raise ValueError("Input path is of invalid type!")
 
 
+# TODO: Add output path functionality
 @measure_time
-def convert_file(config: ConfigLike,
-                 input_path: str,
-                 output_path: str = None,
-                 keep_all_additional_data: bool = False,
-                 custom_folder_path: str = None) -> DataFrame:
+def convert_file(
+    config: ConfigLike,
+    input_path: str,
+    output_path: str = None,
+    keep_all_additional_data: bool = False,
+    custom_folder_path: str = None
+) -> pd.DataFrame:
     """
     Standardize a measurement file according to the given configuration and returns the standardized DataFrame.
 
@@ -83,27 +90,27 @@ def convert_file(config: ConfigLike,
     DataFrame
         The standardized DataFrame.
     """
-    
     if isinstance(config, str):
-        config = Config.from_string(config)    
+        config = Config.from_string(config)
     if Config.not_exists(config):
-        raise ValueError("config must be provided")
+        raise ValueError("Config must be provided!")
     if ExtPath.is_not_valid(input_path):
-        raise ValueError("input_path must be provided")
+        raise ValueError("Input_path must be provided!")
     if custom_folder_path is not None and ExtPath.is_not_valid(custom_folder_path):
-        raise ValueError("custom_folder_path must be valid if provided")
+        raise ValueError("Custom_folder_path must be valid if provided!")
 
-    data_frame, meta_data = _convert_file_to_pandas_data_frame(config, input_path, custom_folder_path)
-    data_frame = _column_mapping(data_frame, config, custom_folder_path)
+    df, meta_data = _convert_file_to_pandas_data_frame(config, input_path, custom_folder_path)
+    df = _column_mapping(df, config, custom_folder_path)
     if not keep_all_additional_data:
-        data_frame = _drop_additional_data(data_frame)
-    data_frame = _add_metadata_to_dataframe(data_frame, meta_data)
-    data_frame = _reorder_columns(data_frame)
-    data_frame = _get_data_into_format(data_frame, config, custom_folder_path)
+        df = _drop_additional_data(df)
+    df = _add_metadata_to_dataframe(df, meta_data)
+    df = _reorder_columns(df)
+    df = _get_data_into_format(df, config, custom_folder_path)
 
-    return data_frame
+    return df
 
 
+# TODO: Implement better way of handling case where output_path is None?
 @measure_time
 def convert_files_in_directory(
         config: Config,
@@ -111,7 +118,7 @@ def convert_files_in_directory(
         output_path: str = None,
         keep_all_additional_data: bool = False,
         custom_folder_path: str = None
-) -> DataFrame:
+) -> pd.DataFrame | None:
     """
     Standardize a directory of files according to the given configuration and outputs them to an output_path.
 
@@ -132,18 +139,18 @@ def convert_files_in_directory(
         formatter reference for the given configuration.
     """
     if config is None:
-        raise ValueError("config must be provided")
+        raise ValueError("Config must be provided!")
     if input_path is None:
-        raise ValueError("input_path must be provided")
+        raise ValueError("Input_path must be provided!")
     # if output_path is None:
     #     raise ValueError("output_path must be provided")
     if not isinstance(keep_all_additional_data, bool):
-        raise ValueError("keep_all_additional_data must be a boolean if provided")
+        raise ValueError("Keep_all_additional_data must be a boolean if provided!")
     if custom_folder_path is not None and custom_folder_path is not str:
-        raise ValueError("custom_folder_path must be a string if provided")
+        raise ValueError("Custom_folder_path must be a string if provided!")
 
     current_date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    
+
     if type(config) is str:
         config_name = config
     else:
@@ -153,7 +160,6 @@ def convert_files_in_directory(
         files = find_main_files(input_path)
     else:
         files = os.listdir(input_path)
-
 
     if output_path is None:
         dfs = []
@@ -169,7 +175,7 @@ def convert_files_in_directory(
             )
             dfs.append(df)
         return dfs
-    
+
     else:
         os.makedirs(output_path, exist_ok=True)      
         for filename in files:      
@@ -184,6 +190,7 @@ def convert_files_in_directory(
                 keep_all_additional_data,
                 output_path
             )
+        return
 
 
 def _process_file(
@@ -194,7 +201,7 @@ def _process_file(
         file_path: str,
         filename: str,
         keep_all_additional_data: bool
-) -> pd.DataFrame:
+) -> pd.DataFrame | None:
     """
     Process a single file and save the standardized DataFrame to the given output_path.
 
@@ -276,8 +283,11 @@ def _process_file_and_export(
         logging.warning(f"Issue processing file {filename}: {e}")
 
 
-def _convert_file_to_pandas_data_frame(config: Config, input_path: str, custom_folder: str = None
-                                       ) -> tuple[DataFrame, str]:
+def _convert_file_to_pandas_data_frame(
+        config: Config,
+        input_path: str,
+        custom_folder: str = None
+) -> tuple[pd.DataFrame, str]:
     """
     Convert a file to a pandas DataFrame using the given configuration.
 
@@ -301,7 +311,7 @@ def _convert_file_to_pandas_data_frame(config: Config, input_path: str, custom_f
     if Config.not_exists(config):
         raise ValueError(f"Unknown config: {config}")
 
-    data_frame = None
+    df = None
     meta_data = ""
     if config == Config.Custom:
         if ExtPath.is_not_valid(custom_folder):
@@ -311,14 +321,18 @@ def _convert_file_to_pandas_data_frame(config: Config, input_path: str, custom_f
         if custom_reader.to_data_frame is None:
             raise ValueError("to_data_frame in custom reader is None.")
 
-        data_frame, meta_data = custom_reader.to_data_frame(input_path)
+        df, meta_data = custom_reader.to_data_frame(input_path)
     elif config in READER_CONFIGS:
-        data_frame, meta_data = READER_CONFIGS[config](input_path)
+        df, meta_data = READER_CONFIGS[config](input_path)
 
-    return data_frame, meta_data
+    return df, meta_data
 
 
-def _column_mapping(data_frame: DataFrame, config: Config, custom_folder: str = None) -> DataFrame:
+def _column_mapping(
+        df: DataFrame,
+        config: Config,
+        custom_folder: str = None
+) -> pd.DataFrame | None:
     """
     Map the columns of a pandas DataFrame according to the given configuration.
 
@@ -338,14 +352,14 @@ def _column_mapping(data_frame: DataFrame, config: Config, custom_folder: str = 
     """
     logging.info("mapping columns...")
 
-    if data_frame is None:
+    if df is None:
         raise ValueError("Data frame is None.")
     if Config.not_exists(config):
         raise ValueError(f"Unknown config: {config}")
 
     if config in MAPPER_CONFIGS:
         column_map, missing_required_columns = MAPPER_CONFIGS[config]
-        return mapping(data_frame, column_map, missing_required_columns)
+        return mapping(df, column_map, missing_required_columns)
     elif config == Config.Custom:
         if ExtPath.is_not_valid(custom_folder):
             raise ValueError(f"Custom folder path must be provided for {Config.Custom}!")
@@ -357,10 +371,10 @@ def _column_mapping(data_frame: DataFrame, config: Config, custom_folder: str = 
         if custom_mapper.MISSING_REQUIRED_COLUMNS is None:
             raise ValueError("MISSING_REQUIRED_COLUMNS in custom mapper is None.")
 
-        return mapping(data_frame, custom_mapper.COLUMN_MAP, custom_mapper.MISSING_REQUIRED_COLUMNS)
+        return mapping(df, custom_mapper.COLUMN_MAP, custom_mapper.MISSING_REQUIRED_COLUMNS)
 
 
-def _drop_additional_data(data_frame: DataFrame) -> DataFrame:
+def _drop_additional_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Drop columns that are not in STANDARD_COLUMNS from a DataFrame.
 
@@ -376,17 +390,20 @@ def _drop_additional_data(data_frame: DataFrame) -> DataFrame:
     """
     logging.info("dropping additional data...")
 
-    if data_frame is None:
+    if df is None:
         raise ValueError("Data frame is None.")
 
-    return data_frame[[col for col in data_frame.columns if col in STANDARD_COLUMNS]]
+    return df[[col for col in df.columns if col in STANDARD_COLUMNS]]
 
 
-def _add_metadata_to_dataframe(data_frame: DataFrame, meta_data: str) -> DataFrame:
+def _add_metadata_to_dataframe(
+        df: pd.DataFrame,
+        meta_data: str
+) -> pd.DataFrame:
     """
     Add the given meta data as a column in the DataFrame.
 
-    The first row of the "Metadata" column is set to the given meta data. All
+    The first row of the "Meta_Data" column is set to the given meta data. All
     other rows are set to None.
 
     Parameters
@@ -399,19 +416,19 @@ def _add_metadata_to_dataframe(data_frame: DataFrame, meta_data: str) -> DataFra
     Returns
     -------
     DataFrame
-        The modified DataFrame with the added "Metadata" column.
+        The modified DataFrame with the added "Meta_Data" column.
     """
     logging.info("adding metadata to Dataframe...")
 
-    if data_frame is None:
+    if df is None:
         raise ValueError("Data frame is None.")
 
-    data_frame["Metadata"] = None  # NO, this is faster then .loc
-    data_frame.loc[0, "Metadata"] = str(meta_data)
-    return data_frame
+    df["Meta_Data"] = None  # NO, this is faster then .loc
+    df.loc[0, "Meta_Data"] = str(meta_data)
+    return df
 
 
-def _reorder_columns(data_frame: DataFrame) -> DataFrame:
+def _reorder_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
     Reorder the columns of a DataFrame to ensure standard columns are prioritized.
 
@@ -438,27 +455,27 @@ def _reorder_columns(data_frame: DataFrame) -> DataFrame:
     """
     logging.info("Getting columns in correct order...")
 
-    if data_frame is None:
+    if df is None:
         raise ValueError("Data frame is None.")
 
-    if data_frame.columns.size == 0:
+    if df.columns.size == 0:
         raise ValueError("Data frame is empty or has no columns.")
 
     logging.info("Checking for duplicate extra columns...")
-    duplicates_fixed = _rename_duplicate_extra_columns(data_frame.columns)
-    if not data_frame.columns.equals(duplicates_fixed):
-        data_frame.columns = duplicates_fixed
+    duplicates_fixed = _rename_duplicate_extra_columns(df.columns)
+    if not df.columns.equals(duplicates_fixed):
+        df.columns = duplicates_fixed
 
     logging.info("Selecting and ordering standard columns...")
-    ordered_standard_columns = [col for col in STANDARD_COLUMNS if col in data_frame.columns]
+    ordered_standard_columns = [col for col in STANDARD_COLUMNS if col in df.columns]
 
     logging.info("Selecting extra columns...")
-    extra_columns = [col for col in data_frame.columns if col not in STANDARD_COLUMNS]
+    extra_columns = [col for col in df.columns if col not in STANDARD_COLUMNS]
 
     logging.info("Combining standard and extra columns...")
     ordered_columns = ordered_standard_columns + extra_columns
 
-    reordered = data_frame[ordered_columns]
+    reordered = df[ordered_columns]
     logging.info("Reordered DataFrame columns!")
 
     return reordered
@@ -494,11 +511,16 @@ def _rename_duplicate_extra_columns(columns: Index) -> Index:
             duplicate_counts[col_name] += 1
 
     if any(count > 0 for count in duplicate_counts.values()):
-        logging.warning(f"Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.")
+        logging.warning("Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.")
+
     return Index(result)
 
 
-def _get_data_into_format(data_frame: DataFrame, config: Config, custom_folder: str = None) -> DataFrame:
+def _get_data_into_format(
+        df: pd.DataFrame,
+        config: Config,
+        custom_folder: str = None
+) -> pd.DataFrame:
     """
     Apply the appropriate data formatting function to a DataFrame based on the given configuration.
 
@@ -532,7 +554,7 @@ def _get_data_into_format(data_frame: DataFrame, config: Config, custom_folder: 
     """
     logging.info("Starting to fix data format...")
 
-    if data_frame is None:
+    if df is None:
         raise ValueError("Data frame is None.")
     if config is None:
         raise ValueError("Config is None.")
@@ -548,15 +570,15 @@ def _get_data_into_format(data_frame: DataFrame, config: Config, custom_folder: 
         except Exception as e:
             raise ValueError(f"Error loading custom formatter module: {e}")
         try:
-            data_frame = custom_formatter.get_data_into_format(data_frame)
+            df = custom_formatter.get_data_into_format(df)
         except Exception as e:
             raise ValueError(f"Error applying custom formatter: {e}")
     else:
         logging.info(f"Using formatter for config: {config}")
         try:
-            FORMATTER_CONFIGS[config](data_frame)
+            FORMATTER_CONFIGS[config](df)
         except Exception as e:
             raise ValueError(f"Error applying formatter: {e}")
 
     logging.info("Data format fixed.")
-    return data_frame
+    return df

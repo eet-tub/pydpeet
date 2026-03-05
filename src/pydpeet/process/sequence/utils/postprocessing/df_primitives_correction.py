@@ -35,9 +35,6 @@ def df_primitives_correction(
     pd.DataFrame: The corrected dataframe with the added columns for annotated primitives.
     """
 
-
-
-
     df = df_primitives.copy()
     max_id = df["ID"].max() + 1  # for new IDs
 
@@ -49,39 +46,39 @@ def df_primitives_correction(
     # --- REPLACE by TIME with splitting ---
     if "replace_time" in correction_config:
         for (start, end), new_label in correction_config["replace_time"].items():
-            overlapping_idx = df[(df["Testtime[s]"] >= start) & (df["Testtime[s]"] <= end)].index
+            overlapping_idx = df[(df["Test_Time[s]"] >= start) & (df["Test_Time[s]"] <= end)].index
             if overlapping_idx.empty:
                 continue
 
             overlapping_ids = df.loc[overlapping_idx, "ID"].unique()
             for seg_id in overlapping_ids:
                 segment_rows = df[df["ID"] == seg_id]
-                seg_start_time = segment_rows["Testtime[s]"].min()
-                seg_end_time = segment_rows["Testtime[s]"].max()
+                seg_start_time = segment_rows["Test_Time[s]"].min()
+                seg_end_time = segment_rows["Test_Time[s]"].max()
 
                 if start <= seg_start_time and end >= seg_end_time:
-                    mask = (df["ID"] == seg_id)
+                    mask = df["ID"] == seg_id
                     df.loc[mask, "Variable"] = new_label
                 else:
                     if seg_start_time < start:
-                        mask_before = (df["ID"] == seg_id) & (df["Testtime[s]"] < start)
+                        mask_before = (df["ID"] == seg_id) & (df["Test_Time[s]"] < start)
                         df.loc[mask_before, "ID"] = max_id
                         max_id += 1
 
-                    mask_overlap = (df["ID"] == seg_id) & (df["Testtime[s]"] >= start) & (df["Testtime[s]"] <= end)
+                    mask_overlap = (df["ID"] == seg_id) & (df["Test_Time[s]"] >= start) & (df["Test_Time[s]"] <= end)
                     df.loc[mask_overlap, "Variable"] = new_label
                     df.loc[mask_overlap, "ID"] = max_id
                     max_id += 1
 
                     if seg_end_time > end:
-                        mask_after = (df["ID"] == seg_id) & (df["Testtime[s]"] > end)
+                        mask_after = (df["ID"] == seg_id) & (df["Test_Time[s]"] > end)
                         df.loc[mask_after, "ID"] = max_id
                         max_id += 1
 
     # --- REPLACE by TIME and MERGE ---
     if "replace_time_and_merge" in correction_config:
         for (start, end), new_label in correction_config["replace_time_and_merge"].items():
-            overlapping_idx = df[(df["Testtime[s]"] >= start) & (df["Testtime[s]"] <= end)].index
+            overlapping_idx = df[(df["Test_Time[s]"] >= start) & (df["Test_Time[s]"] <= end)].index
             if overlapping_idx.empty:
                 continue
 
@@ -91,25 +88,25 @@ def df_primitives_correction(
 
             for seg_id in overlapping_ids:
                 segment_rows = df[df["ID"] == seg_id]
-                seg_start_time = segment_rows["Testtime[s]"].min()
-                seg_end_time = segment_rows["Testtime[s]"].max()
+                seg_start_time = segment_rows["Test_Time[s]"].min()
+                seg_end_time = segment_rows["Test_Time[s]"].max()
 
                 if start <= seg_start_time and end >= seg_end_time:
-                    mask = (df["ID"] == seg_id)
+                    mask = df["ID"] == seg_id
                     df.loc[mask, "Variable"] = new_label
                     df.loc[mask, "ID"] = new_id_for_merge
                 else:
                     if seg_start_time < start:
-                        mask_before = (df["ID"] == seg_id) & (df["Testtime[s]"] < start)
+                        mask_before = (df["ID"] == seg_id) & (df["Test_Time[s]"] < start)
                         df.loc[mask_before, "ID"] = max_id
                         max_id += 1
 
-                    mask_overlap = (df["ID"] == seg_id) & (df["Testtime[s]"] >= start) & (df["Testtime[s]"] <= end)
+                    mask_overlap = (df["ID"] == seg_id) & (df["Test_Time[s]"] >= start) & (df["Test_Time[s]"] <= end)
                     df.loc[mask_overlap, "Variable"] = new_label
                     df.loc[mask_overlap, "ID"] = new_id_for_merge
 
                     if seg_end_time > end:
-                        mask_after = (df["ID"] == seg_id) & (df["Testtime[s]"] > end)
+                        mask_after = (df["ID"] == seg_id) & (df["Test_Time[s]"] > end)
                         df.loc[mask_after, "ID"] = max_id
                         max_id += 1
 
@@ -148,7 +145,7 @@ def df_primitives_correction(
 
     # --- MERGE RANGES ---
     if "merge_range" in correction_config:
-        for (start_id, end_id) in correction_config["merge_range"]:
+        for start_id, end_id in correction_config["merge_range"]:
             mask = (df["ID"] >= start_id) & (df["ID"] <= end_id)
             if not mask.any():
                 continue
@@ -167,4 +164,3 @@ def df_primitives_correction(
         df = _merged_annotations(df, data_columns, thresholds)
 
     return df
-

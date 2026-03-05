@@ -55,9 +55,9 @@ def extract_ocv_iocv(
         raise ValueError("Please provide either df or df_primitives, not both!")
 
     if df is not None:
-        df.drop_duplicates(subset=["Testtime[s]"], inplace=True)
-        df.dropna(subset=["Testtime[s]"], inplace=True)
-        df = df.sort_values("Testtime[s]")
+        df.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
+        df.dropna(subset=["Test_Time[s]"], inplace=True)
+        df = df.sort_values("Test_Time[s]")
 
         df_primitives = add_primitives(
             df=df,
@@ -69,13 +69,13 @@ def extract_ocv_iocv(
         )
 
     if df_primitives is not None:
-        if df_primitives["Testtime[s]"].duplicated().any():
+        if df_primitives["Test_Time[s]"].duplicated().any():
             raise ValueError("Duplicated 'Testtime[s]' values found!")
 
-        if df_primitives["Testtime[s]"].isna().any():
+        if df_primitives["Test_Time[s]"].isna().any():
             raise ValueError("NaN values found in 'Testtime[s]'")
 
-        if not np.all(np.diff(df_primitives["Testtime[s]"]) > 0):
+        if not np.all(np.diff(df_primitives["Test_Time[s]"]) > 0):
             raise ValueError("'Testtime[s]' is not monotonically increasing!")
 
         logging.info("Checking if SOC exists in dataframe...")
@@ -102,7 +102,7 @@ def extract_ocv_iocv(
         "Charge_iOCV"
     ]
     _STANDARD_COLUMNS = [
-        "Testtime[s]",
+        "Test_Time[s]",
         "Voltage[V]",
         "Current[A]",
         "Power[W]",
@@ -121,7 +121,7 @@ def extract_ocv_iocv(
 
     # Filtering iOCV Points
     dfs_per_block = [df[df["Type"] == "Rest"] for df in dfs_per_block[0]]
-    dfs_per_block = [df.loc[df.groupby("ID")["Testtime[s]"].idxmax()] for df in dfs_per_block]
+    dfs_per_block = [df.loc[df.groupby("ID")["Test_Time[s]"].idxmax()] for df in dfs_per_block]
     dfs_per_block = [df for df in dfs_per_block if df["ID"].nunique() >= min_loops]
     dfs_per_block = [df for df in dfs_per_block if df["Duration"].min() >= min_pause_lenght]
 

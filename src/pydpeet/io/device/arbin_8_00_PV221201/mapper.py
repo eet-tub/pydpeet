@@ -1,17 +1,18 @@
-# Define the mapping from current names to standardized names
+# Map raw-data column names (left) to standardized column names (right)
 COLUMN_MAP = {
-    "Record number": "StepID",
+    "Record number": "Step_Count",
     "Voltage(V)": "Voltage[V]",
     "Current(A)": "Current[A]",
-    "Relative Time(h:min:s.ms)": "Testtime[s]",
-    "Real Time(h:min:s.ms)": "Absolute Time[yyyy-mm-dd hh:mm:ss]"
+    "Relative Time(h:min:s.ms)": "Test_Time[s]",
+    "Real Time(h:min:s.ms)": "Date_Time",
 }
 
-
+# Default columns of the standardized format
+# which are not present in the raw data files.
 MISSING_REQUIRED_COLUMNS = [
     "Temperature[°C]",
-    "EISFreq[Hz]",
-    "Zre[Ohm]",
-    "Zim[Ohm]",
-    "DC_Current[A]"
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]",
 ]
