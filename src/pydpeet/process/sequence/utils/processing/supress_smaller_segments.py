@@ -42,7 +42,7 @@ def _add_segment_lengths(df, column_name):
     Compute the length (time) of each segment in the given DataFrame.
 
     Parameters:
-        df (pd.DataFrame): Input DataFrame containing 'Testtime[s]' and 'Segment_<column_name>' columns.
+        df (pd.DataFrame): Input DataFrame containing 'Test_Time[s]' and 'Segment_<column_name>' columns.
         column_name (str): Name of the column containing the signal values.
 
     Returns:

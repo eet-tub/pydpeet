@@ -59,12 +59,12 @@ def add_efficiency_coulomb(
         parse_time = False
         tolerance_val = max_time_diff_in_secs  # already seconds
     elif "Date_Time" in df.columns:
-        warnings.warn("Absolute Time[yyyy-mm-dd hh:mm:ss] is used as time column, because there is no 'Testtime[s]' given.")
+        warnings.warn("Date_Time is used as time column, because there is no 'Test_Time[s]' given.")
         time_col = "Date_Time"
         parse_time = True
         tolerance_val = pd.Timedelta(seconds=max_time_diff_in_secs)
     else:
-        raise ValueError("No suitable time column found. Provide 'Absolute Time[yyyy-mm-dd hh:mm:ss]' or 'Testtime[s]'.")
+        raise ValueError("No suitable time column found. Provide 'Date_Time' or 'Test_Time[s]'.")
 
     max_voltage = config.max_voltage
     min_voltage = config.min_voltage

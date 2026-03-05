@@ -64,7 +64,7 @@ def return_or_print_blocks(df_filtered: pd.DataFrame,
 
     # Convert necessary columns to arrays
     ids = df_filtered["ID"].values
-    testtimes = df_filtered["Testtime[s]"].values
+    testtimes = df_filtered["Test_Time[s]"].values
     is_filtered = df_filtered["Variable"].values == "Filtered"
 
     # Boolean mask for unfiltered rows
@@ -90,8 +90,8 @@ def return_or_print_blocks(df_filtered: pd.DataFrame,
         if print_blocks:
             logging.info("-" * 40)
             logging.info(f"Block {i + 1}:")
-            logging.info(f"  Start ID: {start_id}, Testtime[s]: {start_time}")
-            logging.info(f"  End ID:   {end_id}, Testtime[s]: {end_time}")
+            logging.info(f"  Start ID: {start_id}, Test_Time[s]: {start_time}")
+            logging.info(f"  End ID:   {end_id}, Test_Time[s]: {end_time}")
             logging.info("-" * 40)
 
         blocks.append(

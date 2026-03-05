@@ -127,7 +127,7 @@ def add_charge_throughput(df, inplace=False, calculate_tests_individually=False,
     Calculate charge throughput and absolute charge throughput from a given DataFrame.
 
     Parameters:
-    df (pandas.DataFrame): Input DataFrame containing 'Testtime[s]' and 'Current[A]' columns
+    df (pandas.DataFrame): Input DataFrame containing 'Test_Time[s]' and 'Current[A]' columns
 
     Returns:
     pandas.DataFrame: DataFrame with added 'ChargeThroughput[Ah]' and 'AbsoluteChargeThroughput[Ah]' columns

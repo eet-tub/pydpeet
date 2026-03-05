@@ -12,10 +12,10 @@ from pydpeet.process.analyze.utils import StepTimer, _check_columns
 
 def add_cumulative_energy(df, config: BatteryConfig = None, verbose=True):
     """
-    Calculates cumulative energy [Wh] from 'Testtime[s]' and 'Power[W]' columns and adds it as a new column.
+    Calculates cumulative energy [Wh] from 'Test_Time[s]' and 'Power[W]' columns and adds it as a new column.
 
     Parameters:
-    - df (pandas.DataFrame): DataFrame containing 'Testtime[s]' and 'Power[W]' columns
+    - df (pandas.DataFrame): DataFrame containing 'Test_Time[s]' and 'Power[W]' columns
     - cumu_energy_method (CumulativeEnergyMethod): Method to use for cumulative energy calculation
     - config (BatteryConfig): Config object containing max and min voltage values
 

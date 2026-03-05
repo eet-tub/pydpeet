@@ -70,13 +70,13 @@ def extract_ocv_iocv(
 
     if df_primitives is not None:
         if df_primitives["Test_Time[s]"].duplicated().any():
-            raise ValueError("Duplicated 'Testtime[s]' values found!")
+            raise ValueError("Duplicated 'Test_Time[s]' values found!")
 
         if df_primitives["Test_Time[s]"].isna().any():
-            raise ValueError("NaN values found in 'Testtime[s]'")
+            raise ValueError("NaN values found in 'Test_Time[s]'")
 
         if not np.all(np.diff(df_primitives["Test_Time[s]"]) > 0):
-            raise ValueError("'Testtime[s]' is not monotonically increasing!")
+            raise ValueError("'Test_Time[s]' is not monotonically increasing!")
 
         logging.info("Checking if SOC exists in dataframe...")
 

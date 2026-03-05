@@ -65,9 +65,9 @@ def _visualize_phases(
     with log_time("filtering by time", show_runtime):
         mask = pd.Series(True, index=dataframe.index)
         if start_time is not None:
-            mask &= dataframe["Testtime[s]"] >= start_time
+            mask &= dataframe["Test_Time[s]"] >= start_time
         if end_time is not None:
-            mask &= dataframe["Testtime[s]"] <= end_time
+            mask &= dataframe["Test_Time[s]"] <= end_time
         df = dataframe.loc[mask]
 
     # 2) Normalize line colors and y-axis ranges
@@ -112,7 +112,7 @@ def _visualize_phases(
 
     # 5) Plot data
     with log_time("plotting data", show_runtime):
-        t = df["Testtime[s]"]
+        t = df["Test_Time[s]"]
         for col in columns_to_visualize:
             if col in df.columns:
                 axes[col].plot(t, df[col], label=col, color=line_colors.get(col))
@@ -120,7 +120,7 @@ def _visualize_phases(
     # 6) Group segments by ID + Variable
     with log_time("grouping segments by ID + Variable", show_runtime):
         stats = (
-            df.groupby(['ID', 'Variable'])['Testtime[s]']
+            df.groupby(['ID', 'Variable'])['Test_Time[s]']
             .agg(tmin='min', tmax='max')
             .reset_index()
         )
@@ -232,7 +232,7 @@ def visualize_phases(
     if not (isinstance(width_height_ratio, (list, tuple)) and len(width_height_ratio) == 2):
         raise ValueError("width_height_ratio must be a list or tuple of length 2")
     if "Test_Time[s]" not in dataframe.columns:
-        raise ValueError("dataframe needs to have at least column 'Testtime[s]'")
+        raise ValueError("dataframe needs to have at least column 'Test_Time[s]'")
     if "ID" not in dataframe.columns:
         raise ValueError("dataframe needs to have at least column 'ID'")
     if not isinstance(visualize_phases_config, list):
@@ -246,9 +246,9 @@ def visualize_phases(
         segment_alpha = 0.3
 
     if start_time is None:
-        start_time = dataframe["Testtime[s]"].min()
+        start_time = dataframe["Test_Time[s]"].min()
     if end_time is None:
-        end_time = dataframe["Testtime[s]"].max()
+        end_time = dataframe["Test_Time[s]"].max()
 
     segment_id_cols = [col for col, _ in visualize_phases_config]
     segment_colors = [color for _, color in visualize_phases_config]

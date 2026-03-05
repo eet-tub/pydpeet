@@ -1,7 +1,6 @@
 import logging
 
 import numpy as np
-import pandas as pd
 from numba import njit
 
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
@@ -46,7 +45,6 @@ def _find_zero_segments(times, currents, tolerance):
 
 @njit(cache=True)
 def _get_id_tol_range(times, currents, tolerance):
-
     """
     Return (tmin, tmax) where tmin and tmax are the minimum and maximum times, respectively,
     where the absolute value of the current is less than or equal to the given tolerance.
@@ -134,25 +132,25 @@ def _check_CV_0Aend_segments(df_primitives,
 
     with log_time("checking CV Segments that end with 0A", SHOW_RUNTIME=SHOW_RUNTIME):
         # convert once to numpy
-        times = df_primitives['Testtime[s]'].to_numpy(np.float64)
-        currents = df_primitives['Current[A]'].to_numpy(np.float64)
+        times = df_primitives["Test_Time[s]"].to_numpy(np.float64)
+        currents = df_primitives["Current[A]"].to_numpy(np.float64)
 
         # 1) compute global zero-current segments
         zero_segments = _find_zero_segments(times, currents, tolerance)
 
         # 2) get last entry per ID, restricted to Variable=='V' and ~0 current
-        last_entries = df_primitives.groupby('ID', sort=False).tail(1)
-        mask_V = (last_entries['Variable'].to_numpy() == 'V')
-        mask_tol = np.abs(last_entries['Current[A]'].to_numpy(np.float64)) <= tolerance
-        candidate_ids = last_entries.loc[mask_V & mask_tol, 'ID'].to_numpy()
+        last_entries = df_primitives.groupby("ID", sort=False).tail(1)
+        mask_V = last_entries["Variable"].to_numpy() == "V"
+        mask_tol = np.abs(last_entries["Current[A]"].to_numpy(np.float64)) <= tolerance
+        candidate_ids = last_entries.loc[mask_V & mask_tol, "ID"].to_numpy()
 
         expanded_ranges = {}
 
         # 3) process each candidate ID with numba-accelerated range finder
         for id_val in candidate_ids:
-            sub = df_primitives[df_primitives['ID'] == id_val]
-            sub_times = sub['Testtime[s]'].to_numpy(np.float64)
-            sub_currents = sub['Current[A]'].to_numpy(np.float64)
+            sub = df_primitives[df_primitives["ID"] == id_val]
+            sub_times = sub["Test_Time[s]"].to_numpy(np.float64)
+            sub_currents = sub["Current[A]"].to_numpy(np.float64)
 
             seg_min, seg_max = _get_id_tol_range(sub_times, sub_currents, tolerance)
             if np.isnan(seg_min):
@@ -167,7 +165,6 @@ def _check_CV_0Aend_segments(df_primitives,
             expanded_ranges[id_val] = (float(seg_min), float(seg_max))
 
     with log_time("correcting CV Segments that end with 0A", SHOW_RUNTIME=SHOW_RUNTIME):
-
         correction_config = {
             "replace_time_and_merge": {
                 (start, end): "I"
@@ -176,11 +173,11 @@ def _check_CV_0Aend_segments(df_primitives,
         }
         starts = np.array([s for s, e in expanded_ranges.values()])
         ends = np.array([e for s, e in expanded_ranges.values()])
-        times = df_primitives['Testtime[s]'].to_numpy(np.float64)
+        times = df_primitives["Test_Time[s]"].to_numpy(np.float64)
 
         # single mask: True if time is inside any (start, end)
         mask = np.zeros(len(times), dtype=bool)
-        for s, e in zip(starts, ends):
+        for s, e in zip(starts, ends, strict=False):
             mask |= (times >= s) & (times <= e)
 
         df_CV_0Aend_segments = df_primitives.loc[mask]
@@ -205,8 +202,7 @@ def _check_CV_0Aend_segments(df_primitives,
 
         if not supress_IO_warnings:
             if expanded_ranges:
-                logging.warning(
-                    "Suspicious Voltage Segments that end with Current[A] = 0.0 found.")
+                logging.warning("Suspicious Voltage Segments that end with Current[A] = 0.0 found.")
             if THRESHOLD_CONSOLE_PRINTS_CV_CHECK:
                 expanded_ranges_items = list(expanded_ranges.items())
                 if len(expanded_ranges_items) > THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
@@ -214,6 +210,5 @@ def _check_CV_0Aend_segments(df_primitives,
                     logging.warning(f"Turned into CC segments: {preview}, ...")
                 else:
                     logging.warning(f"Turned into CC segments: {expanded_ranges_items}")
-
 
     return df_primitives

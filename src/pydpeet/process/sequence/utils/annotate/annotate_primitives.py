@@ -103,7 +103,7 @@ def _annotate_id(df: pd.DataFrame, data_columns: dict[str, str], show_runtime: b
         cols = [f"Segment_{v}" for v in data_columns.values()]
         arr = df[cols].to_numpy()
         segment_id = _compute_segment_id(arr)
-        df['ID'] = segment_id
+        df["ID"] = segment_id
     return df
 
 
@@ -128,7 +128,7 @@ def _annotate_variable(df: pd.DataFrame, data_columns: dict[str, str], show_runt
         for i, name in enumerate(short_names):
             mask = (data[:, i] != -1) & (variable_array == np.array(None))
             variable_array[mask] = name
-        df['Variable'] = variable_array
+        df["Variable"] = variable_array
     return df
 
 
@@ -178,7 +178,7 @@ def _merged_annotations_njit(
     group_max = np.full(G, np.nan, dtype=np.float64)
     first_val = np.full(G, np.nan, dtype=np.float64)
     last_val = np.full(G, np.nan, dtype=np.float64)
-    init_flag = np.zeros(G, dtype=np.int8)       # initialization flag
+    init_flag = np.zeros(G, dtype=np.int8)  # initialization flag
     time_min = np.full(G, np.nan, dtype=np.float64)
     time_max = np.full(G, np.nan, dtype=np.float64)
 
@@ -227,9 +227,8 @@ def _merged_annotations_njit(
     avg_vals = np.full(n, np.nan, dtype=np.float64)
     slope_vals = np.full(n, np.nan, dtype=np.float64)
     length_vals = np.full(n, np.nan, dtype=np.float64)
-    type_codes = np.full(n, -1, dtype=np.int64)     # -1=None, 0=Rest,1=Constant,2=Ramp
-    dir_codes = np.full(n, -1, dtype=np.int64)      # -1=None, 0=Neutral,1=Charge,2=Discharge,3=Up,4=Down
-
+    type_codes = np.full(n, -1, dtype=np.int64)  # -1=None, 0=Rest,1=Constant,2=Ramp
+    dir_codes = np.full(n, -1, dtype=np.int64)  # -1=None, 0=Neutral,1=Charge,2=Discharge,3=Up,4=Down
 
     for i in range(n):
         gid = group_of_row[i]
@@ -274,7 +273,7 @@ def _merged_annotations_njit(
             diff = vmax - vmin
             if diff <= thr and abs(curr_mean) <= thr:
                 type_code = 0  # Rest
-                dir_code = 0   # Neutral
+                dir_code = 0  # Neutral
             elif diff <= thr:
                 type_code = 1  # Constant
                 dir_code = 1 if curr_mean >= 0 else 2  # Charge / Discharge
@@ -311,11 +310,11 @@ def _merged_annotations(df: pd.DataFrame, data_columns: dict[str, str], threshol
     var_map = {name: idx for idx, name in enumerate(var_names)}
 
     n = len(df)
-    ids = df['ID'].to_numpy(np.int64)
+    ids = df["ID"].to_numpy(np.int64)
 
     # map variables column (strings) to integer indices (-1 if not in var_map)
     # use pandas.map for speed & clarity
-    variables = df['Variable'].map(lambda x: var_map.get(x, -1)).to_numpy(np.int64)
+    variables = df["Variable"].map(lambda x: var_map.get(x, -1)).to_numpy(np.int64)
 
     # Build values_matrix (n x num_vars) where column j is the measurement for var j
     values_matrix = np.full((n, num_vars), np.nan, dtype=np.float64)
@@ -323,8 +322,8 @@ def _merged_annotations(df: pd.DataFrame, data_columns: dict[str, str], threshol
         var_idx = var_map[var_name]
         values_matrix[:, var_idx] = df[col_name].to_numpy(np.float64)
 
-    testtime_s = df['Testtime[s]'].to_numpy(np.float64)
-    current_a = df['Current[A]'].to_numpy(np.float64)
+    testtime_s = df["Test_Time[s]"].to_numpy(np.float64)
+    current_a = df["Current[A]"].to_numpy(np.float64)
 
     # Compute duration per row: count of rows per ID (original annotate_duration_length)
     duration = np.zeros(n, dtype=np.int64)
@@ -382,8 +381,8 @@ def _merged_annotations(df: pd.DataFrame, data_columns: dict[str, str], threshol
     )
 
     # Map type & direction codes to strings (or None)
-    type_map = np.array(['Rest', 'Constant', 'Ramp'], dtype=object)
-    dir_map = np.array(['Neutral', 'Charge', 'Discharge', 'Up', 'Down'], dtype=object)
+    type_map = np.array(["Rest", "Constant", "Ramp"], dtype=object)
+    dir_map = np.array(["Neutral", "Charge", "Discharge", "Up", "Down"], dtype=object)
 
     type_col = np.empty(n, dtype=object)
     dir_col = np.empty(n, dtype=object)
@@ -393,13 +392,13 @@ def _merged_annotations(df: pd.DataFrame, data_columns: dict[str, str], threshol
         type_col[i] = None if tc == -1 else type_map[tc]
         dir_col[i] = None if dc == -1 else dir_map[dc]
 
-    df['Duration'] = duration
-    df['Length'] = length_vals
-    df['Min'] = min_vals
-    df['Max'] = max_vals
-    df['Avg'] = avg_vals
-    df['Type'] = type_col
-    df['Direction'] = dir_col
-    df['Slope'] = slope_vals
+    df["Duration"] = duration
+    df["Length"] = length_vals
+    df["Min"] = min_vals
+    df["Max"] = max_vals
+    df["Avg"] = avg_vals
+    df["Type"] = type_col
+    df["Direction"] = dir_col
+    df["Slope"] = slope_vals
 
     return df

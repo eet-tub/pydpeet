@@ -140,7 +140,7 @@ def add_primitive_segments(
     if "Current[A]" not in df_step.columns:
         raise ValueError("'Current[A]' column not found in input dataframe.")
     if "Test_Time[s]" not in df_step.columns:
-        raise ValueError("'Testtime[s]' column not found in input dataframe.")
+        raise ValueError("'Test_Time[s]' column not found in input dataframe.")
     if SEGMENTS_TO_DETECT_CONFIG is None or len(SEGMENTS_TO_DETECT_CONFIG) == 0:
         raise ValueError("SEGMENTS_TO_DETECT_CONFIG is None or empty")
     if ADJUST_SEGMENTS_CONFIG is None or len(ADJUST_SEGMENTS_CONFIG) == 0:
@@ -160,7 +160,7 @@ def add_primitive_segments(
 
     # --- Data cleanup ---
     if not supress_IO_warnings:
-        logger.warning("Dropping NaN values in 'Testtime[s]', dropping duplicates and sorting 'Testtime[s]' column.")
+        logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
     df_step.dropna(subset=["Test_Time[s]"], inplace=True)
     df_step.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
     df_step.sort_values(by=["Test_Time[s]"], inplace=True)
@@ -310,7 +310,7 @@ def extract_sequence_overview(
 
     Parameters:
         df_primitives (pd.DataFrame): A DataFrame of primitives created using step_analyzer_primitives(). With the following columns:
-            standard_columns = ['Testtime[s]', 'Voltage[V]', 'Current[A]', 'Power[W]', "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
+            standard_columns = ['Test_Time[s]', 'Voltage[V]', 'Current[A]', 'Power[W]', "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
         SEGMENT_SEQUENCE_CONFIG (dict): A dictionary containing the configuration for the analysis.
             Example:{{"Current": {"rules": {"variable": "I", ...}}}, {"Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge","Pause"]}}, ...}
         SHOW_RUNTIME (bool): If True, the function logs the time taken to perform each step.
