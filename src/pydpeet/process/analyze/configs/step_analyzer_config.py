@@ -1,6 +1,4 @@
-from typing import Dict
-
-from pydpeet.process.sequence.threshold_dictonaries import THRESHOLD_DICT_NEWARE
+from pydpeet.process.sequence.configs import config
 from pydpeet.process.sequence.utils.preprocessing.calculate_thresholds import calculate_minimum_definitive_differences
 
 THRESHOLD_DICT_Custom = [  # ARBIN_OLD
@@ -9,10 +7,10 @@ THRESHOLD_DICT_Custom = [  # ARBIN_OLD
     0.0005,  # ACCURACY_VOLTAGE_MEASUREMENT
     0.01,  # ACCURACY_CURRENT_MEASUREMENT
     5,  # FS_VOLTAGE
-    3  # FS_CURRENT
+    3,  # FS_CURRENT
 ]
 # use THRESHOLD_DICT = THRESHOLD_DICT_Custom if you don't want to use a predefined dictionary
-THRESHOLD_DICT = THRESHOLD_DICT_NEWARE.threshold_dict_neware
+THRESHOLD_DICT = config.NEWARE_CT_4008Q_5V12A_S1
 MIN_DEFINITIVE_VOLTAGE_DIFFERENCE, MIN_DEFINITIVE_CURRENT_DIFFERENCE = calculate_minimum_definitive_differences(*THRESHOLD_DICT)
 
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
@@ -23,7 +21,7 @@ SEGMENTS_TO_DETECT_CONFIG = [
     ("Power[W]", (MIN_DEFINITIVE_VOLTAGE_DIFFERENCE + MIN_DEFINITIVE_CURRENT_DIFFERENCE) / 2),
 ]
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
-#ORDER IS IMPORTANT!
+# ORDER IS IMPORTANT!
 ADJUST_SEGMENTS_CONFIG = [
     ("Voltage[V]", MIN_DEFINITIVE_VOLTAGE_DIFFERENCE),
     ("Current[A]", MIN_DEFINITIVE_CURRENT_DIFFERENCE),
@@ -56,13 +54,13 @@ VISUALIZE_PHASES_CONFIG = [
 LINE_VISUALIZATION_CONFIG = [
     ("Voltage[V]", "blue", (2.4, 4.3)),
     ("Current[A]", "red", (-10, 10)),
-    #("Power[W]", "green", (-40, 20)),
+    # ("Power[W]", "green", (-40, 20)),
 ]
 # Bilder Bachelorarbeit Text
-#("Voltage[V]", "blue", (2.4, 4.3)),
-#("Current[A]", "red", (-10, 10)),
-START = 0#55000.0
-END = 1e100#90000
+# ("Voltage[V]", "blue", (2.4, 4.3)),
+# ("Current[A]", "red", (-10, 10)),
+START = 0  # 55000.0
+END = 1e100  # 90000
 USE_LINES_FOR_SEGMENTS = True
 SHOW_COLUMN_NAMES = False
 SHOW_TIME = False
@@ -78,22 +76,21 @@ END_CONDITION_MAP_GENERATE_INSTRUCTIONS = {
     "Pause": "time",
 }
 ########################################################################################################################
-SEQUENCES_CONFIG: Dict[str, Dict] = {
+SEQUENCES_CONFIG: dict[str, dict] = {
     # Complex Sequences
     # Loop rules: "loop": True, "exact_loops": 2, "min_loops": 2, "max_loops": 2, "minimum_IDs": 6
     # "Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge","Pause"]},
     # "Charge_iOCV": {"loop": True, "min_loops": 2, "sequence": ["Pause", "CC_Charge"]},
     "CCCV_Charge": {"loop": False, "sequence": ["CC_Charge", "CV_Charge"]},
     "CCCV_Discharge": {"loop": False, "sequence": ["CC_Discharge", "CV_Discharge"]},
-    "CC_Discharge_after_CC_Charge" : {"loop": False, "sequence": ["CC_Charge", "CC_Discharge"]},
-    "CC_Discharge_after_CCCV_Charge" : {"loop": False, "sequence": ["CCCV_Charge", "CC_Discharge"]},
-    "CC_Discharge_after_CV_Charge" : {"loop": False, "sequence": ["CV_Charge", "CC_Discharge"]},
-    "CC_Discharge_after_CCCV_Charge_with_Pause" : {"loop": False, "sequence": ["CCCV_Charge","Pause", "CV_Discharge"]},
-    "CC_Discharge_after_CC_Charge_with_Pause": {"loop": False, "sequence": ["CC_Charge","Pause", "CC_Discharge"]},
-    "CC_Discharge_after_CV_Charge_with_Pause": {"loop": False, "sequence": ["CV_Charge","Pause", "CC_Discharge"]},
-
+    "CC_Discharge_after_CC_Charge": {"loop": False, "sequence": ["CC_Charge", "CC_Discharge"]},
+    "CC_Discharge_after_CCCV_Charge": {"loop": False, "sequence": ["CCCV_Charge", "CC_Discharge"]},
+    "CC_Discharge_after_CV_Charge": {"loop": False, "sequence": ["CV_Charge", "CC_Discharge"]},
+    "CC_Discharge_after_CCCV_Charge_with_Pause": {"loop": False, "sequence": ["CCCV_Charge", "Pause", "CV_Discharge"]},
+    "CC_Discharge_after_CC_Charge_with_Pause": {"loop": False, "sequence": ["CC_Charge", "Pause", "CC_Discharge"]},
+    "CC_Discharge_after_CV_Charge_with_Pause": {"loop": False, "sequence": ["CV_Charge", "Pause", "CC_Discharge"]},
 }
-SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
+SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
     # Primitive segments
     # Pause
     # CC_Charge, CV_Charge, CP_Charge
@@ -150,7 +147,6 @@ SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
 }
 
 
-
 SEGMENT_SEQUENCE_CONFIG = {
     **SEQUENCES_CONFIG,
     **SEGMENTS_CONFIG_STANDARD,
@@ -163,7 +159,7 @@ DATA_COLUMNS = {
     "P": "Power[W]",
 }
 STANDARD_COLUMNS = [
-    "Testtime[s]",
+    "Test_Time[s]",
     "Voltage[V]",
     "Current[A]"
 ]

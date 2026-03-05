@@ -27,6 +27,3 @@ def set_logging_style(level="WARNING", formatting_string="%(levelname)s | %(path
         format=formatting_string,
         force=True
     )
-
-
-#set_logging_style()

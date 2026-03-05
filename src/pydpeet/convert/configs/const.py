@@ -1,1 +1,0 @@
-PANDAS_EXCEL_ENGINE = 'calamine'

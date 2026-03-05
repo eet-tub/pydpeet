@@ -1,7 +1,9 @@
 import unittest
+
 from pandas import DataFrame
-from ppb.configs.config import STANDARD_COLUMNS
-from ppb.convert import _drop_additional_data
+
+from pydpeet.io.configs.config import STANDARD_COLUMNS
+from pydpeet.io.convert import _drop_additional_data
 
 
 class TestDropAdditionalData(unittest.TestCase):
@@ -11,12 +13,12 @@ class TestDropAdditionalData(unittest.TestCase):
         self.assertEqual(result.columns.tolist(), STANDARD_COLUMNS)
 
     def test_standard_and_additional_columns(self):
-        data_frame = DataFrame(columns=STANDARD_COLUMNS + ['extra1', 'extra2'])
+        data_frame = DataFrame(columns=STANDARD_COLUMNS + ["extra1", "extra2"])
         result = _drop_additional_data(data_frame)
         self.assertEqual(result.columns.tolist(), STANDARD_COLUMNS)
 
     def test_additional_columns_only(self):
-        data_frame = DataFrame(columns=['extra1', 'extra2'])
+        data_frame = DataFrame(columns=["extra1", "extra2"])
         result = _drop_additional_data(data_frame)
         self.assertEqual(result.columns.tolist(), [])
 
@@ -31,5 +33,5 @@ class TestDropAdditionalData(unittest.TestCase):
             _drop_additional_data(data_frame)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

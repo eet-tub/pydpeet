@@ -2,15 +2,15 @@ import unittest
 from unittest.mock import Mock
 
 from numpy.ma.testutils import assert_equal
-from ppb.zyklisierer.arbin.reader import to_DataFrame, read_sheets
+
+from pydpeet.io.device.arbin_8_00_PV221201.reader import read_sheets, to_dataframe
 
 
 class ArbinTests(unittest.TestCase):
     def test_invalid_input_path(self):
-
         for value in ["invalid", None, ""]:
             try:
-                _, _ = to_DataFrame(value)
+                _, _ = to_dataframe(value)
                 self.fail()
             except FileNotFoundError:
                 pass
@@ -27,5 +27,5 @@ class ArbinTests(unittest.TestCase):
         assert_equal(md, "")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,16 +1,7 @@
 """
 Auto-generated __init__ file.
-Created: 2026-02-04 13:46:34
+Created: 2026-02-22 07:00:26
 """
 
-# Child packages exported by this package
-from . import analyze
-from . import merge
-from . import sequence
-
-# Public API for this package
-__all__ = [
-    'analyze',
-    'merge',
-    'sequence',
-]
+# Restrictive package init: start with no public API
+__all__ = []

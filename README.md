@@ -18,25 +18,25 @@ The standardized columns are defined as follows:
 
 ```python
 STANDARD_COLUMNS = [
-    "Metadata",
-    "StepID",
-    "Voltage [V]",
-    "Current [A]",
-    "Temperature [°C]",
-    "Test Time [s]",
-    "Absolute Time [yyyy-mm-dd HH:MM:SS]",
-    "EIS Frequency [Hz]",
-    "Zre [Ohm]",
-    "Zim [Ohm]",
-    "DC Current [A]"
+    "Meta_Data",
+    "Step_Count",
+    "Voltage[V]",
+    "Current[A]",
+    "Temperature[°C]",
+    "Test_Time[s]",
+    "Date_Time",
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]"
 ]
 ```
 
 ## Metadata
-Currently, metadata is not standardized. It contains all additional information from the provided measurement file and is stored as a string in the first row of the `Metadata` column.
+Currently, metadata is not standardized. It contains all additional information from the provided measurement file and is stored as a string in the first row of the `Meta_Data` column.
 
 ## Supported Cyclers
-PPB24 supports conversion from the following cyclers:
+PyDPEET supports conversion from the following cyclers:
 - Arbin
 - BaSyTec
 - Digatron
@@ -142,7 +142,7 @@ You'll find the documentation in
 
 
 ### For Usage
-To install PPB24 in your project, run the following command in your console:
+To install PyDPEET in your project, run the following command in your console:
 
 ```bash
 pip install git+https://oauth2:GITLAB_ACCESS_TOKEN@git.tu-berlin.de/eet/ppb/ppb24.git
@@ -290,19 +290,19 @@ The files need to implement the following functions to work with our project:
 # Define the mapping from current names to standardized names (ALL standardized columns need to be in either one!)
 
 COLUMN_MAP = {
-    "Time[h]": "Testtime (s)",
-    "U[V]": "Voltage (V)",
-    "I[A]": "Current (A)",
-    "T1[°C]": "Temperature (°C)",
-    "Line": "StepID",
+    "Time[h]": "Test_Time[s]",
+    "U[V]": "Voltage[V]",
+    "I[A]": "Current[A]",
+    "T1[°C]": "Temperature[°C]",
+    "Line": "Step_Count",
 }
 
 MISSING_REQUIRED_COLUMNS = [
-    "Absolute Time (yyyy-mm-dd hh:mm:ss)",
-    "EISFreq (Hz)",
-    "Zre (Ohm)",
-    "Zim (Ohm)",
-    "DC_Current (A)"
+    "Date_Time",
+    "EIS_f[Hz]",
+    "EIS_Z_Real[Ohm]",
+    "EIS_Z_Imag[Ohm]",
+    "EIS_DC[A]"
 ]
 ```
 
@@ -323,7 +323,7 @@ def get_data_into_format(dataFrame: pandas.DataFrame):
 ```python
 import pandas as pd
 
-def to_DataFrame(input_path: str) -> (pd.DataFrame, str):
+def to_dataframe(input_path: str) -> (pd.DataFrame, str):
     ***YOUR CODE***
     return dataFrame, metadata_string
 ```

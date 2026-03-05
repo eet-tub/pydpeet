@@ -1,72 +1,69 @@
 import unittest
 from pathlib import Path
 
-from ppb.convert import convert, Config
-
+from pydpeet.io.convert import Config, convert
 from test.utils import RES_PATH, with_zip_files
 
 
 class MyTestCase(unittest.TestCase):
     # Define the expected data types
     _EXPECTED_DATATYPES = {
-        "Metadata": object,
-        "StepID": int,
+        "Meta_Data": object,
+        "Step_Count": int,
         "Voltage[V]": float,
         "Current[A]": float,
         "Temperature[\u00b0C]": float,
-        "Testtime[s]": float,
-        "Absolute Time[yyyy-mm-dd hh:mm:ss]": object,
-        "EISFreq[Hz]": float,
-        "Zre[Ohm]": float,
-        "Zim[Ohm]": float,
-        "DC_Current[A]": float,
+        "Test_Time[s]": float,
+        "Date_Time": object,
+        "EIS_f[Hz]": float,
+        "EIS_Z_Real[Ohm]": float,
+        "EIS_Z_Imag[Ohm]": float,
+        "EIS_DC[A]": float,
     }
 
     def test_expected_datatypes_arbin(self):
         self._datatype_test(RES_PATH / "arbin" / "new", Config.Arbin)
 
     def test_expected_datatypes_arbin_old(self):
-        self._datatype_test(RES_PATH / "arbin" / "old", Config.Arbin_Old)
+        self._datatype_test(RES_PATH / "arbin" / "old", Config.Arbin_4_23_PV090331)
 
     def test_expected_datatypes_basytec(self):
-        self._datatype_test(RES_PATH / "basytec" / "for_datatype_test", Config.BaSyTec)
+        self._datatype_test(RES_PATH / "basytec" / "for_datatype_test", Config.BaSyTec_6_3_1_0)
 
     def test_expected_datatypes_Digatron(self):
-        self._datatype_test(RES_PATH / "digatron", Config.Digatron)
+        self._datatype_test(RES_PATH / "digatron", Config.Digatron_4_20_6_236)
 
     def test_expected_datatypes_Digatron_EIS(self):
-        self._datatype_test(RES_PATH / "digatron_eis", Config.Digatron_EIS)
+        self._datatype_test(RES_PATH / "digatron_eis", Config.Digatron_EIS_4_20_6_236)
 
     def test_expected_datatypes_Neware(self):
-        self._datatype_test(RES_PATH / "neware" / "for_datatype_test", Config.Neware)
+        self._datatype_test(RES_PATH / "neware" / "for_datatype_test", Config.Neware_8_0_0_516)
 
     def test_expected_datatypes_Parstat(self):
-        self._datatype_test(RES_PATH / "parstat" / "for_datatype_test", Config.Parstat)
+        self._datatype_test(RES_PATH / "parstat" / "for_datatype_test", Config.Parstat_2_63_3)
 
     def test_expected_datatypes_Safion(self):
-        self._datatype_test(RES_PATH / "safion" / "for_datatype_test", Config.Safion)
+        self._datatype_test(RES_PATH / "safion" / "for_datatype_test", Config.Safion_1_9)
 
     def test_expected_datatypes_Zahner_1(self):
         self._datatype_test(RES_PATH / "zahner" / "old" / "for_datatype_test" / "cfg1", Config.Zahner_1)
 
     def test_expected_datatypes_Zahner_2(self):
-        self._datatype_test(RES_PATH / "zahner" / "old" /"for_datatype_test" / "cfg2", Config.Zahner_2)
+        self._datatype_test(RES_PATH / "zahner" / "old" / "for_datatype_test" / "cfg2", Config.Zahner_2)
 
     def test_expected_datatypes_Zahner_new_1(self):
-        self._datatype_test(RES_PATH / "zahner" / "new" /"for_datatype_test" / "cfg1", Config.Zahner_new_1)
+        self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg1", Config.Zahner_new_1)
 
     def test_expected_datatypes_Zahner_new_2(self):
-        self._datatype_test(RES_PATH / "zahner" / "new" /"for_datatype_test" / "cfg2", Config.Zahner_new_2)
+        self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg2", Config.Zahner_new_2)
 
     def test_expected_datatypes_Zahner_new_3(self):
-        self._datatype_test(RES_PATH / "zahner" / "new" /"for_datatype_test" / "cfg3", Config.Zahner_new_3)
+        self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg3", Config.Zahner_new_3)
 
     def _datatype_test(self, input_path: Path, config: Config):
         with_zip_files(
             input_path,
-            lambda file: self._validate_dataframe(
-                convert(config, file, False)
-            )
+            lambda file: self._validate_dataframe(convert(config, file, False))
         )
 
     def _validate_dataframe(self, df):
@@ -83,7 +80,6 @@ class MyTestCase(unittest.TestCase):
 
         if errors:
             raise AssertionError("\n".join(errors))
-
 
 
 if __name__ == "__main__":

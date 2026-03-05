@@ -1,6 +1,5 @@
+from pydpeet.process.sequence.configs import config
 from pydpeet.process.sequence.utils.preprocessing.calculate_thresholds import calculate_minimum_definitive_differences
-from pydpeet.process.sequence.threshold_dictonaries import THRESHOLD_DICT_NEWARE
-from typing import Dict
 
 THRESHOLD_DICT_Custom = [  # ARBIN_OLD
     0.0005,  # ACCURACY_VOLTAGE_SIGNAL
@@ -8,10 +7,10 @@ THRESHOLD_DICT_Custom = [  # ARBIN_OLD
     0.0005,  # ACCURACY_VOLTAGE_MEASUREMENT
     0.01,  # ACCURACY_CURRENT_MEASUREMENT
     5,  # FS_VOLTAGE
-    3  # FS_CURRENT
+    3,  # FS_CURRENT
 ]
 # use THRESHOLD_DICT = THRESHOLD_DICT_Custom if you don't want to use a predefined dictionary
-THRESHOLD_DICT = THRESHOLD_DICT_NEWARE.threshold_dict_neware
+THRESHOLD_DICT = config.NEWARE_CT_4008Q_5V12A_S1
 MIN_DEFINITIVE_VOLTAGE_DIFFERENCE, MIN_DEFINITIVE_CURRENT_DIFFERENCE = calculate_minimum_definitive_differences(*THRESHOLD_DICT)
 
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
@@ -22,7 +21,7 @@ SEGMENTS_TO_DETECT_CONFIG = [
     ("Power[W]", (MIN_DEFINITIVE_VOLTAGE_DIFFERENCE + MIN_DEFINITIVE_CURRENT_DIFFERENCE) / 2),
 ]
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
-#ORDER IS IMPORTANT!
+# ORDER IS IMPORTANT!
 ADJUST_SEGMENTS_CONFIG = [
     ("Voltage[V]", MIN_DEFINITIVE_VOLTAGE_DIFFERENCE),
     ("Current[A]", MIN_DEFINITIVE_CURRENT_DIFFERENCE),
@@ -76,14 +75,14 @@ END_CONDITION_MAP_GENERATE_INSTRUCTIONS = {
     "Pause": "time",
 }
 ########################################################################################################################
-SEQUENCES_CONFIG: Dict[str, Dict] = {
+SEQUENCES_CONFIG: dict[str, dict] = {
     # Complex Sequences
     # Loop rules: "loop": True, "exact_loops": 2, "min_loops": 2, "max_loops": 2, "minimum_IDs": 6
-    "Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge","Pause"]},
+    "Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge", "Pause"]},
     "Charge_iOCV": {"loop": True, "min_loops": 2, "sequence": ["Pause", "CC_Charge"]},
     "CCCV_Charge": {"loop": False, "sequence": ["CC_Charge", "CV_Charge"]},
 }
-SEGMENTS_CONFIG_SIMPLE: Dict[str, Dict] = {
+SEGMENTS_CONFIG_SIMPLE: dict[str, dict] = {
     # Primitive segments
     # I, V, P,
     # Charging, Discharging
@@ -113,7 +112,7 @@ SEGMENTS_CONFIG_SIMPLE: Dict[str, Dict] = {
         }
     },
 }
-SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
+SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
     # Primitive segments
     # Pause
     # CC_Charge, CV_Charge, CP_Charge
@@ -210,7 +209,6 @@ SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
         }
     },
 }
-
 
 
 SEGMENT_SEQUENCE_CONFIG = {

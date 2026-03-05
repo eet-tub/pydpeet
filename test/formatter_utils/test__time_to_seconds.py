@@ -1,16 +1,14 @@
 import unittest
-from ppb.utils.formatter_utils import _time_to_seconds
 
+from pydpeet.io.utils.formatter_utils import _time_to_seconds
 
 
 class TestTimeToSeconds(unittest.TestCase):
-
     def test_time_to_seconds_empty_dataframe(self):
         data = None
         expected = None
         result = _time_to_seconds(data)
         self.assertEqual(expected, result)
-
 
     def test_time_string_in_HH_MM_SS_format(self):
         data = "01:30:00"

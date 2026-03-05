@@ -1,11 +1,10 @@
 import logging
-from typing import Dict
+
 import pandas as pd
 
-from pydpeet.process.sequence.step_analyzer import step_analyzer_seqments_and_sequences
+from pydpeet.process.sequence.step_analyzer import extract_sequences
 
-
-SEGMENTS_CONFIG_STANDARD: Dict[str, Dict] = {
+SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
     "Pause": {
         "rules": {
             "type": "Rest",
@@ -119,8 +118,7 @@ def _parse_segment_type(seg_type: str):
         return "Pause", None
 
     # Case 1: already in the form CC_Charge, CRamp_Discharge, etc.
-    if "_" in seg_type and seg_type.split("_")[0] in {"CC", "CV", "CP",
-                                                      "CRamp", "VRamp", "PRamp"}:
+    if "_" in seg_type and seg_type.split("_")[0] in {"CC", "CV", "CP", "CRamp", "VRamp", "PRamp"}:
         base, *tail = seg_type.split("_")
         direction = tail[-1] if tail else None
         return base, direction
@@ -128,9 +126,11 @@ def _parse_segment_type(seg_type: str):
     # Case 2: new naming scheme ► Ramp_{Current|Voltage|Power}_{Charge|Discharge}
     if seg_type.startswith("Ramp_"):
         _, signal, *tail = seg_type.split("_")
-        mapping = {"Current": "CRamp",
-                   "Voltage": "VRamp",
-                   "Power":   "PRamp"}
+        mapping = {
+            "Current": "CRamp",
+            "Voltage": "VRamp",
+            "Power": "PRamp"
+        }
         base = mapping.get(signal, "UNKNOWN")
         direction = tail[-1] if tail else None
         return base, direction
@@ -152,8 +152,7 @@ def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
                   End_Value_Current[A], End_Value_Power[W], End_Value_Length, Type, Direction, AVG_Current)
 
     """
-    segment_type_cols = [c for c in df_segments_and_sequences.columns
-                         if c not in ["ID", "Sequence"]]
+    segment_type_cols = [c for c in df_segments_and_sequences.columns if c not in ["ID", "Sequence"]]
 
     records = []
     for _, row in df_segments_and_sequences.iterrows():
@@ -163,32 +162,35 @@ def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
         segment_df = df_primitives[df_primitives["ID"] == seg_id]
         last_row = segment_df.iloc[-1]
 
-        records.append({
-            "ID": seg_id,
-            "Segment_Type": segment_type,
-            "End_Value_Voltage[V]": last_row["Voltage[V]"],
-            "End_Value_Current[A]": last_row["Current[A]"],
-            "End_Value_Power[W]":   last_row["Power[W]"],
-            "End_Value_Length":     last_row["Length"],
-            "Type": last_row["Type"],
-            "Direction": last_row["Direction"],
-            "AVG_Current": segment_df["Current[A]"].mean(),
-            #"AVG_Voltage": segment_df["Voltage[V]"].mean(),
-            #"AVG_Power":   segment_df["Power[W]"].mean(),
-        })
+        records.append(
+            {
+                "ID": seg_id,
+                "Segment_Type": segment_type,
+                "End_Value_Voltage[V]": last_row["Voltage[V]"],
+                "End_Value_Current[A]": last_row["Current[A]"],
+                "End_Value_Power[W]": last_row["Power[W]"],
+                "End_Value_Length": last_row["Length"],
+                "Type": last_row["Type"],
+                "Direction": last_row["Direction"],
+                "AVG_Current": segment_df["Current[A]"].mean(),
+                # "AVG_Voltage": segment_df["Voltage[V]"].mean(),
+                # "AVG_Power":   segment_df["Power[W]"].mean(),
+            }
+        )
 
     dataframe_records = pd.DataFrame(records)
     return dataframe_records
 
 
-def generate_instructions(df_primitives,
-                          end_condition_map: dict = {
-                            "CC": "voltage",
-                            "CV": "current",
-                            "CP": "voltage",
-                            "Pause": "time",
-                          },
-                          threshold_warnings: int = 5):
+def generate_instructions(
+        df_primitives,
+        end_condition_map: dict = {
+            "CC": "voltage",
+            "CV": "current",
+            "CP": "voltage",
+            "Pause": "time",
+        },
+        threshold_warnings: int = 5):
     """
     Generate PyBaMM instructions based on the given primitives dataframe and end condition map.
     Replaces Ramps with AVG Current for time.
@@ -201,8 +203,7 @@ def generate_instructions(df_primitives,
     Returns:
     list: list of instructions
     """
-    df_segments_and_sequences = step_analyzer_seqments_and_sequences(df_primitives,
-                                                                     SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD)
+    df_segments_and_sequences = extract_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD)
     results = _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
     instructions = []
     unknown_seen = False
@@ -213,15 +214,12 @@ def generate_instructions(df_primitives,
         base_type, direction = _parse_segment_type(raw_seg_type)
 
         if base_type == "UNKNOWN":
-            instructions.append(
-                f"\033[91mUnknown segment type '{raw_seg_type}' "
-                f"for {row['End_Value_Length']}s encountered\033[0m"
-            )
+            instructions.append(f"\033[91mUnknown segment type '{raw_seg_type}' " f"for {row['End_Value_Length']}s encountered\033[0m")
             unknown_seen = True
             continue
 
         current = row["AVG_Current"] if "Ramp" in base_type else row["End_Value_Current[A]"]
-        length  = row["End_Value_Length"]
+        length = row["End_Value_Length"]
 
         # Determine end condition
         end_condition = end_condition_map.get(base_type.replace("Ramp", ""), "time")
@@ -232,8 +230,8 @@ def generate_instructions(df_primitives,
 
             cond_val, units = {
                 "current": (abs(current), "A"),
-                "voltage": (abs(row['End_Value_Voltage[V]']), "V"),
-                "power":   (abs(row['End_Value_Power[W]']),   "W")
+                "voltage": (abs(row["End_Value_Voltage[V]"]), "V"),
+                "power": (abs(row["End_Value_Power[W]"]), "W")
             }.get(end_condition, (length, "seconds"))
 
             return f"{action} at {value_str} until {cond_val}{units}"
@@ -277,9 +275,6 @@ def generate_instructions(df_primitives,
     if too_many_warnings > threshold_warnings:
         logging.warning("...")
     if unknown_seen:
-        logging.warning("Unknown segment types encountered. "
-              "Instructions may be incomplete!")
+        logging.warning("Unknown segment types encountered. " "Instructions may be incomplete!")
 
     return instructions
-
-
