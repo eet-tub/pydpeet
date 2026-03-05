@@ -28,7 +28,7 @@ from pydpeet.process.sequence.utils.processing.supress_smaller_segments import _
 from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
 
 
-def add_primitives(
+def add_primitive_segments(
     df: pd.DataFrame,
     STEP_ANALYZER_PRIMITIVES_CONFIG: dict = None,
     SEGMENTS_TO_DETECT_CONFIG: list[tuple[str, float]] = None,
@@ -286,7 +286,7 @@ def add_primitives(
     return df_primitives
 
 
-def extract_sequences(
+def extract_sequence_overview(
         df_primitives: pd.DataFrame,
         SEGMENT_SEQUENCE_CONFIG: dict = None,
         SHOW_RUNTIME: bool = True) -> pd.DataFrame:
@@ -361,7 +361,7 @@ def _precompile_step_analyzer():
     _res_dir = os.path.join(_project_dir, "../../res")
     _input_path = os.path.join(_res_dir, "precompile_dummy_data.parquet")
     _df_file = pd.read_parquet(_input_path)
-    _df_primitives = add_primitives(
+    _df_primitives = add_primitive_segments(
         df=_df_file,
         STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE,
         SHOW_RUNTIME=False,
@@ -383,7 +383,7 @@ def _precompile_step_analyzer():
         thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION
     )
 
-    _ = extract_sequences(
+    _ = extract_sequence_overview(
         df_primitives=_df_primitives,
         SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG,
         SHOW_RUNTIME=False

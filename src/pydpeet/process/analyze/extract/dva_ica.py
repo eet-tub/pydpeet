@@ -9,7 +9,7 @@ from scipy.signal import savgol_filter
 from pydpeet.process.analyze.configs.ocv_config import *
 from pydpeet.process.analyze.extract.ocv import extract_ocv_iocv
 from pydpeet.process.analyze.soc import add_soc
-from pydpeet.process.sequence.step_analyzer import add_primitives, extract_sequences
+from pydpeet.process.sequence.step_analyzer import add_primitive_segments, extract_sequence_overview
 from pydpeet.process.sequence.utils.visualize.visualize_data import *
 
 
@@ -65,7 +65,7 @@ def compute_ocv_dva_ica(
         df.dropna(subset=["Test_Time[s]"], inplace=True)
         df = df.sort_values("Test_Time[s]")
 
-        df_primitives = add_primitives(
+        df_primitives = add_primitive_segments(
             df=df,
             STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG,
             SHOW_RUNTIME=False,
@@ -97,7 +97,7 @@ def compute_ocv_dva_ica(
                 C_ref=soc_c_ref
             )
 
-        df_segments_and_sequences = extract_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG)
+        df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
     else:
         raise ValueError("No df_primitives found!")

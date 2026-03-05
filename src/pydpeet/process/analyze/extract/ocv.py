@@ -10,7 +10,7 @@ from pydpeet.process.analyze.configs.ocv_config import *
 from pydpeet.process.analyze.soc import SocMethod, add_soc
 
 # import Daniel's & Jan's work
-from pydpeet.process.sequence.step_analyzer import add_primitives, extract_sequences
+from pydpeet.process.sequence.step_analyzer import add_primitive_segments, extract_sequence_overview
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 
 
@@ -59,7 +59,7 @@ def extract_ocv_iocv(
         df.dropna(subset=["Test_Time[s]"], inplace=True)
         df = df.sort_values("Test_Time[s]")
 
-        df_primitives = add_primitives(
+        df_primitives = add_primitive_segments(
             df=df,
             STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG,
             # SHOW_RUNTIME=False,
@@ -91,7 +91,7 @@ def extract_ocv_iocv(
                 config=config
             )
 
-        df_segments_and_sequences = extract_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG)
+        df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
     else:
         raise ValueError("No df_primitives found!")

@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from pydpeet.process.sequence.step_analyzer import extract_sequences
+from pydpeet.process.sequence.step_analyzer import extract_sequence_overview
 
 SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
     "Pause": {
@@ -183,14 +183,15 @@ def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
 
 
 def generate_instructions(
-        df_primitives,
-        end_condition_map: dict = {
-            "CC": "voltage",
-            "CV": "current",
-            "CP": "voltage",
-            "Pause": "time",
-        },
-        threshold_warnings: int = 5):
+    df_primitives,
+    end_condition_map: dict = {
+        "CC": "voltage",
+        "CV": "current",
+        "CP": "voltage",
+        "Pause": "time",
+    },
+    threshold_warnings: int = 5,
+):
     """
     Generate PyBaMM instructions based on the given primitives dataframe and end condition map.
     Replaces Ramps with AVG Current for time.
@@ -203,7 +204,7 @@ def generate_instructions(
     Returns:
     list: list of instructions
     """
-    df_segments_and_sequences = extract_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD)
+    df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD)
     results = _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
     instructions = []
     unknown_seen = False

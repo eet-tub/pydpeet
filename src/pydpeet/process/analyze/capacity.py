@@ -7,7 +7,7 @@ from scipy import integrate
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
 from pydpeet.process.analyze.configs.step_analyzer_config import SEGMENT_SEQUENCE_CONFIG
 from pydpeet.process.analyze.utils import StepTimer, _check_columns
-from pydpeet.process.sequence.step_analyzer import extract_sequences
+from pydpeet.process.sequence.step_analyzer import extract_sequence_overview
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 
 # ** Capacity and Degradation metrics **
@@ -53,7 +53,7 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
 
     # Step 2: Segments and sequences
     with StepTimer(verbose) as st:
-        df_segments_and_sequences = extract_sequences(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG)
+        df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG)
         st.log("computed segments and sequences")
 
     if neware_bool:
