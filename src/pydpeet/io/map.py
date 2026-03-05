@@ -5,7 +5,11 @@ import pandas as pd
 from pydpeet.io.configs.config import STANDARD_COLUMNS
 
 
-def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -> pd.DataFrame:
+def mapping(
+        df: pd.DataFrame,
+        column_map: dict,
+        missing_columns: list
+) -> pd.DataFrame | None:
     """
     Renames and maps specific columns in the DataFrame to standardized names.
     If a standardized column doesn't exist in the DataFrame, it is added with default None values.
@@ -23,13 +27,13 @@ def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -
     column_map and missing_columns contain all standard columns
     (If you want to rename more or add more columns do it after the conversion)
     """
-    if data_frame is None:
+    if df is None:
         raise ValueError("dataFrame is None")
     if column_map is None:
         raise ValueError("column_map is None")
     if missing_columns is None:
         raise ValueError("missing_columns is None")
-    if type(data_frame) is not pd.DataFrame:
+    if type(df) is not pd.DataFrame:
         raise ValueError("dataFrame is not a DataFrame")
     if type(column_map) is not dict:
         raise ValueError("column_map is not a dictionary")
@@ -42,22 +46,22 @@ def mapping(data_frame: pd.DataFrame, column_map: dict, missing_columns: list) -
         raise ValueError("column_map and missing_columns contain columns that are not standard columns")
 
     # Create a copy of the DataFrame to avoid modifying the original
-    df = data_frame.copy()
+    df_copy = df.copy()
 
     # Add missing columns with None values if they do not exist, and issue warnings
     for missing in missing_columns:
-        if missing not in df.columns:
+        if missing not in df_copy.columns:
             logging.warning(f"Missing column: '{missing}'. Adding Collumn (with None values) named: '{missing}'.")
-            df[missing] = None
+            df_copy[missing] = None
 
     # Warn if a column that should be mapped is missing and add it with None values
     for original_col in column_map.keys():
-        if original_col not in df.columns:
+        if original_col not in df_copy.columns:
             logging.warning(f"Column to be mapped '{original_col}' does not exist in DataFrame. Adding it with None values.")
-            df[original_col] = None
+            df_copy[original_col] = None
 
     # Rename the existing columns as per the column_map
     # Columns not in the column_map will remain unchanged
-    df.rename(columns=column_map, inplace=True)
+    df_copy.rename(columns=column_map, inplace=True)
 
-    return df
+    return df_copy

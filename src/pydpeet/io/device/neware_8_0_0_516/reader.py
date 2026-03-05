@@ -105,7 +105,10 @@ def find_main_files(input_path: str) -> list[str]:
     return [file for file in os.listdir(input_path) if (file.endswith(".xlsx") or file.endswith(".xls")) and not re.search(_BASE_CHILD_FILE_PATTERN, file)]
 
 
-def _read_sheets_from(main_file: str, children: list[str]) -> dict[str, pd.DataFrame] | None:
+def _read_sheets_from(
+        main_file: str,
+        children: list[str]
+) -> dict[str, pd.DataFrame] | None:
     """
     Reads sheets from the main Excel file and its children into a dictionary of DataFrames.
 
@@ -140,7 +143,11 @@ def _read_sheets_from(main_file: str, children: list[str]) -> dict[str, pd.DataF
         return main_sheets
 
 
-def _extract_meta_data(unit_sheet: pd.DataFrame, test_sheet: pd.DataFrame, log_sheet: pd.DataFrame) -> str:
+def _extract_meta_data(
+        unit_sheet: pd.DataFrame,
+        test_sheet: pd.DataFrame,
+        log_sheet: pd.DataFrame
+) -> str:
     """
     Extracts and concatenates metadata from the provided DataFrames.
 
@@ -168,7 +175,11 @@ def _extract_meta_data(unit_sheet: pd.DataFrame, test_sheet: pd.DataFrame, log_s
     return "\n".join(meta_data)
 
 
-def _handle_cycle_step_test(cycle_sheet: pd.DataFrame, step_sheet: pd.DataFrame, test_sheet: pd.DataFrame) -> pd.DataFrame:
+def _handle_cycle_step_test(
+        cycle_sheet: pd.DataFrame,
+        step_sheet: pd.DataFrame,
+        test_sheet: pd.DataFrame
+) -> pd.DataFrame:
     """
     Handles the cycle, step, and test sheets by merging them together.
 
@@ -192,6 +203,7 @@ def _handle_cycle_step_test(cycle_sheet: pd.DataFrame, step_sheet: pd.DataFrame,
     test = _handle_test(test_sheet)
 
     logging.info("merging cycle_step_test and test...")
+
     return pd.merge(cycle_step_test, test, left_on="Step Index", right_on="Step Index", how="left")
 
 
@@ -246,7 +258,11 @@ def _capture_settingwithcopy_debug():
         warnings.showwarning = original
 
 
-def _handle_record_auxvol_auxtemp(df_record: pd.DataFrame, df_auxvol: pd.DataFrame | None, df_auxtemp: pd.DataFrame | None) -> pd.DataFrame:
+def _handle_record_auxvol_auxtemp(
+        df_record: pd.DataFrame,
+        df_auxvol: pd.DataFrame | None,
+        df_auxtemp: pd.DataFrame | None
+) -> pd.DataFrame:
     """
     Processes and merges the record, auxiliary voltage, and auxiliary temperature sheets.
 
@@ -286,7 +302,11 @@ def _handle_record_auxvol_auxtemp(df_record: pd.DataFrame, df_auxvol: pd.DataFra
     return result
 
 
-def _re_index_headers(df: pd.DataFrame, expected_headers: list[str], keyword: str):
+def _re_index_headers(
+        df: pd.DataFrame,
+        expected_headers: list[str],
+        keyword: str
+) -> pd.DataFrame:
     """
     Checks if the headers of a DataFrame need to be reindexed and reindexes them if necessary.
 
@@ -310,10 +330,14 @@ def _re_index_headers(df: pd.DataFrame, expected_headers: list[str], keyword: st
         df = df.iloc[1:]
     else:
         logging.info("no need to reindex headers...")
+
     return df
 
 
-def _handle_final(step: pd.DataFrame, record: pd.DataFrame) -> pd.DataFrame:
+def _handle_final(
+        step: pd.DataFrame,
+        record: pd.DataFrame
+) -> pd.DataFrame:
     """
     Merges the step and record DataFrames based on the 'step_id' column.
 

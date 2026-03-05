@@ -1,29 +1,28 @@
 from __future__ import annotations
 
-import logging
 import os
 from pathlib import Path
-
-
-from pathlib import Path
 from typing import Union
 
-from pandas import DataFrame, Index
+from pandas import DataFrame
 
 from pydpeet.io.configs.config import Config
-from pydpeet.io.convert import convert_file, convert_files_in_directory
-import pandas as pd
-
-from typing import Union
+from pydpeet.io.convert import (
+    convert_file,
+    convert_files_in_directory
+)
 
 ConfigLike = Union[Config, str]
 PathLike = Union[str, Path]
 
 
-def read(config: ConfigLike,
-           input_path: object,
-           keep_all_additional_data: bool = False,
-           custom_folder_path: str = None) -> DataFrame:
+def read(
+        config: ConfigLike,
+        input_path: object,
+        keep_all_additional_data: bool = False,
+        custom_folder_path: str = None
+) -> DataFrame:
+    # TODO: Docstring
     if isinstance(input_path, str):
         if os.path.isfile(input_path):
             return convert_file(config, input_path, None, keep_all_additional_data, custom_folder_path)
