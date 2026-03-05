@@ -1,9 +1,14 @@
 import numpy as np
+import pandas as pd
 from numba import njit
 
 
 @njit(cache=True)
-def _assign_segments_with_fit(times, values, threshold):
+def _assign_segments_with_fit(
+    times: np.ndarray,
+    values: np.ndarray,
+    threshold: float,
+) -> np.ndarray:
     """
     Assign segment IDs to each point in a time series by incrementally fitting linear
     segments using least squares. A new segment is started when either the current
@@ -65,7 +70,11 @@ def _assign_segments_with_fit(times, values, threshold):
     return seg_ids
 
 
-def _split_in_segments_using_incremental_linear_fit(df, column_name, threshold):
+def _split_in_segments_using_incremental_linear_fit(
+    df: pd.DataFrame,
+    column_name: str,
+    threshold: float,
+) -> pd.DataFrame:
     """
     Detect near-linear segments in columns of a DataFrame using incremental least squares fitting.
 
@@ -84,4 +93,5 @@ def _split_in_segments_using_incremental_linear_fit(df, column_name, threshold):
     values = df[column_name].to_numpy()
     seg_ids = _assign_segments_with_fit(times, values, threshold)
     df[f"Segment_{column_name}"] = seg_ids
+
     return df

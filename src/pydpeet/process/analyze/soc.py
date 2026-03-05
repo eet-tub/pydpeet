@@ -8,9 +8,11 @@ import pandas as pd
 from numba import njit
 
 from pydpeet.process.analyze.capacity import add_capacity
-from pydpeet.process.analyze.utils import StepTimer, precompute_block_arrays_soc_methods
-
-# ** SOC calculation logic **
+from pydpeet.process.analyze.configs.battery_config import BatteryConfig
+from pydpeet.process.analyze.utils import (
+    StepTimer,
+    precompute_block_arrays_soc_methods,
+)
 
 
 class SocMethod(Enum):
@@ -25,26 +27,27 @@ SOC_METHOD_MAP = {
     "WITHOUT_RESET": 0,
     "WITH_RESET_WHEN_FULL": 1,
     "WITH_RESET_WHEN_EMPTY": 2,
-    "WITH_RESET_WHEN_FULL_AND_EMPTY": 3
+    "WITH_RESET_WHEN_FULL_AND_EMPTY": 3,
 }
 
 
 # numba compiled multi-method function: compute SOC arrays for all methods in one call, writing into preallocated output
 @njit(cache=True)
 def _compute_soc_multi_methods_out(
-        delta_soc,
-        current,
-        abs_current,
-        voltage,
-        soc_start,
-        lower_soc,
-        upper_soc,
-        threshold_current,
-        max_voltage,
-        min_voltage,
-        method_ints,
-        socs_out,
-        reset_buf):
+    delta_soc: list[float],
+    current: list[float],
+    abs_current: list[float],
+    voltage: list[float],
+    soc_start: float,
+    lower_soc: float,
+    upper_soc: float,
+    threshold_current: float,
+    max_voltage: float,
+    min_voltage: float,
+    method_ints: list[int],
+    socs_out: list[int, float],
+    reset_buf: list[float],
+) -> None:
     """
     Compute State of Charge (SOC) arrays for all methods in one call, writing into preallocated output.
 
@@ -53,7 +56,6 @@ def _compute_soc_multi_methods_out(
     - current (n): array of current values
     - abs_current (n): array of absolute current values
     - voltage (n): array of voltage values
-    - c_ref_as (n): array of capacity values in As
     - SOC_start (float): starting SOC value
     - lower_soc (float): lowerSOC value for reset
     - upper_soc (float): upperSOC value for reset
@@ -95,11 +97,13 @@ def _compute_soc_multi_methods_out(
             # Full-Rest Runs
             if is_full_method and (voltage[i] >= max_voltage and abs_current[i] < threshold_current):
                 start = i
-                while(i + 1 < n
-                        and not np.isnan(voltage[i + 1])
-                        and not np.isnan(abs_current[i + 1])
-                        and voltage[i + 1] >= max_voltage
-                        and abs_current[i + 1] < threshold_current):
+                while (
+                    i + 1 < n
+                    and not np.isnan(voltage[i + 1])
+                    and not np.isnan(abs_current[i + 1])
+                    and voltage[i + 1] >= max_voltage
+                    and abs_current[i + 1] < threshold_current
+                ):
                     i += 1
                 run_length = i - start + 1
                 if run_length >= min_run_length:
@@ -110,11 +114,13 @@ def _compute_soc_multi_methods_out(
             # Empty-Rest Runs
             if is_empty_method and (voltage[i] <= min_voltage and abs_current[i] < threshold_current):
                 start = i
-                while (i + 1 < n
-                       and not np.isnan(voltage[i + 1])
-                       and not np.isnan(abs_current[i + 1])
-                       and voltage[i + 1] <= min_voltage
-                       and abs_current[i + 1] < threshold_current):
+                while (
+                    i + 1 < n
+                    and not np.isnan(voltage[i + 1])
+                    and not np.isnan(abs_current[i + 1])
+                    and voltage[i + 1] <= min_voltage
+                    and abs_current[i + 1] < threshold_current
+                ):
                     i += 1
                 run_length = i - start + 1
                 if run_length >= min_run_length and reset_buf[i] < 0.0:
@@ -169,18 +175,19 @@ def _compute_soc_multi_methods_out(
 
 
 def add_soc(
-        df: pd.DataFrame,
-        df_primitives: pd.DataFrame,
-        neware_bool=True,
-        standard_method=None,
-        methods=None,
-        config=None,
-        lower_soc_for_voltage=0,
-        upper_soc_for_voltage=1,
-        lower_voltage_for_soc=0,
-        upper_voltage_for_soc=0,
-        verbose=True,
-        restart_for_testindex=True):
+    df: pd.DataFrame,
+    df_primitives: pd.DataFrame,
+    neware_bool: bool = True,
+    standard_method: SocMethod = None,
+    methods: list[SocMethod] = None,
+    config: BatteryConfig = None,
+    lower_soc_for_voltage: float = 0,
+    upper_soc_for_voltage: float = 1,
+    lower_voltage_for_soc: float = 0,
+    upper_voltage_for_soc: float = 0,
+    verbose: bool = True,
+    restart_for_testindex: bool = True,
+) -> pd.DataFrame:
     """
     Computes the Soc (State of Charge) for a battery cell, from the given dataframe. It therefore integrates the current over time,
     using the trapezoid rule. As a capacity reference value, the first calculated capacity value is used, which is updated once the
@@ -223,7 +230,7 @@ def add_soc(
                 st.log("added Capacity[Ah] column")
 
     # Copy df so it can be safely modified
-    df = df.copy()
+    df_mod = df.copy()
 
     # Config
     if config is None:
@@ -237,7 +244,7 @@ def add_soc(
     lower_soc = lower_soc_for_voltage or 0
     upper_soc = upper_soc_for_voltage or 1
 
-    logging.info(f"Starting SOC computation on dataframe of size {len(df)}...")
+    logging.info(f"Starting SOC computation on dataframe of size {len(df_mod)}...")
 
     # precompile numba functions to be faster with first big block
     with StepTimer(verbose) as st:
@@ -249,8 +256,8 @@ def add_soc(
     with StepTimer(verbose) as st:
         for m in methods:
             colname = "SOC_" + (m.name if hasattr(m, "name") else str(m))
-            if colname not in df.columns:
-                df[colname] = np.nan
+            if colname not in df_mod.columns:
+                df_mod[colname] = np.nan
                 st.log(f"created column {colname}")
 
     # Helper to adjust voltages
@@ -258,12 +265,12 @@ def add_soc(
         return max_v * (1 - intervall), min_v * (1 + intervall)
 
     # Either process per TestIndex block or the whole df
-    if "TestIndex" in df.columns and restart_for_testindex:
-        unique_indices = df.loc[df["TestIndex"] >= 0, "TestIndex"].dropna().unique()
+    if "TestIndex" in df_mod.columns and restart_for_testindex:
+        unique_indices = df_mod.loc[df_mod["TestIndex"] >= 0, "TestIndex"].dropna().unique()
         for idx in unique_indices:
-            logging.info(f"Processing TestIndex {idx} with {df['TestIndex'].eq(idx).sum()} rows...")
-            block_mask = df["TestIndex"] == idx
-            block = df.loc[block_mask]
+            logging.info(f"Processing TestIndex {idx} with {df_mod['TestIndex'].eq(idx).sum()} rows...")
+            block_mask = df_mod["TestIndex"] == idx
+            block = df_mod.loc[block_mask]
 
             if block.empty:
                 continue
@@ -319,20 +326,20 @@ def add_soc(
             # Assign back using the sorted block's index so the row mapping is exact
             for idx_method, method in enumerate(methods):
                 colname = "SOC_" + (method.name if hasattr(method, "name") else str(method))
-                df.loc[block_sorted.index, colname] = socs_matrix[idx_method]
+                df_mod.loc[block_sorted.index, colname] = socs_matrix[idx_method]
 
             del socs_matrix, reset_buf
             gc.collect()
 
     else:
-        logging.info(f"Processing whole dataframe ({len(df)} rows)...")
+        logging.info(f"Processing whole dataframe ({len(df_mod)} rows)...")
 
         with StepTimer(verbose) as st:
             delta_soc, current_arr, abs_current, voltage_arr, c_ref_as = precompute_block_arrays_soc_methods(
-                df["Test_Time[s]"].values,
-                df["Current[A]"].values,
-                df["Voltage[V]"].values,
-                df["Capacity[Ah]"].values,
+                df_mod["Test_Time[s]"].values,
+                df_mod["Current[A]"].values,
+                df_mod["Voltage[V]"].values,
+                df_mod["Capacity[Ah]"].values,
                 c_ref,
             )
             st.log("precomputed arrays")
@@ -340,7 +347,7 @@ def add_soc(
         max_voltage_adj, min_voltage_adj = _adj_voltages(max_voltage, min_voltage, voltage_intervall)
         method_ints = np.array([SOC_METHOD_MAP[m.name] for m in methods], dtype=np.int64)
 
-        n_points = len(df)
+        n_points = len(df_mod)
         socs_matrix = np.empty((len(methods), n_points), dtype=np.float64)
         reset_buf = np.empty(n_points, dtype=np.float64)
 
@@ -364,7 +371,7 @@ def add_soc(
 
         for idx_method, method in enumerate(methods):
             colname = "SOC_" + (method.name if hasattr(method, "name") else str(method))
-            df[colname] = socs_matrix[idx_method]
+            df_mod[colname] = socs_matrix[idx_method]
 
         del socs_matrix, reset_buf
         gc.collect()
@@ -372,11 +379,11 @@ def add_soc(
     # Rename standard SOC column
     if standard_method is not None:
         std_name = standard_method.name if hasattr(standard_method, "name") else str(standard_method)
-        if "SOC_" + std_name in df.columns:
+        if "SOC_" + std_name in df_mod.columns:
             # overwrite existing "SOC" if present, avoiding duplicate column labels
-            df["SOC"] = df.pop("SOC_" + std_name)
+            df_mod["SOC"] = df_mod.pop("SOC_" + std_name)
 
-    return df
+    return df_mod
 
 
 def warmup_numba():
@@ -407,5 +414,5 @@ def warmup_numba():
         3.0,
         dummy_methods,
         socs_out,
-        reset_buf
+        reset_buf,
     )

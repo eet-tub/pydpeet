@@ -1,9 +1,17 @@
-import numpy as np
-from numba import njit
 import logging
 
+import numpy as np
+import pandas as pd
+from numba import njit
+
+
+# TODO: Typing correct?
 @njit(cache=True)
-def _widen_segments_numba(Data_arr, ID_arr, thresholds):
+def _widen_segments_numba(
+    Data_arr: np.ndarray,
+    ID_arr: np.ndarray,
+    thresholds: np.array[float],
+) -> np.array:
     """
     Widen constant segments in a DataFrame by identifying contiguous segments in each column,
     and then widening each segment by extending it to the left and right until the
@@ -97,9 +105,12 @@ def _widen_segments_numba(Data_arr, ID_arr, thresholds):
     return new_ID_arr
 
 
-
-
-def _widen_constant_segments(df, adjust_segments_config, Threshold_segments_to_print, supress_IO_warnings):
+def _widen_constant_segments(
+    df: pd.DataFrame,
+    adjust_segments_config: list[tuple[str, float]],
+    Threshold_segments_to_print: int,
+    supress_IO_warnings: bool,
+) -> pd.DataFrame:
     """
     Widen constant segments in a DataFrame by identifying contiguous segments in each column,
     and then widening each segment by extending it to the left and right until the
@@ -146,23 +157,29 @@ def _widen_constant_segments(df, adjust_segments_config, Threshold_segments_to_p
     for i, col in enumerate(ID_columns_name_list):
         updated_ids = new_ID_arr[:, i]
         removed_ranges = [
-            f"{start}:{end}"
-            for start, end in original_segments[col]
-            if np.all(updated_ids[start:end + 1] == -1)
+            f"{start}:{end}" for start, end in original_segments[col] if np.all(updated_ids[start : end + 1] == -1)
         ]
         if removed_ranges:
             if not supress_IO_warnings:
                 if Threshold_segments_to_print:
                     if Threshold_segments_to_print < len(removed_ranges):
-                        logging.warning(f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges[:Threshold_segments_to_print]) + " ...")
+                        logging.warning(
+                            f"Removed segments during finetuning of the width in '{col}': "
+                            + ", ".join(removed_ranges[:Threshold_segments_to_print])
+                            + " ..."
+                        )
                     else:
-                        logging.warning(f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges[:Threshold_segments_to_print]))
+                        logging.warning(
+                            f"Removed segments during finetuning of the width in '{col}': "
+                            + ", ".join(removed_ranges[:Threshold_segments_to_print])
+                        )
                 else:
-                    logging.warning(f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges))
+                    logging.warning(
+                        f"Removed segments during finetuning of the width in '{col}': " + ", ".join(removed_ranges)
+                    )
 
     # Update DataFrame
     for i, col in enumerate(ID_columns_name_list):
         df[col] = new_ID_arr[:, i]
 
     return df
-

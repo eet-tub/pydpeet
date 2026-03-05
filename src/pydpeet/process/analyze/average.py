@@ -1,12 +1,19 @@
 import logging
 
 import numpy as np
+import pandas as pd
 
 from pydpeet.process.analyze.capacity import add_charge_throughput
-from pydpeet.process.analyze.utils import StepTimer, _check_columns
+from pydpeet.process.analyze.utils import (
+    StepTimer,
+    _check_columns,
+)
 
 
-def calculate_average_temperature(df, verbose=True):
+def calculate_average_temperature(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     if "Temperature[°C]" not in df.columns:
         raise ValueError("Temperature[°C] column not found in DataFrame.")
 
@@ -15,7 +22,10 @@ def calculate_average_temperature(df, verbose=True):
     return average_temperature
 
 
-def calculate_average_voltage(df, verbose=True):
+def calculate_average_voltage(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     if "Voltage[V]" not in df.columns:
         raise ValueError("Voltage[V] column not found in DataFrame.")
 
@@ -24,18 +34,20 @@ def calculate_average_voltage(df, verbose=True):
     return average_voltage
 
 
-def calculate_average_loading_voltage(df, verbose=True):
+def calculate_average_loading_voltage(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     if "Voltage[V]" not in df.columns:
         raise ValueError("Voltage[V] column not found in DataFrame.")
 
     positive_charges = df[df["Voltage[V]"].diff() > 0]["Voltage[V]"]
     average_charge = positive_charges.mean()
 
-    # Select only positive values (charging)
     return average_charge
 
 
-def calculate_average_charge(df):
+def calculate_average_charge(df: pd.DataFrame) -> float:
     """
     Calculate the average charge current [A] over all charging phases (Current > 0) efficiently.
     """
@@ -47,10 +59,11 @@ def calculate_average_charge(df):
 
     if positive.size == 0:
         return np.nan
+
     return positive.mean()
 
 
-def calculate_average_discharge(df):
+def calculate_average_discharge(df: pd.DataFrame) -> float:
     """
     Calculate the average discharge current [A] over all discharging phases (Current < 0) efficiently.
     """
@@ -62,10 +75,14 @@ def calculate_average_discharge(df):
 
     if negative.size == 0:
         return np.nan
+
     return negative.mean()
 
 
-def calculate_soh_loss(df, verbose=True):
+def calculate_soh_loss(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     """
     Calculate the total SOH loss for a dataset.
     Returns a single scalar value:
@@ -78,6 +95,7 @@ def calculate_soh_loss(df, verbose=True):
     if soh.empty:
         if verbose:
             logging.warning("No valid SOH values found.")
+
         return np.nan
 
     with StepTimer(verbose) as st:
@@ -87,7 +105,10 @@ def calculate_soh_loss(df, verbose=True):
     return soh_loss
 
 
-def calculate_soh_loss_per_cycle(df, verbose=True):
+def calculate_soh_loss_per_cycle(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     """
     Calculate the SOH loss per equivalent full cycle.
     Returns a single scalar value:
@@ -101,12 +122,14 @@ def calculate_soh_loss_per_cycle(df, verbose=True):
     if cycles.empty:
         if verbose:
             logging.warning("No valid EquivalentFullCycles values found. returning np.nan")
+
         return np.nan
 
     max_cycles = cycles.max()
     if max_cycles <= 0:
         if verbose:
             logging.warning("Max EquivalentFullCycles <= 0, cannot compute loss per cycle. returning np.nan")
+
         return np.nan
 
     with StepTimer(verbose) as st:
@@ -116,7 +139,10 @@ def calculate_soh_loss_per_cycle(df, verbose=True):
     return soh_loss_per_cycle
 
 
-def add_soh_loss_over_charging(df, verbose=True):
+def add_soh_loss_over_charging(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> pd.DataFrame:
     """
     Calculate SOH loss per unit of charging current.
 
@@ -148,12 +174,18 @@ def add_soh_loss_over_charging(df, verbose=True):
         df.at[end_idx, "SohLossPerAh"] = loss_per_current
 
         if verbose:
-            logging.info(f"From index {start_idx} to {end_idx}: SOH diff = {soh_diff}, " f"Avg current = {avg_current}, Loss/current = {loss_per_current}")
+            logging.info(
+                f"From index {start_idx} to {end_idx}: SOH diff = {soh_diff}, "
+                f"Avg current = {avg_current}, Loss/current = {loss_per_current}"
+            )
 
     return df
 
 
-def calculate_total_charge(df, verbose=True):
+def calculate_total_charge(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     """
     Calculate the total charge (in Ah) from the ChargeThroughput column.
 
@@ -170,6 +202,7 @@ def calculate_total_charge(df, verbose=True):
     if "ChargeThroughput[Ah]" not in df.columns:
         if verbose:
             logging.info("ChargeThroughput column missing, computing via add_charge_throughput...")
+
         df = add_charge_throughput(df, verbose=verbose)
 
     delta_load = df["ChargeThroughput[Ah]"].diff().fillna(0)
@@ -181,7 +214,10 @@ def calculate_total_charge(df, verbose=True):
     return total_charge
 
 
-def calculate_total_discharge(df, verbose=True):
+def calculate_total_discharge(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     """
     Calculate the total discharge (in Ah) from the ChargeThroughput column.
 
@@ -207,7 +243,10 @@ def calculate_total_discharge(df, verbose=True):
     return total_discharge
 
 
-def calculate_average_positive_chargeThroughput(df, verbose=True):
+def calculate_average_positive_chargeThroughput(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     """
     Calculate the average charge (in Ah) from the ChargeThroughput column.
 
@@ -228,11 +267,13 @@ def calculate_average_positive_chargeThroughput(df, verbose=True):
     positive_charges = df[df["ChargeThroughput[Ah]"] > 0]["ChargeThroughput[Ah]"]
     average_charge = positive_charges.mean()
 
-    # Select only positive values (charging)
     return average_charge
 
 
-def calculate_average_negative_charge_throughput(df, verbose=True):
+def calculate_average_negative_charge_throughput(
+    df: pd.DataFrame,
+    verbose: bool = True,
+) -> float:
     """
     Calculate the average discharge (in Ah) from the ChargeThroughput column.
 
@@ -253,5 +294,4 @@ def calculate_average_negative_charge_throughput(df, verbose=True):
     negative_charges = df[df["ChargeThroughput[Ah]"] < 0]["ChargeThroughput[Ah]"]
     average_discharge = negative_charges.mean()
 
-    # Select only negative values (discharging)
     return average_discharge

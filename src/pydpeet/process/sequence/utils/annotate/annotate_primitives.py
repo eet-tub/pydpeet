@@ -6,10 +6,10 @@ from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
 
 def _annotate_primitives(
-        df: pd.DataFrame,
-        data_columns: dict[str, str],
-        thresholds: dict[str, float],
-        show_runtime: bool = False
+    df: pd.DataFrame,
+    data_columns: dict[str, str],
+    thresholds: dict[str, float],
+    show_runtime: bool = False,
 ) -> pd.DataFrame:
     """
     Annotates the primitives in the dataframe with ID, variable, duration, length, min, max, avg, type, direction, slope.
@@ -28,11 +28,12 @@ def _annotate_primitives(
     df = _annotate_variable(df, data_columns, show_runtime)
     with log_time("adding duration, length, min, max, avg, type, direction, slope annotation", show_runtime):
         df = _merged_annotations(df, data_columns, thresholds)
+
     return df
 
 
 @njit(cache=True)
-def _compute_segment_id(ID_arrays):
+def _compute_segment_id(ID_arrays) -> np.array:
     """
     Compute segment ID array using the ID arrays.
 
@@ -82,7 +83,11 @@ def _compute_segment_id(ID_arrays):
     return segment_id
 
 
-def _annotate_id(df: pd.DataFrame, data_columns: dict[str, str], show_runtime: bool) -> pd.DataFrame:
+def _annotate_id(
+    df: pd.DataFrame,
+    data_columns: dict[str, str],
+    show_runtime: bool,
+) -> pd.DataFrame:
     """
     Adds a column 'ID' to the dataframe df based on the values of the columns specified in data_columns.
 
@@ -104,10 +109,15 @@ def _annotate_id(df: pd.DataFrame, data_columns: dict[str, str], show_runtime: b
         arr = df[cols].to_numpy()
         segment_id = _compute_segment_id(arr)
         df["ID"] = segment_id
+
     return df
 
 
-def _annotate_variable(df: pd.DataFrame, data_columns: dict[str, str], show_runtime: bool) -> pd.DataFrame:
+def _annotate_variable(
+    df: pd.DataFrame,
+    data_columns: dict[str, str],
+    show_runtime: bool,
+) -> pd.DataFrame:
     """
     Adds a column 'Variable' to the dataframe df based on the values of the columns specified in data_columns.
 
@@ -129,18 +139,19 @@ def _annotate_variable(df: pd.DataFrame, data_columns: dict[str, str], show_runt
             mask = (data[:, i] != -1) & (variable_array == np.array(None))
             variable_array[mask] = name
         df["Variable"] = variable_array
+
     return df
 
 
 @njit(cache=True)
 def _merged_annotations_njit(
-    group_of_row,
-    group_var_vals,
-    values_matrix,
-    testtime_s,
-    current_mean_per_group,
-    thresholds_array,
-):
+    group_of_row: np.array,
+    group_var_vals: np.array,
+    values_matrix: np.array,
+    testtime_s: np.array,
+    current_mean_per_group: np.array,
+    thresholds_array: np.array,
+) -> tuple[np.array, np.array, np.array, np.array, np.array, np.array, np.array]:
     """
     Compute the following annotations for each row in the input dataframe:
     - min value
@@ -292,7 +303,11 @@ def _merged_annotations_njit(
     return min_vals, max_vals, avg_vals, slope_vals, length_vals, type_codes, dir_codes
 
 
-def _merged_annotations(df: pd.DataFrame, data_columns: dict[str, str], thresholds: dict[str, float]) -> pd.DataFrame:
+def _merged_annotations(
+    df: pd.DataFrame,
+    data_columns: dict[str, str],
+    thresholds: dict[str, float],
+) -> pd.DataFrame:
     # map variable names to integer var indices
     """
     Compute duration, length, min, max, avg, type, direction, slope for each group of (ID, Variable).

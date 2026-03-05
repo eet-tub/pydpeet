@@ -1,7 +1,9 @@
 import logging
 
 
-def set_logging_style(level="WARNING", formatting_string="%(levelname)s | %(pathname)s:%(lineno)d | %(message)s"):
+def set_logging_style(
+    level="WARNING", formatting_string="%(levelname)s | %(pathname)s:%(lineno)d | %(message)s"
+) -> None:
     """
     Sets up on import the logging configuration to use the specified level and a custom format.
 
@@ -22,8 +24,5 @@ def set_logging_style(level="WARNING", formatting_string="%(levelname)s | %(path
     """
     if isinstance(level, str):
         level = getattr(logging, level)
-    logging.basicConfig(
-        level=level,
-        format=formatting_string,
-        force=True
-    )
+
+    logging.basicConfig(level=level, format=formatting_string, force=True)

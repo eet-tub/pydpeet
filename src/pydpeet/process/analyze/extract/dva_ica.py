@@ -9,21 +9,25 @@ from scipy.signal import savgol_filter
 from pydpeet.process.analyze.configs.ocv_config import *
 from pydpeet.process.analyze.extract.ocv import extract_ocv_iocv
 from pydpeet.process.analyze.soc import add_soc
-from pydpeet.process.sequence.step_analyzer import add_primitive_segments, extract_sequence_overview
+from pydpeet.process.sequence.step_analyzer import (
+    add_primitive_segments,
+    extract_sequence_overview,
+)
 from pydpeet.process.sequence.utils.visualize.visualize_data import *
 
 
 def compute_ocv_dva_ica(
-        df_primitives=None,
-        df=None,
-        min_pause_lenght: float = 120.0,
-        min_loops: float = 70,
-        soc_max_voltage: float = 4.21,
-        soc_min_voltage: float = 2.49,
-        soc_c_ref: float = 4.8,
-        savgol: bool = False,
-        savgol_window_lenght_percentage: float = 0.07,
-        visualize: bool = False) -> pd.DataFrame:
+    df_primitives: pd.DataFrame = None,
+    df: pd.DataFrame = None,
+    min_pause_lenght: float = 120.0,
+    min_loops: float = 70,
+    soc_max_voltage: float = 4.21,
+    soc_min_voltage: float = 2.49,
+    soc_c_ref: float = 4.8,
+    savgol: bool = False,
+    savgol_window_lenght_percentage: float = 0.07,
+    visualize: bool = False,
+) -> pd.DataFrame:
     """
     Compute DVA and ICA curves from given data.
 
@@ -71,7 +75,7 @@ def compute_ocv_dva_ica(
             SHOW_RUNTIME=False,
             check_CV_0Aend_segments_bool=False,
             check_zero_length_segments_bool=False,
-            supress_IO_warnings=True
+            supress_IO_warnings=True,
         )
 
     if df_primitives is not None:
@@ -94,7 +98,7 @@ def compute_ocv_dva_ica(
                 method="withResetWhenFullAndEmpty",
                 max_Voltage=soc_max_voltage,
                 min_Voltage=soc_min_voltage,
-                C_ref=soc_c_ref
+                C_ref=soc_c_ref,
             )
 
         df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG)
@@ -105,10 +109,7 @@ def compute_ocv_dva_ica(
     logging.info("Calling iOCV detection...")
     # Get every iocv as df
     dfs_per_block = extract_ocv_iocv(
-        min_pause_lenght=min_pause_lenght,
-        min_loops=min_loops,
-        visualize=False,
-        df_primitives=df_primitives
+        min_pause_lenght=min_pause_lenght, min_loops=min_loops, visualize=False, df_primitives=df_primitives
     )
 
     # Compute SOC
@@ -122,11 +123,13 @@ def compute_ocv_dva_ica(
             method="withResetWhenFullAndEmpty",
             max_Voltage=soc_max_voltage,
             min_Voltage=soc_min_voltage,
-            C_ref=soc_c_ref
+            C_ref=soc_c_ref,
         )
 
     logging.info("Computing Capacity in Ah...")
-    capacity_Ah_points = integrate.cumulative_trapezoid((df_primitives["Current[A]"]), x=df_primitives["Test_Time[s]"], initial=0) / 3600
+    capacity_Ah_points = (
+        integrate.cumulative_trapezoid((df_primitives["Current[A]"]), x=df_primitives["Test_Time[s]"], initial=0) / 3600
+    )
     df_primitives["Capacity_Ah"] = capacity_Ah_points
 
     logging.info("Labeling DVA/ICA blocks (Charge/Discharge)...")
@@ -215,4 +218,5 @@ def compute_ocv_dva_ica(
         plt.tight_layout()
         plt.show()
     logging.info("Returning DataFrame with all DVA and ICA Curves...")
+
     return pd.concat(all_dva_ica_curves, ignore_index=True)

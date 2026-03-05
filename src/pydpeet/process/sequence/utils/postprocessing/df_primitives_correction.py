@@ -4,12 +4,12 @@ from pydpeet.process.sequence.utils.annotate.annotate_primitives import _merged_
 
 
 def df_primitives_correction(
-        df_primitives: pd.DataFrame,
-        correction_config: dict,
-        data_columns: dict[str, str],
-        thresholds: dict[str, float],
-        reindex: bool = True,
-        reannotate: bool = True
+    df_primitives: pd.DataFrame,
+    correction_config: dict,
+    data_columns: dict[str, str],
+    thresholds: dict[str, float],
+    reindex: bool = True,
+    reannotate: bool = True,
 ) -> pd.DataFrame:
     """
     Corrects the primitives in the dataframe based on the given configuration.

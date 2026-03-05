@@ -26,7 +26,7 @@ def _visualize_phases(
     segment_id_cols: list[str] = None,
     segment_colors: (dict[str, str] | list[str]) = None,
     segment_alpha: float = 0.3,
-    columns_to_visualize: list[str] = ['Voltage[V]', 'Current[A]', 'Power[W]'],
+    columns_to_visualize: list[str] = ["Voltage[V]", "Current[A]", "Power[W]"],
     line_colors: dict[str, str] = None,
     y_axis_ranges: dict[str, tuple[float, float]] = None,
     use_lines_for_segments: bool = True,
@@ -35,8 +35,8 @@ def _visualize_phases(
     show_id: bool = True,
     width_height_ratio: list[float, float] = [1.0, 0.3],
     show_runtime: bool = True,
-    show_grid: bool = False
-):
+    show_grid: bool = False,
+) -> None:
     """
     Visualizes the given dataframe by plotting all columns over time.
 
@@ -119,11 +119,7 @@ def _visualize_phases(
 
     # 6) Group segments by ID + Variable
     with log_time("grouping segments by ID + Variable", show_runtime):
-        stats = (
-            df.groupby(['ID', 'Variable'])['Test_Time[s]']
-            .agg(tmin='min', tmax='max')
-            .reset_index()
-        )
+        stats = df.groupby(["ID", "Variable"])["Test_Time[s]"].agg(tmin="min", tmax="max").reset_index()
 
     y0, y1 = ax_base.get_ylim()
     height = y1 - y0
@@ -172,14 +168,7 @@ def _visualize_phases(
 
             label = "  ".join(label_parts)
 
-            ax_base.text(x_center,
-                         mid_y,
-                         label,
-                         ha='center',
-                         va='center',
-                         rotation=90,
-                         size=10)
-
+            ax_base.text(x_center, mid_y, label, ha="center", va="center", rotation=90, size=10)
 
     # 8) Adding grid and legend
     with log_time("adding grid and legend", show_runtime):
@@ -197,6 +186,7 @@ def _visualize_phases(
         plt.tight_layout()
 
 
+# TODO: Docstring
 def visualize_phases(
     dataframe: pd.DataFrame,
     start_time: float = None,
@@ -218,7 +208,7 @@ def visualize_phases(
     show_id: bool = True,
     width_height_ratio: float = [1.0, 0.3],
     show_runtime: bool = True,
-):
+) -> None:
     if start_time is None:
         logging.warning("start_time is None - setting it to 0.0")
         start_time = 0.0
@@ -280,5 +270,5 @@ def visualize_phases(
         show_time=show_time,
         show_id=show_id,
         width_height_ratio=width_height_ratio,
-        show_runtime=show_runtime
+        show_runtime=show_runtime,
     )

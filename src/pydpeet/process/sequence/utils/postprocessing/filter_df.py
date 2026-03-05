@@ -6,19 +6,16 @@ import pandas as pd
 from pandas import DataFrame
 
 
-def filter_df(df_segments_and_sequences,
-              df_primitives,
-              rules,
-              standard_columns,
-              combine_op='xor'):
-
+# TODO: Docstring
+def filter_df(
+    df_segments_and_sequences: pd.DataFrame,
+    df_primitives: pd.DataFrame,
+    rules: list[str],
+    standard_columns: list[str],
+    combine_op: str = "xor",
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     # Map string to actual function
-    comb_funcs = {
-        'and': operator.and_,
-        'or': operator.or_,
-        'xor': operator.xor,
-        'not': operator.not_
-    }
+    comb_funcs = {"and": operator.and_, "or": operator.or_, "xor": operator.xor, "not": operator.not_}
     if combine_op not in comb_funcs:
         raise ValueError(f"combine_op must be one of {list(comb_funcs)}")
 
@@ -39,7 +36,9 @@ def filter_df(df_segments_and_sequences,
 
     # Create standard and non-standard dataframes
     df_standard = df_primitives[standard_columns + ["ID", "Power[W]"]]
-    df_non_standard = df_primitives[[col for col in df_primitives.columns if col not in standard_columns + ["Power[W]"]]]
+    df_non_standard = df_primitives[
+        [col for col in df_primitives.columns if col not in standard_columns + ["Power[W]"]]
+    ]
 
     # Nullify non-standard rows not in filtered IDs
     mask = ~df_non_standard["ID"].isin(df_filtered_IDs)
@@ -53,10 +52,12 @@ def filter_df(df_segments_and_sequences,
     return df_filtered, df_filtered_IDs
 
 
-def return_or_print_blocks(df_filtered: pd.DataFrame,
-                           filtered_IDs: pd.Series | list | set, tuple,
-                           print_blocks: bool = True) -> None | list[dict]:
-
+# TODO: Docstring
+def return_or_print_blocks(
+    df_filtered: pd.DataFrame,
+    filtered_IDs: pd.Series | list | set | tuple,
+    print_blocks: bool = True,
+) -> None | list[dict]:
     import numpy as np
 
     # Ensure IDs are in a fast lookup structure
@@ -106,7 +107,10 @@ def return_or_print_blocks(df_filtered: pd.DataFrame,
     return blocks
 
 
-def split_df_by_blocks(df_filtered: pd.DataFrame, blocks: list[dict]) -> list[pd.DataFrame]:
+def split_df_by_blocks(
+    df_filtered: pd.DataFrame,
+    blocks: list[dict],
+) -> list[pd.DataFrame]:
     """
     Split df_filtered into multiple DataFrames per block.
     Each block includes all rows from start_id to end_id (inclusive), even if IDs repeat.
@@ -133,15 +137,15 @@ def split_df_by_blocks(df_filtered: pd.DataFrame, blocks: list[dict]) -> list[pd
 
     return dfs_per_block
 
-def filter_and_split_df_by_blocks(df_segments_and_sequences: pd.DataFrame,
-                                  df_primitives: pd.DataFrame,
-                                  rules: list[str],
-                                  combine_op: str = 'or',
-                                  print_blocks: bool = False,
-                                  also_return_filtered_df: bool = True
-                                  ) -> tuple[list[DataFrame], DataFrame] | list[DataFrame]:
 
-
+def filter_and_split_df_by_blocks(
+    df_segments_and_sequences: pd.DataFrame,
+    df_primitives: pd.DataFrame,
+    rules: list[str],
+    combine_op: str = "or",
+    print_blocks: bool = False,
+    also_return_filtered_df: bool = True,
+) -> tuple[list[DataFrame], DataFrame] | list[DataFrame]:
     standard_columns = ["Test_Time[s]", "Voltage[V]", "Current[A]", "Power[W]"]
     logging.warning("Using default standard columns:")
     logging.warning(standard_columns)
@@ -151,20 +155,14 @@ def filter_and_split_df_by_blocks(df_segments_and_sequences: pd.DataFrame,
         df_primitives=df_primitives,
         rules=rules,
         combine_op=combine_op,
-        standard_columns=standard_columns
+        standard_columns=standard_columns,
     )
 
-    blocks = return_or_print_blocks(
-        df_filtered=df_filtered,
-        filtered_IDs=df_filtered_IDs,
-        print_blocks=print_blocks
-    )
+    blocks = return_or_print_blocks(df_filtered=df_filtered, filtered_IDs=df_filtered_IDs, print_blocks=print_blocks)
 
-    dfs_per_block = split_df_by_blocks(
-        df_filtered=df_filtered,
-        blocks=blocks
-    )
+    dfs_per_block = split_df_by_blocks(df_filtered=df_filtered, blocks=blocks)
 
     if also_return_filtered_df:
         return dfs_per_block, df_filtered
+
     return dfs_per_block

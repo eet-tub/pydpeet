@@ -2,13 +2,20 @@ import inspect
 import logging
 
 import numpy as np
+import pandas as pd
 
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
-from pydpeet.process.analyze.utils import StepTimer, _check_columns
+from pydpeet.process.analyze.utils import (
+    StepTimer,
+    _check_columns,
+)
 
 
-# doku: bei Neware FUDS Test erhöht sich die Spannung bei einem negativen Stromsprung um ca. 1A
-def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
+def add_resistance_internal(
+    df: pd.DataFrame,
+    config: BatteryConfig = None,
+    verbose: bool = True,
+) -> pd.DataFrame:
     """
     Calculate the internal resistance of a battery from given test data.
 
@@ -44,14 +51,14 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
     min_voltage_diff = config.min_voltage_diff
     ignore_negative_resistance_values = config.ignore_negative_resistance_values
 
-    df = df.copy()
-    logging.info(f"Starting internal resistance computation on dataframe of size {len(df)}...")
+    df_mod = df.copy()
+    logging.info(f"Starting internal resistance computation on dataframe of size {len(df_mod)}...")
 
     # Calculate differences
     with StepTimer(verbose) as st:
-        delta_t = df["Test_Time[s]"].diff()
-        delta_current = df["Current[A]"].diff()
-        delta_voltage = df["Voltage[V]"].diff()
+        delta_t = df_mod["Test_Time[s]"].diff()
+        delta_current = df_mod["Current[A]"].diff()
+        delta_voltage = df_mod["Voltage[V]"].diff()
         st.log("calculated delta_t, delta_I, delta_V")
 
     # Only calculate resistance when:
@@ -70,14 +77,11 @@ def add_resistance_internal(df, config: BatteryConfig = None, verbose=True):
         st.log("computed internal resistance for valid points")
 
     # Assign the calculated resistances
-    df["InternalResistance[ohm]"] = resistance
-
-    # useful for debugging
-    # df['delta_t'] = delta_t
-    # df['delta_current'] = delta_current
-    # df['delta_voltage'] = delta_voltage
+    df_mod["InternalResistance[ohm]"] = resistance
 
     if ignore_negative_resistance_values:
-        df["InternalResistance[ohm]"] = df["InternalResistance[ohm]"].mask(df["InternalResistance[ohm]"] <= 0)
+        df_mod["InternalResistance[ohm]"] = df_mod["InternalResistance[ohm]"].mask(
+            df_mod["InternalResistance[ohm]"] <= 0
+        )
 
-    return df
+    return df_mod

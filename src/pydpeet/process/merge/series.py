@@ -3,12 +3,18 @@ import logging
 import numpy as np
 import pandas as pd
 
-from pydpeet.process.analyze.utils import StepTimer, drop_duplicate_testtime
+from pydpeet.process.analyze.utils import (
+    StepTimer,
+    drop_duplicate_testtime,
+)
 
-# ** series and campaign utilities **
 
-
-def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose=True, sort_dfs=True):
+def merge_into_series(
+    dfs: list[pd.DataFrame],
+    time_between_tests_seconds: float = 60.0,
+    verbose: bool = True,
+    sort_dfs: bool = True,
+) -> pd.DataFrame:
     """
     Run a list of DataFrames as a single aging test series.
 
@@ -25,20 +31,20 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
     Returns:
     pandas.DataFrame: Merged DataFrame with a single test series.
     """
-    if not df_list:
+    if not dfs:
         logging.info("No DataFrames provided.")
         return pd.DataFrame()
 
     if time_between_tests_seconds <= 0:
         raise ValueError("time_between_tests_seconds must be > 0")
 
-    first_item = df_list[0]
+    first_item = dfs[0]
     if isinstance(first_item, (tuple, list)) and len(first_item) == 2:
         # Already (df, filename) pairs
-        input_pairs = df_list
+        input_pairs = dfs
     else:
         # Wrap plain DataFrames with None as filename
-        input_pairs = [(df, None) for df in df_list]
+        input_pairs = [(df, None) for df in dfs]
 
     if verbose:
         logging.info("Sorting DataFrames...")
@@ -168,10 +174,14 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
         st.log(f"Final merged DataFrame shape: {dfs_merged.shape}")
 
     dfs_merged = drop_duplicate_testtime(dfs_merged)
+
     return dfs_merged
 
 
-def _sort_dfs(df_list, verbose=True):
+def _sort_dfs(
+    dfs: list[pd.DataFrame],
+    verbose: bool = True,
+) -> list[pd.DataFrame]:
     """
     Sorts a list of DataFrames by their 'Date_Time' column.
     Falls back to filename order if no valid absolute time is found.
@@ -187,16 +197,16 @@ def _sort_dfs(df_list, verbose=True):
     list of pandas.DataFrame
         Sorted list of DataFrames.
     """
-    if not df_list:
+    if not dfs:
         return []
 
     time_col = "Date_Time"
 
     # ensure df_list always work with (df, filename) pairs
-    if isinstance(df_list[0], (tuple, list)) and len(df_list[0]) == 2:
-        pairs = [(df, fn) for df, fn in df_list if df is not None and not df.empty]
+    if isinstance(dfs[0], (tuple, list)) and len(dfs[0]) == 2:
+        pairs = [(df, fn) for df, fn in dfs if df is not None and not df.empty]
     else:
-        pairs = [(df, None) for df in df_list if df is not None and not df.empty]
+        pairs = [(df, None) for df in dfs if df is not None and not df.empty]
 
     if not pairs:
         logging.warning("No valid DataFrames found.")
@@ -214,7 +224,7 @@ def _sort_dfs(df_list, verbose=True):
                 pd.to_datetime(x[0][time_col].dropna().iloc[0])
                 if time_col in x[0].columns and x[0][time_col].notna().any()
                 else pd.Timestamp.min
-            )
+            ),
         )
     else:
         if any(fn is not None for _, fn in pairs):
@@ -229,11 +239,13 @@ def _sort_dfs(df_list, verbose=True):
     if verbose:
         logging.info("Sorting complete.")
 
-    # Return just the DataFrames
     return [df for df, _ in sorted_pairs]
 
 
-def merge_into_campaign(test_series_list: list[list[pd.DataFrame]], verbose=True):
+def merge_into_campaign(
+    dfs_list: list[list[pd.DataFrame]],
+    verbose: bool = True,
+) -> list[pd.DataFrame]:
     """
     Execute a list of test series and return a list of merged DataFrames.
 
@@ -250,7 +262,7 @@ def merge_into_campaign(test_series_list: list[list[pd.DataFrame]], verbose=True
         List of DataFrames, where each DataFrame represents a merged test series.
     """
     test_campaigns = []
-    for test in test_series_list:
+    for test in dfs_list:
         with StepTimer(verbose) as st:
             test_campaign = merge_into_series(test, verbose=verbose)
             st.log("Executed one test series")

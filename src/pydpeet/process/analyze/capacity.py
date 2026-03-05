@@ -2,18 +2,26 @@ import inspect
 import logging
 
 import numpy as np
+import pandas as pd
 from scipy import integrate
 
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
 from pydpeet.process.analyze.configs.step_analyzer_config import SEGMENT_SEQUENCE_CONFIG
-from pydpeet.process.analyze.utils import StepTimer, _check_columns
+from pydpeet.process.analyze.utils import (
+    StepTimer,
+    _check_columns,
+)
 from pydpeet.process.sequence.step_analyzer import extract_sequence_overview
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 
-# ** Capacity and Degradation metrics **
 
-
-def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = None, verbose=True):
+def add_capacity(
+    df: pd.DataFrame,
+    df_primitives: pd.DataFrame,
+    neware_bool: bool = True,
+    config: BatteryConfig = None,
+    verbose: bool = True,
+) -> pd.DataFrame:
     """
     Compute the capacity of a battery cell from its discharge data.
 
@@ -44,16 +52,18 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
     minimal_current = config.minimal_current_for_capacity
     maximal_current = config.maximal_current_for_capacity
 
-    df = df.copy()
+    df_mod = df.copy()
     max_voltage = config.max_voltage
     min_voltage = config.min_voltage
     voltage_intervall = config.voltage_intervall
 
-    logging.info(f"Starting capacity computation on dataframe of size {len(df)}...")
+    logging.info(f"Starting capacity computation on dataframe of size {len(df_mod)}...")
 
     # Step 2: Segments and sequences
     with StepTimer(verbose) as st:
-        df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG)
+        df_segments_and_sequences = extract_sequence_overview(
+            df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG
+        )
         st.log("computed segments and sequences")
 
     if neware_bool:
@@ -64,14 +74,15 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
             "CC_Discharge_after_CV_Charge",
             "CC_Discharge_after_CCCV_Charge_with_Pause",
             "CC_Discharge_after_CC_Charge_with_Pause",
-            "CC_Discharge_after_CV_Charge_with_Pause"
+            "CC_Discharge_after_CV_Charge_with_Pause",
         ]
         with StepTimer(verbose) as st:
             dfs_per_block, df_filtered = filter_and_split_df_by_blocks(
                 df_segments_and_sequences=df_segments_and_sequences,
                 df_primitives=df_primitives,
                 rules=rules,
-                combine_op="or", also_return_filtered_df=True
+                combine_op="or",
+                also_return_filtered_df=True,
             )
             st.log("filtered initial discharge blocks")
 
@@ -81,7 +92,8 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
             df_segments_and_sequences=df_segments_and_sequences,
             df_primitives=df_primitives,
             rules=rules,
-            combine_op="or", also_return_filtered_df=True
+            combine_op="or",
+            also_return_filtered_df=True,
         )
         st.log("filtered CC_Discharge blocks")
 
@@ -91,9 +103,10 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
         avg_current = block["Current[A]"].mean()
         voltage_range = (block["Voltage[V]"].max(), block["Voltage[V]"].min())
 
-        if (not (minimal_current < avg_current < maximal_current)
-                or not (voltage_range[0] >= max_voltage * (1 - voltage_intervall)
-                        and voltage_range[1] <= min_voltage * (1 + voltage_intervall))):
+        if not (minimal_current < avg_current < maximal_current) or not (
+            voltage_range[0] >= max_voltage * (1 - voltage_intervall)
+            and voltage_range[1] <= min_voltage * (1 + voltage_intervall)
+        ):
             continue
 
         block = block.copy()
@@ -111,18 +124,21 @@ def add_capacity(df, df_primitives, neware_bool=True, config: BatteryConfig = No
 
         discharge_dfs.append(block)
 
-    df_with_capacity = df.copy()
     if len(discharge_dfs) > 0:
         for block in discharge_dfs:
-            df_with_capacity.loc[block.index[0] : block.index[-1], "Capacity[Ah]"] = block["Capacity[Ah]"]
+            df_mod.loc[block.index[0] : block.index[-1], "Capacity[Ah]"] = block["Capacity[Ah]"]
     else:
         logging.info("No valid discharge blocks found, returning DataFrame with Capacity as nans")
-        df_with_capacity["Capacity[Ah]"] = np.full(len(df_with_capacity), np.nan, dtype=np.float64)
+        df_mod["Capacity[Ah]"] = np.full(len(df_mod), np.nan, dtype=np.float64)
 
-    return df_with_capacity
+    return df_mod
 
 
-def add_charge_throughput(df, inplace=False, calculate_tests_individually=False, verbose=True):
+def add_charge_throughput(
+    df: pd.DataFrame,
+    calculate_tests_individually: bool = False,
+    verbose: bool = True,
+) -> pd.DataFrame:
     """
     Calculate charge throughput and absolute charge throughput from a given DataFrame.
 
@@ -148,7 +164,7 @@ def add_charge_throughput(df, inplace=False, calculate_tests_individually=False,
     if n == 0:
         if verbose:
             logging.info("Empty DataFrame, returning.")
-        return df if inplace else df.copy()
+        return df.copy()
 
     time = df[time_col].to_numpy(dtype=float)
     current = df[current_col].to_numpy(dtype=float)
@@ -185,7 +201,8 @@ def add_charge_throughput(df, inplace=False, calculate_tests_individually=False,
             _process_slice(0, n)
             st.log("Processed charge throughput for whole DataFrame")
 
-    out = df if inplace else df.copy()
-    out["ChargeThroughput[Ah]"] = charge_throughput
-    out["AbsoluteChargeThroughput[Ah]"] = abs_charge_throughput
-    return out
+    df_mod = df.copy()
+    df_mod["ChargeThroughput[Ah]"] = charge_throughput
+    df_mod["AbsoluteChargeThroughput[Ah]"] = abs_charge_throughput
+
+    return df_mod
