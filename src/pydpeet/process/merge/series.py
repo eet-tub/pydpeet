@@ -12,7 +12,7 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
     """
     Run a list of DataFrames as a single aging test series.
 
-    Each DataFrame is treated as a single test in the series. The 'Testtime[s]' column of each DataFrame is adjusted to create a continuous time axis. A pause row is added after each DataFrame (except the last one) to indicate a pause in the test series.
+    Each DataFrame is treated as a single test in the series. The 'Test_Time[s]' column of each DataFrame is adjusted to create a continuous time axis. A pause row is added after each DataFrame (except the last one) to indicate a pause in the test series.
 
     The function returns a single DataFrame with the merged test series.
 
@@ -20,7 +20,7 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
     df_list (List[List[pandas.DataFrame]]): List of DataFrames (or list of (df, filename) pairs).
     time_between_tests_seconds (float, optional): Time between tests in seconds. Defaults to 60.0.
     verbose (bool, optional): If True, log debug messages. Defaults to True.
-    sort_dfs (bool, optional): If True, sort the DataFrames by their 'Absolute Time[yyyy-mm-dd hh:mm:ss]' column. Defaults to True.
+    sort_dfs (bool, optional): If True, sort the DataFrames by their 'Date_Time' column. Defaults to True.
 
     Returns:
     pandas.DataFrame: Merged DataFrame with a single test series.
@@ -70,12 +70,12 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
             if "Step_Count" in df.columns:
                 first_val = df["Step_Count"].iloc[0]
                 if isinstance(first_val, str) and first_val.lower() == "test":
-                    logging.warning(f"Skipping DataFrame {i} because StepID starts with 'Test'")
+                    logging.warning(f"Skipping DataFrame {i} because Step_Count starts with 'Test'")
                     continue
 
             last_valid_idx = df["Test_Time[s]"].last_valid_index()
             if last_valid_idx is None:
-                logging.info(f"DataFrame {i} skipped: 'Testtime[s]' is all NaN")
+                logging.info(f"DataFrame {i} skipped: 'Test_Time[s]' is all NaN")
                 continue
 
             # Initialize column types only once
@@ -91,11 +91,11 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
                         object_cols.append(column)
                 other_storage = {c: [] for c in datetime_cols + object_cols}
 
-            # Convert StepID to int64
+            # Convert Step_Count to int64
             if "Step_Count" in df.columns:
                 df["Step_Count"] = pd.to_numeric(df["Step_Count"], errors="coerce").fillna(0).astype(np.int64)
 
-            # Ensure Testtime[s] is numeric and safe for addition
+            # Ensure Test_Time[s] is numeric and safe for addition
             df["Test_Time[s]"] = pd.to_numeric(df["Test_Time[s]"], errors="coerce").fillna(0.0)
 
             # --- Apply the current cumulative offset to this DataFrame ---
@@ -173,7 +173,7 @@ def merge_into_series(df_list, time_between_tests_seconds: float = 60.0, verbose
 
 def _sort_dfs(df_list, verbose=True):
     """
-    Sorts a list of DataFrames by their 'Absolute Time[yyyy-mm-dd hh:mm:ss]' column.
+    Sorts a list of DataFrames by their 'Date_Time' column.
     Falls back to filename order if no valid absolute time is found.
 
     Parameters

@@ -28,7 +28,7 @@ from pydpeet.process.sequence.utils.processing.supress_smaller_segments import _
 from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
 
 
-def add_primitives(
+def add_primitive_segments(
     df: pd.DataFrame,
     STEP_ANALYZER_PRIMITIVES_CONFIG: dict = None,
     SEGMENTS_TO_DETECT_CONFIG: list[tuple[str, float]] = None,
@@ -140,7 +140,7 @@ def add_primitives(
     if "Current[A]" not in df_step.columns:
         raise ValueError("'Current[A]' column not found in input dataframe.")
     if "Test_Time[s]" not in df_step.columns:
-        raise ValueError("'Testtime[s]' column not found in input dataframe.")
+        raise ValueError("'Test_Time[s]' column not found in input dataframe.")
     if SEGMENTS_TO_DETECT_CONFIG is None or len(SEGMENTS_TO_DETECT_CONFIG) == 0:
         raise ValueError("SEGMENTS_TO_DETECT_CONFIG is None or empty")
     if ADJUST_SEGMENTS_CONFIG is None or len(ADJUST_SEGMENTS_CONFIG) == 0:
@@ -160,7 +160,7 @@ def add_primitives(
 
     # --- Data cleanup ---
     if not supress_IO_warnings:
-        logger.warning("Dropping NaN values in 'Testtime[s]', dropping duplicates and sorting 'Testtime[s]' column.")
+        logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
     df_step.dropna(subset=["Test_Time[s]"], inplace=True)
     df_step.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
     df_step.sort_values(by=["Test_Time[s]"], inplace=True)
@@ -286,7 +286,7 @@ def add_primitives(
     return df_primitives
 
 
-def extract_sequences(
+def extract_sequence_overview(
         df_primitives: pd.DataFrame,
         SEGMENT_SEQUENCE_CONFIG: dict = None,
         SHOW_RUNTIME: bool = True) -> pd.DataFrame:
@@ -310,7 +310,7 @@ def extract_sequences(
 
     Parameters:
         df_primitives (pd.DataFrame): A DataFrame of primitives created using step_analyzer_primitives(). With the following columns:
-            standard_columns = ['Testtime[s]', 'Voltage[V]', 'Current[A]', 'Power[W]', "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
+            standard_columns = ['Test_Time[s]', 'Voltage[V]', 'Current[A]', 'Power[W]', "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
         SEGMENT_SEQUENCE_CONFIG (dict): A dictionary containing the configuration for the analysis.
             Example:{{"Current": {"rules": {"variable": "I", ...}}}, {"Discharge_iOCV": {"loop": True, "minimum_IDs": 4, "sequence": ["CC_Discharge","Pause"]}}, ...}
         SHOW_RUNTIME (bool): If True, the function logs the time taken to perform each step.
@@ -361,7 +361,7 @@ def _precompile_step_analyzer():
     _res_dir = os.path.join(_project_dir, "../../res")
     _input_path = os.path.join(_res_dir, "precompile_dummy_data.parquet")
     _df_file = pd.read_parquet(_input_path)
-    _df_primitives = add_primitives(
+    _df_primitives = add_primitive_segments(
         df=_df_file,
         STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG_PRECOMPILE,
         SHOW_RUNTIME=False,
@@ -383,7 +383,7 @@ def _precompile_step_analyzer():
         thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION
     )
 
-    _ = extract_sequences(
+    _ = extract_sequence_overview(
         df_primitives=_df_primitives,
         SEGMENT_SEQUENCE_CONFIG=SEGMENT_SEQUENCE_CONFIG,
         SHOW_RUNTIME=False

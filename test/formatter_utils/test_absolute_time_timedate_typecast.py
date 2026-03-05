@@ -14,7 +14,7 @@ class TestAbsoluteTimeTimedateTypecast(unittest.TestCase):
         expected = None
         result = absolute_time_timedate_typecast(data)
         self.assertEqual(result, expected)
-        self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss] \033[0m\n")
+        self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error typecasting Date_Time \033[0m\n")
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_no_absolutetime_column(self, mock_stdout):
@@ -22,7 +22,7 @@ class TestAbsoluteTimeTimedateTypecast(unittest.TestCase):
         expected = pandas.DataFrame({"A": [1, 2, 3]})
         result = absolute_time_timedate_typecast(data)
         pandas.testing.assert_frame_equal(result, expected)
-        self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss] \033[0m\n")
+        self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error typecasting Date_Time \033[0m\n")
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_absolutetime_column_empty(self, mock_stdout):
@@ -30,4 +30,4 @@ class TestAbsoluteTimeTimedateTypecast(unittest.TestCase):
         expected = pandas.DataFrame({"Date_Time": []}, dtype="datetime64[ns]")
         result = absolute_time_timedate_typecast(data)
         pandas.testing.assert_frame_equal(result, expected)
-        self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss] \033[0m\n")
+        self.assertNotEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error typecasting Date_Time \033[0m\n")

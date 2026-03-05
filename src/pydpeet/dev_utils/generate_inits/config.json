@@ -23,7 +23,7 @@
 
   "src/pydpeet/process/sequence/step_analyzer.py": {
     "depth": 3,
-    "exports": ["add_primitives", "extract_sequences"]
+    "exports": ["add_primitive_segments", "extract_sequence_overview"]
   },
   "src/pydpeet/process/sequence/utils/postprocessing/df_primitives_correction.py": {
     "depth": 3,

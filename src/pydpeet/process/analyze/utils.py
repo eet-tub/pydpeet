@@ -102,13 +102,13 @@ def precompute_block_arrays_soc_methods(time, current, voltage, capacity_values,
 
 def drop_duplicate_testtime(df, keep="first"):
     """
-    Drop duplicate rows based on Testtime[s].
+    Drop duplicate rows based on Test_Time[s].
     keep='first' keeps the first occurrence,
     keep='last' keeps the last,
     keep=False removes all duplicates entirely.
     """
     if "Test_Time[s]" not in df.columns:
-        raise ValueError("No 'Testtime[s]' column in DataFrame")
+        raise ValueError("No 'Test_Time[s]' column in DataFrame")
 
     n_before = len(df)
     df_clean = df.drop_duplicates(subset=["Test_Time[s]"], keep=keep).copy()

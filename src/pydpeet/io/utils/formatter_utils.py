@@ -70,13 +70,13 @@ def testtime_hours_to_seconds_with_string_interpretation(
         if not isinstance(astype_string, bool):
             raise ValueError(f"{astype_string} is not a boolean")
         if "Test_Time[s]" not in df.columns:
-            raise ValueError(f"Testtime[s] is not in {df.columns}")
+            raise ValueError(f"Test_Time[s] is not in {df.columns}")
         if astype_string:
             df["Test_Time[s]"] = df["Test_Time[s]"].astype(str).apply(_time_to_seconds)
         else:
             df["Test_Time[s]"] = df["Test_Time[s]"].apply(_time_to_seconds)
     except Exception:
-        logging.warning("Error fixing Testtime[s]")
+        logging.warning("Error fixing Test_Time[s]")
     return df
 
 
@@ -147,7 +147,7 @@ def apply_convert_to_float_if_possible(
     return df
 
 
-def _convert_to_float_if_possible(x) -> float | any:
+def _convert_to_float_if_possible(x) -> float:
     """
     Try to convert a value to a float if possible.
 
@@ -217,14 +217,14 @@ def testtime_hours_to_seconds_direct(df: pd.DataFrame) -> pd.DataFrame | None:
         if df is None:
             raise ValueError("dataFrame is None")
         if "Test_Time[s]" not in df.columns:
-            raise ValueError("Testtime[s] is not in dataFrame.columns")
+            raise ValueError("Test_Time[s] is not in dataFrame.columns")
         df["Test_Time[s]"] = df["Test_Time[s]"].apply(_convert_to_hours_to_seconds_direct_if_possible)
     except Exception as e:
-        logging.warning(f"Error fixing Testtime[s] (converting hours to seconds). Reason: {e}")
+        logging.warning(f"Error fixing Test_Time[s] (converting hours to seconds). Reason: {e}")
     return df
 
 
-def _convert_to_hours_to_seconds_direct_if_possible(x) -> float | any:
+def _convert_to_hours_to_seconds_direct_if_possible(x) -> float:
     # TODO: Docstring
     try:
         return np.float64(x) * 3600
@@ -252,11 +252,11 @@ def round_testtime(df: pd.DataFrame) -> pd.DataFrame | None:
         if df.empty:
             raise ValueError("dataframe is empty")
         if "Test_Time[s]" not in df.columns:
-            raise ValueError("Testtime[s] is not in dataFrame.columns")
+            raise ValueError("Test_Time[s] is not in dataFrame.columns")
 
         df["Test_Time[s]"] = round(df["Test_Time[s]"].astype(float), 5)
     except Exception as e:
-        logging.warning(f"Error fixing Testtime[s] (rounding). Reason: {e}")
+        logging.warning(f"Error fixing Test_Time[s] (rounding). Reason: {e}")
     return df
 
 
@@ -326,7 +326,7 @@ def move_strings_from_column_to_metadata(
         if column_name not in df.columns:
             raise ValueError(f"{column_name} is not in {df.columns}")
         if "Meta_Data" not in df.columns:
-            raise ValueError("Metadata Column doesn't exsist")
+            raise ValueError("Meta_Data Column doesn't exsist")
 
         strings = df[column_name].apply(lambda x: x if isinstance(x, str) else None)
         concatenated_string = concatenated_string.join(filter(None, strings))
@@ -335,7 +335,7 @@ def move_strings_from_column_to_metadata(
         df[column_name] = df[column_name].apply(lambda x: None if isinstance(x, str) else x).astype(object)
         df[column_name] = df[column_name].replace({np.nan: None})
     except Exception:
-        logging.warning("Error adding Messages to Metadata")
+        logging.warning("Error adding Messages to Meta_Data")
     return df
 
 
@@ -378,7 +378,7 @@ def fix_time_format(
         if column_name not in df.columns:
             raise ValueError(f"{column_name} is not in {df.columns}")
         if "Date_Time" not in df.columns:
-            raise ValueError("Absolute Time[yyyy-mm-dd hh:mm:ss] Column doesn't exsist")
+            raise ValueError("Date_Time Column doesn't exsist")
         try:
             df[column_name] = pd.to_datetime(df[column_name], format=input_format, errors="coerce")
         except Exception:
@@ -388,7 +388,7 @@ def fix_time_format(
         except Exception:
             raise ValueError("Error changing to correct order in Timeformat")
     except Exception:
-        logging.warning("Error fixing timeformat Absolute Time[yyyy-mm-dd hh:mm:ss]")
+        logging.warning("Error fixing timeformat Date_Time")
     return df
 
 
@@ -412,8 +412,8 @@ def absolute_time_timedate_typecast(df: pd.DataFrame) -> pd.DataFrame | None:
         if df is None:
             raise ValueError("data_frame is None")
         if "Date_Time" not in df.columns:
-            raise ValueError("Absolute Time[yyyy-mm-dd hh:mm:ss] Column doesn't exsist")
+            raise ValueError("Date_Time Column doesn't exsist")
         df["Date_Time"] = pd.to_datetime(df["Date_Time"], errors="coerce")
     except Exception:
-        logging.warning("Error typecasting Absolute Time[yyyy-mm-dd hh:mm:ss]")
+        logging.warning("Error typecasting Date_Time")
     return df

@@ -3,7 +3,7 @@ import pandas as pd
 from pydpeet.io.utils.formatter_utils import typecast
 
 
-def get_data_into_format(df: pd.DataFrame) -> pd.DateFrame:
+def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:
     """
     Format a DataFrame into standard format required by the database.
 
