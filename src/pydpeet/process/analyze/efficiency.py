@@ -61,7 +61,8 @@ def add_efficiency_coulomb(
         parse_time = False
         tolerance_val = max_time_diff_in_secs  # already seconds
     elif "Date_Time" in df.columns:
-        warnings.warn("Date_Time is used as time column, because there is no 'Test_Time[s]' given.")
+        # TODO: Assumed stack level for now
+        warnings.warn("Date_Time is used as time column, because there is no 'Test_Time[s]' given.", stacklevel=2)
         time_col = "Date_Time"
         parse_time = True
         tolerance_val = pd.Timedelta(seconds=max_time_diff_in_secs)

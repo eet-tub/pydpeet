@@ -1,4 +1,8 @@
 import logging
+from types import (
+    Any,
+    Series,
+)
 
 import pandas as pd
 
@@ -185,12 +189,7 @@ def _get_important_entries_per_segment(
 
 def generate_instructions(
     df_primitives: pd.DataFrame,
-    end_condition_map: dict = {
-        "CC": "voltage",
-        "CV": "current",
-        "CP": "voltage",
-        "Pause": "time",
-    },
+    end_condition_map: dict = None,
     threshold_warnings: int = 5,
 ) -> list[str]:
     """
@@ -205,6 +204,14 @@ def generate_instructions(
     Returns:
     list: list of instructions
     """
+    # Set default values for mutable data structures
+    if end_condition_map is None:
+        end_condition_map = {
+            "CC": "voltage",
+            "CV": "current",
+            "CP": "voltage",
+            "Pause": "time",
+        }
     df_segments_and_sequences = extract_sequence_overview(
         df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD
     )
@@ -230,7 +237,15 @@ def generate_instructions(
         # Determine end condition
         end_condition = end_condition_map.get(base_type.replace("Ramp", ""), "time")
 
-        def build_instruction(action, value_str):
+        # TODO: Docstring
+        def build_instruction(
+            action: str,
+            value_str: str,
+            current: float = current,
+            row: Series[Any] = row,
+            length: int = length,
+            end_condition: str = end_condition,
+        ) -> str:
             if end_condition == "time":
                 return f"{action} at {value_str} for {length} seconds"
 

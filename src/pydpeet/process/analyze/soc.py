@@ -221,7 +221,8 @@ def add_soc(
 
     # Add capacity if missing
     if "Capacity[Ah]" not in df.columns:
-        warnings.warn("Column 'Capacity[Ah]' missing, adding with function add_capacity.")
+        # TODO: Assumed stack level for now
+        warnings.warn("Column 'Capacity[Ah]' missing, adding with function add_capacity.", stacklevel=2)
         with StepTimer(verbose) as st:
             if df_primitives is None:
                 logging.info("df_primitives is None, please provide a valid df_primitives for add_capacity function")

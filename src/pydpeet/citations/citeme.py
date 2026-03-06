@@ -42,7 +42,7 @@ class CiteMe:
 
     def print_references(self):
         for ref_type in self.references:
-            for handle, citation in iteritems(self.references[ref_type]):
+            for _, citation in iteritems(self.references[ref_type]):
                 # print(ref_type, handle, citation.description)
                 print(citation.description)
 
@@ -152,35 +152,35 @@ class Citation:
 
 class article(Citation):
     def __init__(self, handle, description):
-        super(article, self).__init__(handle, description, "article")
+        super().__init__(handle, description, "article")
         self._required = ["author", "title", "journal", "year", "volume"]
         self._optional = ["number", "pages", "month", "note", "key"]
 
 
 class book(Citation):
     def __init__(self, handle, description):
-        super(book, self).__init__(handle, description, "book")
+        super().__init__(handle, description, "book")
         self._required = [("author", "editor"), "title", "publisher", "year"]
         self._optional = [("volume", "number"), "series", "address", "edition", "month", "note", "key"]
 
 
 class booklet(Citation):
     def __init__(self, handle, description):
-        super(booklet, self).__init__(handle, description, "booklet")
+        super().__init__(handle, description, "booklet")
         self._required = ["title"]
         self._optional = ["author", "howpublished", "address", "month", "year", "note", "key"]
 
 
 class inbook(Citation):
     def __init__(self, handle, description):
-        super(inbook, self).__init__(handle, description, "inbook")
+        super().__init__(handle, description, "inbook")
         self._required = [("author", "editor"), "title", ("chapter", "pages"), "publisher", "year"]
         self._optional = [("volume", "number"), "series", "type", "address", "edition", "month", "note", "key"]
 
 
 class incollection(Citation):
     def __init__(self, handle, description):
-        super(incollection, self).__init__(handle, description, "incollection")
+        super().__init__(handle, description, "incollection")
         self._required = ["author", "title", "booktitle", "publisher", "year"]
         self._optional = [
             "editor",
@@ -199,7 +199,7 @@ class incollection(Citation):
 
 class inproceedings(Citation):
     def __init__(self, handle, description):
-        super(inproceedings, self).__init__(handle, description, "inproceedings")
+        super().__init__(handle, description, "inproceedings")
         self._required = ["author", "title", "booktitle", "year"]
         self._optional = [
             "editor",
@@ -218,53 +218,53 @@ class inproceedings(Citation):
 # conference has the same fields as inproceedings
 class conference(inproceedings):
     def __init__(self, handle, description):
-        super(conference, self).__init__(handle, description, "conference")
+        super().__init__(handle, description, "conference")
 
 
 class manual(Citation):
     def __init__(self, handle, description):
-        super(manual, self).__init__(handle, description, "manual")
+        super().__init__(handle, description, "manual")
         self._required = ["title"]
         self._optional = ["author", "organization", "address", "edition", "month", "year", "note", "key"]
 
 
 class mastersthesis(Citation):
     def __init__(self, handle, description):
-        super(mastersthesis, self).__init__(handle, description, "mastersthesis")
+        super().__init__(handle, description, "mastersthesis")
         self._required = ["author", "title", "school", "year"]
         self._optional = ["type", "address", "month", "note", "key"]
 
 
 class bachelorthesis(Citation):
     def __init__(self, handle, description):
-        super(bachelorthesis, self).__init__(handle, description, "bachelorthesis")
+        super().__init__(handle, description, "bachelorthesis")
         self._required = ["author", "title", "school", "year"]
         self._optional = ["type", "address", "month", "note", "key"]
 
 
 class internship(Citation):
     def __init__(self, handle, description):
-        super(internship, self).__init__(handle, description, "internship")
+        super().__init__(handle, description, "internship")
         self._required = ["author", "title", "school", "year"]
         self._optional = ["type", "address", "month", "note", "key"]
 
 
 class misc(Citation):
     def __init__(self, handle, description):
-        super(misc, self).__init__(handle, description, "misc")
+        super().__init__(handle, description, "misc")
         self._optional = ["author", "title", "howpublished", "month", "year", "note", "key"]
 
 
 class phdthesis(Citation):
     def __init__(self, handle, description):
-        super(phdthesis, self).__init__(handle, description, "phdthesis")
+        super().__init__(handle, description, "phdthesis")
         self._required = ["author", "title", "school", "year"]
         self._optional = ["type", "address", "month", "note", "key"]
 
 
 class proceedings(Citation):
     def __init__(self, handle, description):
-        super(proceedings, self).__init__(handle, description, "proceedings")
+        super().__init__(handle, description, "proceedings")
         self._required = ["title", "year"]
         self._optional = [
             "editor",
@@ -281,14 +281,14 @@ class proceedings(Citation):
 
 class techreport(Citation):
     def __init__(self, handle, description):
-        super(techreport, self).__init__(handle, description, "techreport")
+        super().__init__(handle, description, "techreport")
         self._required = ["author", "title", "institution", "year"]
         self._optional = ["type", "number", "address", "month", "note", "key"]
 
 
 class unpublished(Citation):
     def __init__(self, handle, description):
-        super(unpublished, self).__init__(handle, description, "unpublished")
+        super().__init__(handle, description, "unpublished")
         self._required = ["author", "title", "note"]
         self._optional = ["month", "year", "key"]
 

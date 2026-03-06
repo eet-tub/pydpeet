@@ -6,14 +6,16 @@ import pandas as pd
 from scipy import integrate
 from scipy.signal import savgol_filter
 
-from pydpeet.process.analyze.configs.ocv_config import *
+from pydpeet.process.analyze.configs.ocv_config import (
+    SEGMENT_SEQUENCE_CONFIG,
+    STEP_ANALYZER_PRIMITIVES_CONFIG,
+)
 from pydpeet.process.analyze.extract.ocv import extract_ocv_iocv
 from pydpeet.process.analyze.soc import add_soc
 from pydpeet.process.sequence.step_analyzer import (
     add_primitive_segments,
     extract_sequence_overview,
 )
-from pydpeet.process.sequence.utils.visualize.visualize_data import *
 
 
 def compute_ocv_dva_ica(
@@ -155,7 +157,7 @@ def compute_ocv_dva_ica(
 
     logging.info("Computing DVA and ICA for every block...")
     all_dva_ica_curves = []
-    for idx, block in enumerate(dfs_per_block):
+    for _, block in enumerate(dfs_per_block):
         df_dva_ica = df_primitives.loc[df_primitives["Test_Time[s]"].isin(block["Test_Time[s]"])]
 
         voltage = df_dva_ica["Voltage[V]"].to_numpy()

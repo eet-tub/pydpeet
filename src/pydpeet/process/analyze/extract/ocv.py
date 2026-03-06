@@ -7,7 +7,10 @@ import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
-from pydpeet.process.analyze.configs.ocv_config import *
+from pydpeet.process.analyze.configs.ocv_config import (
+    SEGMENT_SEQUENCE_CONFIG,
+    STEP_ANALYZER_PRIMITIVES_CONFIG,
+)
 from pydpeet.process.analyze.soc import (
     SocMethod,
     add_soc,

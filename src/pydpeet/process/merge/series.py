@@ -39,7 +39,7 @@ def merge_into_series(
         raise ValueError("time_between_tests_seconds must be > 0")
 
     first_item = dfs[0]
-    if isinstance(first_item, (tuple, list)) and len(first_item) == 2:
+    if isinstance(first_item, tuple | list) and len(first_item) == 2:
         # Already (df, filename) pairs
         input_pairs = dfs
     else:
@@ -203,7 +203,7 @@ def _sort_dfs(
     time_col = "Date_Time"
 
     # ensure df_list always work with (df, filename) pairs
-    if isinstance(dfs[0], (tuple, list)) and len(dfs[0]) == 2:
+    if isinstance(dfs[0], tuple | list) and len(dfs[0]) == 2:
         pairs = [(df, fn) for df, fn in dfs if df is not None and not df.empty]
     else:
         pairs = [(df, None) for df in dfs if df is not None and not df.empty]

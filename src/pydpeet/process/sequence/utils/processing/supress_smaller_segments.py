@@ -91,7 +91,7 @@ def _keep_max_segment_id(
     max_indices = np.argmax(length_data, axis=1)
 
     # Set all segment columns to -1 where not the max, retain value otherwise
-    for i, (length_col, segment_col) in enumerate(keep_max_segment_id_config):
+    for i, (_, segment_col) in enumerate(keep_max_segment_id_config):
         segment_data = df[segment_col].values.copy()
         segment_data[max_indices != i] = -1
         df[segment_col] = segment_data

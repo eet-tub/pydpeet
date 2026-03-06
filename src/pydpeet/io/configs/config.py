@@ -2,16 +2,19 @@ from collections.abc import Callable
 from enum import Enum, auto
 
 from pandas import DataFrame
+
 # Arbin MITS Pro
 # v4.23 (090331), schedule version 3.03
 import pydpeet.io.device.arbin_4_23_PV090331.formatter as arbin_4_23_PV090331_formatter
 import pydpeet.io.device.arbin_4_23_PV090331.mapper as arbin_4_23_PV090331_mapper
 import pydpeet.io.device.arbin_4_23_PV090331.reader as arbin_4_23_PV090331_reader
+
 # Arbin MITS Pro
 # v8.00 (PV221201), schedule version 8.00.13
 import pydpeet.io.device.arbin_8_00_PV221201.formatter as arbin_8_00_PV221201_formatter
 import pydpeet.io.device.arbin_8_00_PV221201.mapper as arbin_8_00_PV221201_mapper
 import pydpeet.io.device.arbin_8_00_PV221201.reader as arbin_8_00_PV221201_reader
+
 # BaSyTec Battery Test Software
 # File version 6.3.1.0, product version 6.2
 import pydpeet.io.device.basytec_6_3_1_0.formatter as basytec_6_3_1_0_formatter
@@ -100,9 +103,9 @@ class Config(Enum):
 
         try:
             return aliases[key]
-        except KeyError:
+        except KeyError as k:
             known = ", ".join(aliases.keys())
-            raise ValueError(f"Unknown config '{value}'. Known: {known}")
+            raise ValueError(f"Unknown config '{value}'. Known: {known}") from k
 
     @staticmethod
     def exists(maybe_config: any) -> bool:

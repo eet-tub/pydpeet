@@ -3,8 +3,6 @@ import os
 
 import pandas as pd
 
-logger = logging.getLogger(__name__)
-
 from pydpeet.process.sequence.utils.annotate.annotate_primitives import (
     _annotate_primitives,
     _merged_annotations,
@@ -25,6 +23,8 @@ from pydpeet.process.sequence.utils.processing.supress_smaller_segments import (
     _keep_max_segment_id,
 )
 from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
+
+logger = logging.getLogger(__name__)
 
 
 def add_primitive_segments(
@@ -233,7 +233,7 @@ def add_primitive_segments(
             )
 
     keep_max_segment_id_config = []
-    for key, col_name in DATA_COLUMNS.items():
+    for _, col_name in DATA_COLUMNS.items():
         segment_col = f"Segment_{col_name}"
         with log_time(f"adding Length_{segment_col} to calculate the dominating segments", SHOW_RUNTIME=SHOW_RUNTIME):
             df_step = _add_segment_lengths(df=df_step, column_name=col_name)

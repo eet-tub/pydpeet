@@ -26,14 +26,14 @@ def _visualize_phases(
     segment_id_cols: list[str] = None,
     segment_colors: (dict[str, str] | list[str]) = None,
     segment_alpha: float = 0.3,
-    columns_to_visualize: list[str] = ["Voltage[V]", "Current[A]", "Power[W]"],
+    columns_to_visualize: list[str] = None,
     line_colors: dict[str, str] = None,
     y_axis_ranges: dict[str, tuple[float, float]] = None,
     use_lines_for_segments: bool = True,
     show_column_names: bool = True,
     show_time: bool = True,
     show_id: bool = True,
-    width_height_ratio: list[float, float] = [1.0, 0.3],
+    width_height_ratio: list[float, float] = None,
     show_runtime: bool = True,
     show_grid: bool = False,
 ) -> None:
@@ -61,6 +61,12 @@ def _visualize_phases(
     Returns:
         None
     """
+    # Set default values for mutable data structures
+    if columns_to_visualize is None:
+        columns_to_visualize = ["Voltage[V]", "Current[A]", "Power[W]"]
+    if width_height_ratio is None:
+        width_height_ratio = [1.0, 0.3]
+
     # 1) Filter by time
     with log_time("filtering by time", show_runtime):
         mask = pd.Series(True, index=dataframe.index)
@@ -174,13 +180,13 @@ def _visualize_phases(
     with log_time("adding grid and legend", show_runtime):
         # TODO power labels multiple times shown fix?
         ax_base.set_xlabel("Testtime [s]")
-        handles, labels = [], []
+        legend_handles, legend_labels = [], []
         for ax in axes.values():
-            h, l = ax.get_legend_handles_labels()
-            handles += h
-            labels += l
+            handles, labels = ax.get_legend_handles_labels()
+            legend_handles += handles
+            legend_labels += labels
         if handles:
-            ax_base.legend(handles, labels, loc="upper left")
+            ax_base.legend(legend_handles, legend_labels, loc="upper left")
         if show_grid:
             ax_base.grid()
         plt.tight_layout()
@@ -191,24 +197,32 @@ def visualize_phases(
     dataframe: pd.DataFrame,
     start_time: float = None,
     end_time: float = None,
-    visualize_phases_config: list[tuple[str, str]] = [
-        ("V", "blue"),
-        ("I", "red"),
-        ("P", "green"),
-    ],
+    visualize_phases_config: list[tuple[str, str]] = None,
     segment_alpha: float = 0.3,
-    line_visualization_config: list[tuple[str, str, tuple[float, float]]] = [
-        ("Voltage[V]", "blue", (2.3, 4.3)),
-        ("Current[A]", "red", (-10, 10)),
-        # ("Power[W]", "green", (-40, 40)),
-    ],
+    line_visualization_config: list[tuple[str, str, tuple[float, float]]] = None,
     use_lines_for_segments: bool = True,
     show_column_names: bool = True,
     show_time: bool = True,
     show_id: bool = True,
-    width_height_ratio: float = [1.0, 0.3],
+    width_height_ratio: tuple[float, float] | list[float] = None,
     show_runtime: bool = True,
 ) -> None:
+    # Set default values for mutable data structures
+    if visualize_phases_config is None:
+        visualize_phases_config = [
+            ("V", "blue"),
+            ("I", "red"),
+            ("P", "green"),
+        ]
+    if line_visualization_config is None:
+        line_visualization_config = [
+            ("Voltage[V]", "blue", (2.3, 4.3)),
+            ("Current[A]", "red", (-10, 10)),
+            # ("Power[W]", "green", (-40, 40)),
+        ]
+    if width_height_ratio is None:
+        width_height_ratio: float = [1.0, 0.3]
+
     if start_time is None:
         logging.warning("start_time is None - setting it to 0.0")
         start_time = 0.0
@@ -219,7 +233,7 @@ def visualize_phases(
         raise ValueError("dataframe is None")
     if not isinstance(dataframe, pd.DataFrame):
         raise TypeError("dataframe must be a pandas DataFrame")
-    if not (isinstance(width_height_ratio, (list, tuple)) and len(width_height_ratio) == 2):
+    if not (isinstance(width_height_ratio, list | tuple) and len(width_height_ratio) == 2):
         raise ValueError("width_height_ratio must be a list or tuple of length 2")
     if "Test_Time[s]" not in dataframe.columns:
         raise ValueError("dataframe needs to have at least column 'Test_Time[s]'")
@@ -248,7 +262,7 @@ def visualize_phases(
 
     if not isinstance(segment_id_cols, list):
         raise TypeError("segment_id_cols must be a list of strings")
-    if not isinstance(segment_colors, (list, dict)):
+    if not isinstance(segment_colors, list | dict):
         raise TypeError("segment_colors must be a list or dict")
     if isinstance(segment_colors, list) and len(segment_id_cols) != len(segment_colors):
         raise ValueError("segment_id_cols and segment_colors must have the same length")

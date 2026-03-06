@@ -250,8 +250,8 @@ def _merged_annotations_njit(
         vmax = group_max[gid]
         cnt = group_count[gid]
         s = group_sum[gid]
-        f = first_val[gid]
-        l = last_val[gid]
+        first = first_val[gid]
+        last = last_val[gid]
         tmn = time_min[gid]
         tmx = time_max[gid]
 
@@ -271,7 +271,7 @@ def _merged_annotations_njit(
         denom = cnt - 1
         if denom < 1:
             denom = 1
-        slope_val = (l - f) / denom
+        slope_val = (last - first) / denom
 
         # Type & Direction
         thr = thresholds_array[group_var_vals[gid]]
@@ -290,7 +290,7 @@ def _merged_annotations_njit(
                 dir_code = 1 if curr_mean >= 0 else 2  # Charge / Discharge
             else:
                 type_code = 2  # Ramp
-                dir_code = 3 if l > f else 4  # Up / Down
+                dir_code = 3 if last > first else 4  # Up / Down
 
         min_vals[i] = vmin
         max_vals[i] = vmax

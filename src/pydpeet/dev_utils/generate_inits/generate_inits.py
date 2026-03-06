@@ -80,7 +80,7 @@ def remove_all_inits(root_dir, logger):
     """Delete every existing __init__.py under root_dir"""
     logger.log("--- PHASE 1: Deleting all existing __init__.py files ---")
     removed = 0
-    for dirpath, dirnames, filenames in os.walk(root_dir):
+    for dirpath, _, filenames in os.walk(root_dir):
         for fn in filenames:
             if fn == "__init__.py":
                 p = os.path.join(dirpath, fn)
@@ -99,7 +99,7 @@ def create_empty_inits(root_dir, logger):
     """
     logger.log("--- PHASE 2: Creating restrictive empty __init__.py across tree ---")
     created = 0
-    for dirpath, dirnames, filenames in os.walk(root_dir):
+    for dirpath, dirnames, _ in os.walk(root_dir):
         # skip hidden dirs and __pycache__
         dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
         init_path = os.path.join(dirpath, "__init__.py")
@@ -179,10 +179,8 @@ def apply_config(project_root, package_root, config_path, logger):
 
         if not pkg_parts:
             # exporting at the package root
-            target_package_dotted = ""  # special case
             target_dir = package_root
         else:
-            target_package_dotted = ".".join(pkg_parts)
             target_dir = os.path.join(package_root, *pkg_parts)
 
         # Determine full module dotted name relative to package root
@@ -262,8 +260,10 @@ def apply_config(project_root, package_root, config_path, logger):
         except Exception as e:
             logger.log(f"Failed to write {init_path}: {e}")
 
+    # TODO: Obsolete?
     # Ensure package_root has an __init__ that exports top-level packages (e.g., 'pydpeet')
-    root_data = get_data_for_dir(package_root)
+    # root_data = get_data_for_dir(package_root)
+
     # If package root did not get any auto exports (possible), build sensible top-level __init__
     # but don't overwrite if a specific config already created explicit exports
     init_root = os.path.join(package_root, "__init__.py")
@@ -280,8 +280,10 @@ def apply_config(project_root, package_root, config_path, logger):
                 continue
         # read the file and update __all__ if needed
         try:
-            with open(init_root, encoding="utf-8") as f:
-                content = f.read()
+            # TODO: Obsolete?
+            # with open(init_root, encoding="utf-8") as f:
+            #     content = f.read()
+
             # simplistic append if not present
             if child_packages:
                 # create an augmented root __init__ that imports child packages and sets __all__

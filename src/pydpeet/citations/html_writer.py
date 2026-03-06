@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class BibHtmlWriter(BibTexWriter):
     def __init__(self):
-        super(BibHtmlWriter, self).__init__()
+        super().__init__()
         self.display_order = [
             "author",
             "title",
@@ -60,7 +60,7 @@ class BibHtmlWriter(BibTexWriter):
         :return: BibTeX-formatted string
         :rtype: str or unicode
         """
-        html = super(BibHtmlWriter, self).write(bib_database)
+        html = super().write(bib_database)
         if full:
             html = self.html_template.format(html)
 
@@ -122,8 +122,8 @@ class BibHtmlWriter(BibTexWriter):
                         + entry[field]
                         + "</span>"
                     )
-            except TypeError:
-                raise TypeError("The field %s in entry %s must be a string" % (field, entry["ID"]))
+            except TypeError as t:
+                raise TypeError("The field {} in entry {} must be a string".format(field, entry["ID"])) from t
         html += "\n</cite>\n" + self.entry_separator
 
         return html
