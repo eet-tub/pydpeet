@@ -15,11 +15,8 @@ class MyTestCase(unittest.TestCase):
         with_zip_file_for_path(
             zip_file,
             lambda input_path: convert_files_in_directory(
-                "Neware",
-                str(input_path),
-                str(RES_PATH / "neware" / "for_directory_standardization" / "output"),
-                True
-            )
+                "Neware", str(input_path), str(RES_PATH / "neware" / "for_directory_standardization" / "output"), True
+            ),
         )
 
 

@@ -1,6 +1,10 @@
 import pandas as pd
 
-from pydpeet.io.utils.formatter_utils import absolute_time_timedate_typecast, testtime_hours_to_seconds_with_string_interpretation, typecast
+from pydpeet.io.utils.formatter_utils import (
+    absolute_time_timedate_typecast,
+    testtime_hours_to_seconds_with_string_interpretation,
+    typecast,
+)
 
 
 def get_data_into_format(df: pd.DataFrame) -> pd.DataFrame:

@@ -10,10 +10,10 @@ from pydpeet.io.configs.config import DataOutputFiletype
 # Adjust to accept dataframes or lists of dataframes
 # or write dedicated wrapper for list inputs
 def write(
-        data_input: pd.DataFrame,
-        output_path: str,
-        output_file_name: str,
-        data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet
+    data_input: pd.DataFrame,
+    output_path: str,
+    output_file_name: str,
+    data_output_filetype: DataOutputFiletype = DataOutputFiletype.parquet,
 ) -> None:
     """
     Export the given DataFrame to the given output path.
@@ -62,13 +62,11 @@ def write(
 
     _do_export(data_input, os.path.join(abs_path, output_file_name), data_output_filetype)
 
-    return
-
 
 def _do_export(
-        df: pd.DataFrame,
-        output_path: str,
-        data_output_filetype: DataOutputFiletype
+    df: pd.DataFrame,
+    output_path: str,
+    data_output_filetype: DataOutputFiletype,
 ) -> None:
     """
     Export a DataFrame to a file in the specified format.
@@ -99,5 +97,3 @@ def _do_export(
         case DataOutputFiletype.xlsx:
             full_output_path = f"{output_path}_Data.xlsx"
             df.to_excel(full_output_path, index=False)
-
-    return

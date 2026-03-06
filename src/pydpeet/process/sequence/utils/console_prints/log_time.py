@@ -1,11 +1,13 @@
 import logging
-from time import perf_counter
 from contextlib import contextmanager
+from time import perf_counter
 
 
 @contextmanager
-def log_time(description: str = "",
-             SHOW_RUNTIME: bool = True):
+def log_time(
+    description: str = "",
+    SHOW_RUNTIME: bool = True,
+):
     """
     Context manager to log the time taken by a block of code.
 

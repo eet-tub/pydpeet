@@ -1,4 +1,11 @@
-def calculate_minimum_definitive_differences(accuracy_voltage_signal, accuracy_current_signal, accuracy_voltage_measurement, accuracy_current_measurement, fs_voltage, fs_current):
+def calculate_minimum_definitive_differences(
+    accuracy_voltage_signal: float,
+    accuracy_current_signal: float,
+    accuracy_voltage_measurement: float,
+    accuracy_current_measurement: float,
+    fs_voltage: float,
+    fs_current: float,
+) -> tuple[float, float]:
     """
     Calculate minimum definitive differences, that can't be described by noise.
 
@@ -16,4 +23,5 @@ def calculate_minimum_definitive_differences(accuracy_voltage_signal, accuracy_c
     """
     minimum_definitive_voltage_difference = (accuracy_voltage_signal + accuracy_voltage_measurement) * fs_voltage
     minimum_definitive_current_difference = (accuracy_current_signal + accuracy_current_measurement) * fs_current
+
     return minimum_definitive_voltage_difference, minimum_definitive_current_difference

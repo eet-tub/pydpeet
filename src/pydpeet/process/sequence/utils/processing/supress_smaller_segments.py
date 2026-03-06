@@ -1,9 +1,14 @@
 import numpy as np
+import pandas as pd
 from numba import njit
 
 
 @njit(cache=True)
-def _compute_segment_lengths_numba(segment_ids, times, max_id):
+def _compute_segment_lengths_numba(
+    segment_ids: np.ndarray,
+    times: np.ndarray,
+    max_id: int,
+) -> np.ndarray:
     """
     Compute the length (time) of each segment in the given DataFrame.
 
@@ -34,10 +39,14 @@ def _compute_segment_lengths_numba(segment_ids, times, max_id):
     result = np.full(n, 0.0)
     valid = segment_ids != -1
     result[valid] = durations[segment_ids[valid]]
+
     return result
 
 
-def _add_segment_lengths(df, column_name):
+def _add_segment_lengths(
+    df: pd.DataFrame,
+    column_name: str,
+) -> pd.DataFrame:
     """
     Compute the length (time) of each segment in the given DataFrame.
 
@@ -56,17 +65,21 @@ def _add_segment_lengths(df, column_name):
     durations = _compute_segment_lengths_numba(segment_ids, times, max_id)
 
     df[f"Length_{segment_name}"] = durations
+
     return df
 
 
-def _keep_max_segment_id(df, keep_max_segment_id_config):
+def _keep_max_segment_id(
+    df: pd.DataFrame,
+    keep_max_segment_id_config: list[tuple[int, str]],
+) -> pd.DataFrame:
     """
     For each row in the DataFrame, retain the segment ID in the Segment column that has the
     maximum associated length. Set all other segment IDs to -1.
 
     Parameters:
     df (pd.DataFrame): The input DataFrame.
-    length_segment_pairs (list of tuples): List of (length_column, segment_column) pairs.
+    keep_max_segment_id_config (list of tuples): List of (length_column, segment_column) pairs.
 
     Returns:
     pd.DataFrame: Modified DataFrame with updated Segment columns.
@@ -78,7 +91,7 @@ def _keep_max_segment_id(df, keep_max_segment_id_config):
     max_indices = np.argmax(length_data, axis=1)
 
     # Set all segment columns to -1 where not the max, retain value otherwise
-    for i, (length_col, segment_col) in enumerate(keep_max_segment_id_config):
+    for i, (_, segment_col) in enumerate(keep_max_segment_id_config):
         segment_data = df[segment_col].values.copy()
         segment_data[max_indices != i] = -1
         df[segment_col] = segment_data

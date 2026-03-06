@@ -32,11 +32,7 @@ lgm50lt_nmc_4800 = BatteryConfig(
     min_current_diff=1,
     max_time_diff=0.5,
     min_voltage_diff=0,
-    ignore_negative_resistance_values=True
+    ignore_negative_resistance_values=True,
 )
 
-hakadi_nmc_1500 = BatteryConfig(
-    c_ref=1.5,
-    max_voltage=3.6,
-    min_voltage=2.0
-)
+hakadi_nmc_1500 = BatteryConfig(c_ref=1.5, max_voltage=3.6, min_voltage=2.0)

@@ -3,24 +3,33 @@ import logging
 # plot import
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas
+import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 
-from pydpeet.process.analyze.configs.ocv_config import *
-from pydpeet.process.analyze.soc import SocMethod, add_soc
-
-# import Daniel's & Jan's work
-from pydpeet.process.sequence.step_analyzer import add_primitive_segments, extract_sequence_overview
+from pydpeet.process.analyze.configs.battery_config import BatteryConfig
+from pydpeet.process.analyze.configs.ocv_config import (
+    SEGMENT_SEQUENCE_CONFIG,
+    STEP_ANALYZER_PRIMITIVES_CONFIG,
+)
+from pydpeet.process.analyze.soc import (
+    SocMethod,
+    add_soc,
+)
+from pydpeet.process.sequence.step_analyzer import (
+    add_primitive_segments,
+    extract_sequence_overview,
+)
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 
 
 def extract_ocv_iocv(
-        min_pause_lenght: float = 120,
-        min_loops: float = 70,
-        visualize: bool = True,
-        df_primitives: pandas.DataFrame = None,
-        df: pandas.DataFrame = None,
-        config=None) -> pandas.DataFrame:
+    min_pause_lenght: float = 120,
+    min_loops: float = 70,
+    visualize: bool = True,
+    df_primitives: pd.DataFrame = None,
+    df: pd.DataFrame = None,
+    config: BatteryConfig = None,
+) -> pd.DataFrame:
     """
     Compute iOCV blocks from given DataFrames.
 
@@ -88,7 +97,7 @@ def extract_ocv_iocv(
                 df=df_primitives,
                 df_primitives=df_primitives,
                 standard_method=SocMethod.WITH_RESET_WHEN_FULL,
-                config=config
+                config=config,
             )
 
         df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG)
@@ -97,10 +106,7 @@ def extract_ocv_iocv(
         raise ValueError("No df_primitives found!")
 
     # Applying Rules for iOCV Sequences
-    _rules = [
-        "Discharge_iOCV",
-        "Charge_iOCV"
-    ]
+    _rules = ["Discharge_iOCV", "Charge_iOCV"]
     _STANDARD_COLUMNS = [
         "Test_Time[s]",
         "Voltage[V]",
@@ -186,4 +192,5 @@ def extract_ocv_iocv(
         plt.show()
 
     logging.info("Returning Dataframe with iOCV blocks...")
+
     return dfs_per_block

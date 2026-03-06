@@ -36,7 +36,7 @@ class TestConvertFileToPandasDataFrame(unittest.TestCase):
         mock_reader = MagicMock(side_effect=Exception("Invalid input path"))
         mocked_config = mock_config()
         READER_CONFIGS[mocked_config] = mock_reader
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             _convert_file_to_pandas_data_frame(mocked_config, "input_path")
 
 

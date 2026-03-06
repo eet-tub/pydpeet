@@ -7,12 +7,7 @@ COLUMN_MAP = {
     "Schritt Nr.": "Step_Count",
     "Spannung": "Voltage[V]",
     "Strom": "Current[A]",
-    "Progr. Zeit": "Test_Time[s]"
+    "Progr. Zeit": "Test_Time[s]",
 }
 
-MISSING_REQUIRED_COLUMNS = [
-    "Temperature[°C]",
-    "EIS_f[Hz]",
-    "EIS_DC[A]"
-]
-
+MISSING_REQUIRED_COLUMNS = ["Temperature[°C]", "EIS_f[Hz]", "EIS_DC[A]"]

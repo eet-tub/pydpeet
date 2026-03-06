@@ -1,6 +1,7 @@
 import logging
 
 import numpy as np
+import pandas as pd
 from numba import njit
 
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
@@ -8,7 +9,11 @@ from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction impo
 
 
 @njit(cache=True)
-def _find_zero_segments(times, currents, tolerance):
+def _find_zero_segments(
+    times: np.ndarray,
+    currents: np.ndarray,
+    tolerance: float,
+) -> list[tuple[np.ndarray, np.ndarray]]:
     """
     Find segments where the absolute value of the current is less than or equal to the given tolerance.
 
@@ -44,7 +49,11 @@ def _find_zero_segments(times, currents, tolerance):
 
 
 @njit(cache=True)
-def _get_id_tol_range(times, currents, tolerance):
+def _get_id_tol_range(
+    times: np.ndarray,
+    currents: np.ndarray,
+    tolerance: float,
+) -> tuple[float, float]:
     """
     Return (tmin, tmax) where tmin and tmax are the minimum and maximum times, respectively,
     where the absolute value of the current is less than or equal to the given tolerance.
@@ -76,11 +85,12 @@ def _get_id_tol_range(times, currents, tolerance):
 
     if not found:
         return np.nan, np.nan
+
     return tmin, tmax
 
 
 @njit(cache=True)
-def _compute_new_ids(ids):
+def _compute_new_ids(ids) -> np.ndarray:
     """
     Compute a new array of IDs based on the input array to have contiguous IDs
     after inserting the falsely suppressed CC segment back in.
@@ -102,14 +112,17 @@ def _compute_new_ids(ids):
             new_ids[i] = new_ids[i - 1]
     return new_ids
 
-def _check_CV_0Aend_segments(df_primitives,
-                             tolerance,
-                             SHOW_RUNTIME,
-                             DATA_COLUMNS,
-                             THRESHOLDS_PRIMITIVE_ANNOTATION,
-                             supress_IO_warnings,
-                             THRESHOLD_CONSOLE_PRINTS_CV_CHECK,
-                             THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK):
+
+def _check_CV_0Aend_segments(
+    df_primitives: pd.DataFrame,
+    tolerance: float,
+    SHOW_RUNTIME: bool,
+    DATA_COLUMNS: dict[str, str],
+    THRESHOLDS_PRIMITIVE_ANNOTATION: dict[str, float],
+    supress_IO_warnings: bool,
+    THRESHOLD_CONSOLE_PRINTS_CV_CHECK: int,
+    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: int,
+) -> pd.DataFrame:
     """
     Check CV Segments that end with 0A to identify and correct falsely suppressed CC segment at the end,
     that happen due to the slow sloping of the CV.
@@ -118,7 +131,7 @@ def _check_CV_0Aend_segments(df_primitives,
     df_primitives (pd.DataFrame): DataFrame containing the primitives
     tolerance (float): maximum absolute value of current that is allowed in the CV segment
     SHOW_RUNTIME (bool): whether to print runtime information
-    DATA_COLUMNS (list): list of column names to be kept in the DataFrame
+    DATA_COLUMNS (dict): dictionary of column names to be kept in the DataFrame
         Example: {"I": "Current", "P": "Power", "V": "Voltage"}
     THRESHOLDS_PRIMITIVE_ANNOTATION (dict): dictionary of threshold values for primitive annotation
         Example: {"I": 0.1, "P": 0.1, "V": 0.1}
@@ -166,10 +179,7 @@ def _check_CV_0Aend_segments(df_primitives,
 
     with log_time("correcting CV Segments that end with 0A", SHOW_RUNTIME=SHOW_RUNTIME):
         correction_config = {
-            "replace_time_and_merge": {
-                (start, end): "I"
-                for _, (start, end) in expanded_ranges.items()
-            },
+            "replace_time_and_merge": {(start, end): "I" for _, (start, end) in expanded_ranges.items()},
         }
         starts = np.array([s for s, e in expanded_ranges.values()])
         ends = np.array([e for s, e in expanded_ranges.values()])
@@ -182,12 +192,14 @@ def _check_CV_0Aend_segments(df_primitives,
 
         df_CV_0Aend_segments = df_primitives.loc[mask]
 
-        df_CV_0Aend_segments = df_primitives_correction(df_primitives=df_CV_0Aend_segments,
-                                                        correction_config=correction_config,
-                                                        data_columns=DATA_COLUMNS,
-                                                        thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION,
-                                                        reindex=False,
-                                                        reannotate=False)
+        df_CV_0Aend_segments = df_primitives_correction(
+            df_primitives=df_CV_0Aend_segments,
+            correction_config=correction_config,
+            data_columns=DATA_COLUMNS,
+            thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION,
+            reindex=False,
+            reannotate=False,
+        )
 
         # Update df_primitives with df_CV_0Aend_segments
         df_CV_0Aend_segments["ID"] = -2

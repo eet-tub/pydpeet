@@ -1,8 +1,14 @@
 import numpy as np
+import pandas as pd
 from numba import njit
 
+
 @njit(cache=True)
-def _merge_segments_1d_optimized(ids, data, threshold):
+def _merge_segments_1d_optimized(
+    ids: np.array,
+    data: np.array,
+    threshold: float,
+) -> np.array:
     """
     Merge adjacent segments in a 1D array if the mean of the adjacent segments is within a threshold.
 
@@ -76,8 +82,10 @@ def _merge_segments_1d_optimized(ids, data, threshold):
     return merged_ids
 
 
-
-def _attempt_to_merge_neighboring_segments(df, adjust_segments_config):
+def _attempt_to_merge_neighboring_segments(
+    df: pd.DataFrame,
+    adjust_segments_config: list[tuple[str, float]],
+) -> pd.DataFrame:
     """
     Attempt to merge neighboring segments in the DataFrame if they're within the specified thresholds.
 

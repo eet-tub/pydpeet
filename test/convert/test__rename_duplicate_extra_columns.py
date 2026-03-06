@@ -35,7 +35,9 @@ class TestRenameDuplicateExtraColumns(unittest.TestCase):
 
     def test_multiple_duplicates_with_STANDARD_COLUMNS(self):
         expected = Index([STANDARD_COLUMNS[0], "B", "B_1", "C", "C_1", "C_2", STANDARD_COLUMNS[1]])
-        actual = _rename_duplicate_extra_columns(Index([STANDARD_COLUMNS[0], "B", "B", "C", "C", "C", STANDARD_COLUMNS[1]]))
+        actual = _rename_duplicate_extra_columns(
+            Index([STANDARD_COLUMNS[0], "B", "B", "C", "C", "C", STANDARD_COLUMNS[1]])
+        )
         assert_index_equal(actual, expected)
 
     def test_empty_columns(self):

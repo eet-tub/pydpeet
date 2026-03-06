@@ -3,8 +3,9 @@ TODO Code taken from : https://github.com/citation-file-format/citeme/tree/maste
 """
 
 import logging
-from bibtexparser.bwriter import BibTexWriter
+
 from bibtexparser.bibdatabase import BibDatabase
+from bibtexparser.bwriter import BibTexWriter
 
 try:
     import BeautifulSoup
@@ -21,11 +22,25 @@ else:
 
 logger = logging.getLogger(__name__)
 
+
 class BibHtmlWriter(BibTexWriter):
     def __init__(self):
-        super(BibHtmlWriter, self).__init__()
-        self.display_order = ['author', 'title', 'booktitle', 'journal', 'editor', 'volume',
-                              'number', 'series', 'publisher', 'year', 'pages', 'url', 'doi']
+        super().__init__()
+        self.display_order = [
+            "author",
+            "title",
+            "booktitle",
+            "journal",
+            "editor",
+            "volume",
+            "number",
+            "series",
+            "publisher",
+            "year",
+            "pages",
+            "url",
+            "doi",
+        ]
         self.html_template = """
 <html>
 <head>
@@ -45,13 +60,13 @@ class BibHtmlWriter(BibTexWriter):
         :return: BibTeX-formatted string
         :rtype: str or unicode
         """
-        html = super(BibHtmlWriter, self).write(bib_database)
+        html = super().write(bib_database)
         if full:
             html = self.html_template.format(html)
-        
+
         soup = None
         if bs4:
-            soup = bs4(html, "html5lib") 
+            soup = bs4(html, "html5lib")
         if bs:
             soup = bs(html)
 
@@ -75,39 +90,48 @@ class BibHtmlWriter(BibTexWriter):
 
         html += '<ol class="references">'
         for entry in entries:
-            html += '<li>' + self._entry_to_bibtex(entry) + '</li>'
+            html += "<li>" + self._entry_to_bibtex(entry) + "</li>"
 
-        html += '</ol>'
-        html += '</fieldset>'
+        html += "</ol>"
+        html += "</fieldset>"
         return html
 
     def _entry_to_bibtex(self, entry):
-        html = ''
+        html = ""
         # Write BibTeX key
-        html += '<cite id="'+ entry['ID'] + '" class="bib-entry">'
+        html += '<cite id="' + entry["ID"] + '" class="bib-entry">'
 
         # create display_order of fields for this entry
         # only those keys which are both in self.display_order and in entry.keys
         display_order = [i for i in self.display_order if i in entry]
 
         # Write field = value lines
-        for field in [i for i in display_order if i not in ['ENTRYTYPE', 'ID']]:
+        for field in [i for i in display_order if i not in ["ENTRYTYPE", "ID"]]:
             try:
-                if field == 'url':
-                    html += "\n<span class='bib-entry-field bib-entry-url bib-entry-" + "{0:<{1}}".format(field, self._max_field_width) + "'><a href='{0}'>{0}<a></span>".format(entry[field])
+                if field == "url":
+                    html += (
+                        "\n<span class='bib-entry-field bib-entry-url bib-entry-"
+                        + "{0:<{1}}".format(field, self._max_field_width)
+                        + f"'><a href='{entry[field]}'>{entry[field]}<a></span>"
+                    )
                 else:
-                    html += "\n<span class='bib-entry-field bib-entry-" + "{0:<{1}}".format(field, self._max_field_width) + "'>" + entry[field] + "</span>"
-            except TypeError:
-                raise TypeError(u"The field %s in entry %s must be a string"
-                                % (field, entry['ID']))
-        html += "\n</cite>\n"+ self.entry_separator
+                    html += (
+                        "\n<span class='bib-entry-field bib-entry-"
+                        + "{0:<{1}}".format(field, self._max_field_width)
+                        + "'>"
+                        + entry[field]
+                        + "</span>"
+                    )
+            except TypeError as t:
+                raise TypeError("The field {} in entry {} must be a string".format(field, entry["ID"])) from t
+        html += "\n</cite>\n" + self.entry_separator
 
         return html
 
     def _comments_to_bibtex(self, bib_database):
-        return ''.join(['<div class="bib-comment">{0}</div>\n{1}'.format(comment, self.entry_separator)
-                        for comment in bib_database.comments])
+        return "".join(
+            [f'<div class="bib-comment">{comment}</div>\n{self.entry_separator}' for comment in bib_database.comments]
+        )
 
     def _preambles_to_bibtex(self, bib_database):
-        return ''.join(['{0}\n{1}'.format(preamble, self.entry_separator)
-                        for preamble in bib_database.preambles])
+        return "".join([f"{preamble}\n{self.entry_separator}" for preamble in bib_database.preambles])

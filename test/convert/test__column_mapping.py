@@ -72,7 +72,9 @@ class TestColumnMapping(unittest.TestCase):
     @patch("ppb.convert.load_custom_module")
     @patch("pathlib.Path.is_dir")
     @patch("ppb.convert.ExtPath.is_not_valid")
-    def test_custom_config_with_missing_required_columns_none(self, mock_is_not_valid, mock_is_dir, mock_load_custom_module):
+    def test_custom_config_with_missing_required_columns_none(
+        self, mock_is_not_valid, mock_is_dir, mock_load_custom_module
+    ):
         config = Config.Custom
         data_frame = DataFrame()
         custom_folder = "valid_folder"
@@ -88,7 +90,9 @@ class TestColumnMapping(unittest.TestCase):
     @patch("ppb.convert.load_custom_module")
     @patch("pathlib.Path.is_dir")
     @patch("ppb.convert.ExtPath.is_not_valid")
-    def test_custom_config_with_valid_custom_folder(self, mock_is_not_valid, mock_is_dir, mock_load_custom_module, mock_mapping):
+    def test_custom_config_with_valid_custom_folder(
+        self, mock_is_not_valid, mock_is_dir, mock_load_custom_module, mock_mapping
+    ):
         config = Config.Custom
         data_frame = DataFrame()
         custom_folder = "valid_folder"

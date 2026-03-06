@@ -29,7 +29,9 @@ def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
 
     sheets = _read_sheets(input_path)
     with ThreadPoolExecutor() as executor:
-        record_auxvol_auxtemp_future = executor.submit(_handle_record_auxvol_auxtemp, sheets["record"], sheets.get("auxVol"), sheets.get("auxTemp"))
+        record_auxvol_auxtemp_future = executor.submit(
+            _handle_record_auxvol_auxtemp, sheets["record"], sheets.get("auxVol"), sheets.get("auxTemp")
+        )
 
         test_sheet = sheets["test"]
         future_meta_data = executor.submit(_extract_meta_data, sheets["unit"], test_sheet, sheets["log"])
@@ -81,8 +83,19 @@ def _find_children(main_file_path) -> list[str]:
     main_file_name, _ = os.path.splitext(os.path.basename(main_file_path))
     child_file_pattern = rf"{main_file_name}{_BASE_CHILD_FILE_PATTERN}"
     main_file_dir = os.path.dirname(main_file_path)
-    child_file_paths = [child_file_path for file_name in os.listdir(main_file_dir) if ((child_file_path := os.path.join(main_file_dir, file_name)).endswith(".xlsx") or child_file_path.endswith(".xls")) and re.fullmatch(child_file_pattern, file_name) and child_file_path != main_file_path]
-    child_file_paths.sort(key=lambda file: int(match.group(1)) if (match := re.search(_BASE_CHILD_FILE_PATTERN, file)) is not None else 0)
+    child_file_paths = [
+        child_file_path
+        for file_name in os.listdir(main_file_dir)
+        if (
+            (child_file_path := os.path.join(main_file_dir, file_name)).endswith(".xlsx")
+            or child_file_path.endswith(".xls")
+        )
+        and re.fullmatch(child_file_pattern, file_name)
+        and child_file_path != main_file_path
+    ]
+    child_file_paths.sort(
+        key=lambda file: int(match.group(1)) if (match := re.search(_BASE_CHILD_FILE_PATTERN, file)) is not None else 0
+    )
 
     return child_file_paths
 
@@ -102,12 +115,16 @@ def find_main_files(input_path: str) -> list[str]:
     Returns:
     list[str]: A list of main Excel file names found in the directory.
     """
-    return [file for file in os.listdir(input_path) if (file.endswith(".xlsx") or file.endswith(".xls")) and not re.search(_BASE_CHILD_FILE_PATTERN, file)]
+    return [
+        file
+        for file in os.listdir(input_path)
+        if (file.endswith(".xlsx") or file.endswith(".xls")) and not re.search(_BASE_CHILD_FILE_PATTERN, file)
+    ]
 
 
 def _read_sheets_from(
-        main_file: str,
-        children: list[str]
+    main_file: str,
+    children: list[str],
 ) -> dict[str, pd.DataFrame] | None:
     """
     Reads sheets from the main Excel file and its children into a dictionary of DataFrames.
@@ -144,9 +161,9 @@ def _read_sheets_from(
 
 
 def _extract_meta_data(
-        unit_sheet: pd.DataFrame,
-        test_sheet: pd.DataFrame,
-        log_sheet: pd.DataFrame
+    unit_sheet: pd.DataFrame,
+    test_sheet: pd.DataFrame,
+    log_sheet: pd.DataFrame,
 ) -> str:
     """
     Extracts and concatenates metadata from the provided DataFrames.
@@ -176,9 +193,9 @@ def _extract_meta_data(
 
 
 def _handle_cycle_step_test(
-        cycle_sheet: pd.DataFrame,
-        step_sheet: pd.DataFrame,
-        test_sheet: pd.DataFrame
+    cycle_sheet: pd.DataFrame,
+    step_sheet: pd.DataFrame,
+    test_sheet: pd.DataFrame,
 ) -> pd.DataFrame:
     """
     Handles the cycle, step, and test sheets by merging them together.
@@ -207,7 +224,7 @@ def _handle_cycle_step_test(
     return pd.merge(cycle_step_test, test, left_on="Step Index", right_on="Step Index", how="left")
 
 
-def _handle_test(test: pd.DataFrame) -> pd.DataFrame:
+def _handle_test(df: pd.DataFrame) -> pd.DataFrame:
     """
     Handles the test sheet by selecting the relevant columns and renaming them to fit the standard.
 
@@ -224,10 +241,10 @@ def _handle_test(test: pd.DataFrame) -> pd.DataFrame:
     """
     logging.info("handling test sheet...")
 
-    headers_idx = test[test.apply(lambda row: row.astype(str).str.contains("Step Index").any(), axis=1)].index[0]
-    data = pd.DataFrame(test.iloc[headers_idx + 1 :].values, columns=test.iloc[headers_idx])
-    data["Step Index"] = pd.to_numeric(data["Step Index"], errors="coerce")
-    data.rename(
+    headers_idx = df[df.apply(lambda row: row.astype(str).str.contains("Step Index").any(), axis=1)].index[0]
+    df_handled = pd.DataFrame(df.iloc[headers_idx + 1 :].values, columns=df.iloc[headers_idx])
+    df_handled["Step Index"] = pd.to_numeric(df_handled["Step Index"], errors="coerce")
+    df_handled.rename(
         columns={
             "Energy(Wh)": "Energy(Wh) - Test",
             "Capacity(Ah)": "Capacity(Ah) - Test",
@@ -238,7 +255,7 @@ def _handle_test(test: pd.DataFrame) -> pd.DataFrame:
         inplace=True,
     )
 
-    return data
+    return df_handled
 
 
 @contextmanager
@@ -259,9 +276,9 @@ def _capture_settingwithcopy_debug():
 
 
 def _handle_record_auxvol_auxtemp(
-        df_record: pd.DataFrame,
-        df_auxvol: pd.DataFrame | None,
-        df_auxtemp: pd.DataFrame | None
+    df_record: pd.DataFrame,
+    df_auxvol: pd.DataFrame | None,
+    df_auxtemp: pd.DataFrame | None,
 ) -> pd.DataFrame:
     """
     Processes and merges the record, auxiliary voltage, and auxiliary temperature sheets.
@@ -284,28 +301,28 @@ def _handle_record_auxvol_auxtemp(
 
     df_record.rename(columns={"Current(A)": "Current[A] - record", "Step Type": "Step Type - record"}, inplace=True)
 
-    result = df_record
+    df_result = df_record
     if df_auxvol is not None:
         df_auxvol = _re_index_headers(df_auxvol, ["DataPoint", "Date", "V1", "Aux. ΔV"], "Single cell voltage(V)")
         with _capture_settingwithcopy_debug():
             df_auxvol.rename(columns={"Date": "Date - auxVol", "DataPoint": "DataPoint - auxVol"}, inplace=True)
         logging.info("merging record and auxvol...")
-        result = pd.merge(df_record, df_auxvol, left_on="DataPoint", right_on="DataPoint - auxVol", how="left")
+        df_result = pd.merge(df_record, df_auxvol, left_on="DataPoint", right_on="DataPoint - auxVol", how="left")
 
     if df_auxtemp is not None:
         df_auxtemp = _re_index_headers(df_auxtemp, ["DataPoint", "Date", "T1", "Aux. ΔT"], "Single cell temperature(℃)")
         with _capture_settingwithcopy_debug():
             df_auxtemp.rename(columns={"Date": "Date - auxTemp", "DataPoint": "DataPoint - auxTemp"}, inplace=True)
         logging.info("merging record_auxvol and auxtemp...")
-        result = pd.merge(result, df_auxtemp, left_on="DataPoint", right_on="DataPoint - auxTemp", how="left")
+        df_result = pd.merge(df_result, df_auxtemp, left_on="DataPoint", right_on="DataPoint - auxTemp", how="left")
 
-    return result
+    return df_result
 
 
 def _re_index_headers(
-        df: pd.DataFrame,
-        expected_headers: list[str],
-        keyword: str
+    df: pd.DataFrame,
+    expected_headers: list[str],
+    keyword: str,
 ) -> pd.DataFrame:
     """
     Checks if the headers of a DataFrame need to be reindexed and reindexes them if necessary.
@@ -335,8 +352,8 @@ def _re_index_headers(
 
 
 def _handle_final(
-        step: pd.DataFrame,
-        record: pd.DataFrame
+    step: pd.DataFrame,
+    record: pd.DataFrame,
 ) -> pd.DataFrame:
     """
     Merges the step and record DataFrames based on the 'step_id' column.
@@ -375,6 +392,6 @@ def _handle_final(
 
     record.drop(columns=["Step Type - record"], inplace=True)
 
-    merged = step.merge(record, left_index=True, right_on="step_id", how="left")
+    df_merged = step.merge(record, left_index=True, right_on="step_id", how="left")
 
-    return merged
+    return df_merged

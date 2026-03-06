@@ -97,7 +97,7 @@ SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
 }
 
 
-def _parse_segment_type(seg_type: str):
+def _parse_segment_type(seg_type: str) -> tuple[str, str] | tuple[str, None]:
     """
     Parse a segment type string into its base and direction.
 
@@ -121,25 +121,25 @@ def _parse_segment_type(seg_type: str):
     if "_" in seg_type and seg_type.split("_")[0] in {"CC", "CV", "CP", "CRamp", "VRamp", "PRamp"}:
         base, *tail = seg_type.split("_")
         direction = tail[-1] if tail else None
+
         return base, direction
 
     # Case 2: new naming scheme ► Ramp_{Current|Voltage|Power}_{Charge|Discharge}
     if seg_type.startswith("Ramp_"):
         _, signal, *tail = seg_type.split("_")
-        mapping = {
-            "Current": "CRamp",
-            "Voltage": "VRamp",
-            "Power": "PRamp"
-        }
+        mapping = {"Current": "CRamp", "Voltage": "VRamp", "Power": "PRamp"}
         base = mapping.get(signal, "UNKNOWN")
         direction = tail[-1] if tail else None
+
         return base, direction
 
     # Fallback
     return "UNKNOWN", None
 
 
-def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences):
+def _get_important_entries_per_segment(
+    df_primitives: pd.DataFrame, df_segments_and_sequences: pd.DataFrame
+) -> pd.DataFrame:
     """
     Get the last entries per segment from a primitives dataframe and a segments_and_sequences dataframe.
 
@@ -179,19 +179,15 @@ def _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
         )
 
     dataframe_records = pd.DataFrame(records)
+
     return dataframe_records
 
 
 def generate_instructions(
-    df_primitives,
-    end_condition_map: dict = {
-        "CC": "voltage",
-        "CV": "current",
-        "CP": "voltage",
-        "Pause": "time",
-    },
+    df_primitives: pd.DataFrame,
+    end_condition_map: dict = None,
     threshold_warnings: int = 5,
-):
+) -> list[str]:
     """
     Generate PyBaMM instructions based on the given primitives dataframe and end condition map.
     Replaces Ramps with AVG Current for time.
@@ -204,7 +200,17 @@ def generate_instructions(
     Returns:
     list: list of instructions
     """
-    df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD)
+    # Set default values for mutable data structures
+    if end_condition_map is None:
+        end_condition_map = {
+            "CC": "voltage",
+            "CV": "current",
+            "CP": "voltage",
+            "Pause": "time",
+        }
+    df_segments_and_sequences = extract_sequence_overview(
+        df_primitives, SEGMENT_SEQUENCE_CONFIG=SEGMENTS_CONFIG_STANDARD
+    )
     results = _get_important_entries_per_segment(df_primitives, df_segments_and_sequences)
     instructions = []
     unknown_seen = False
@@ -215,7 +221,9 @@ def generate_instructions(
         base_type, direction = _parse_segment_type(raw_seg_type)
 
         if base_type == "UNKNOWN":
-            instructions.append(f"\033[91mUnknown segment type '{raw_seg_type}' " f"for {row['End_Value_Length']}s encountered\033[0m")
+            instructions.append(
+                f"\033[91mUnknown segment type '{raw_seg_type}' " f"for {row['End_Value_Length']}s encountered\033[0m"
+            )
             unknown_seen = True
             continue
 
@@ -225,14 +233,22 @@ def generate_instructions(
         # Determine end condition
         end_condition = end_condition_map.get(base_type.replace("Ramp", ""), "time")
 
-        def build_instruction(action, value_str):
+        # TODO: Docstring
+        def build_instruction(
+            action: str,
+            value_str: str,
+            current: float = current,
+            row: pd.Series = row,
+            length: int = length,
+            end_condition: str = end_condition,
+        ) -> str:
             if end_condition == "time":
                 return f"{action} at {value_str} for {length} seconds"
 
             cond_val, units = {
                 "current": (abs(current), "A"),
                 "voltage": (abs(row["End_Value_Voltage[V]"]), "V"),
-                "power": (abs(row["End_Value_Power[W]"]), "W")
+                "power": (abs(row["End_Value_Power[W]"]), "W"),
             }.get(end_condition, (length, "seconds"))
 
             return f"{action} at {value_str} until {cond_val}{units}"

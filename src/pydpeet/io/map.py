@@ -6,10 +6,10 @@ from pydpeet.io.configs.config import STANDARD_COLUMNS
 
 
 def mapping(
-        df: pd.DataFrame,
-        column_map: dict,
-        missing_columns: list
-) -> pd.DataFrame | None:
+    df: pd.DataFrame,
+    column_map: dict,
+    missing_columns: list,
+) -> pd.DataFrame:
     """
     Renames and maps specific columns in the DataFrame to standardized names.
     If a standardized column doesn't exist in the DataFrame, it is added with default None values.
@@ -57,7 +57,9 @@ def mapping(
     # Warn if a column that should be mapped is missing and add it with None values
     for original_col in column_map.keys():
         if original_col not in df_copy.columns:
-            logging.warning(f"Column to be mapped '{original_col}' does not exist in DataFrame. Adding it with None values.")
+            logging.warning(
+                f"Column to be mapped '{original_col}' does not exist in DataFrame. Adding it with None values."
+            )
             df_copy[original_col] = None
 
     # Rename the existing columns as per the column_map

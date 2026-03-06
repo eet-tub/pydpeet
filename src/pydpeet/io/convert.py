@@ -4,10 +4,9 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
-from pandas import DataFrame, Index
+from pandas import Index
 
 from pydpeet.io.configs.config import (
     FORMATTER_CONFIGS,
@@ -15,7 +14,7 @@ from pydpeet.io.configs.config import (
     READER_CONFIGS,
     STANDARD_COLUMNS,
     Config,
-    DataOutputFiletype
+    DataOutputFiletype,
 )
 from pydpeet.io.device.neware_8_0_0_516.reader import find_main_files
 from pydpeet.io.map import mapping
@@ -24,22 +23,24 @@ from pydpeet.io.utils.load_custom_module import load_custom_module
 from pydpeet.io.utils.timing import measure_time
 from pydpeet.io.write import write
 
-ConfigLike = Union[Config, str]
-PathLike = Union[str, Path]
+ConfigLike = Config | str
+PathLike = str | Path
 
 
 def convert(
-        config: ConfigLike,
-        input_path: object,
-        output_path: str = None,
-        keep_all_additional_data: bool = False,
-        custom_folder_path: str = None
-) -> pd.DataFrame:
+    config: ConfigLike,
+    input_path: object,
+    output_path: str = None,
+    keep_all_additional_data: bool = False,
+    custom_folder_path: str = None,
+) -> pd.DataFrame | list[pd.DataFrame] | None:
     if isinstance(input_path, str):
         if os.path.isfile(input_path):
             return convert_file(config, input_path, output_path, keep_all_additional_data, custom_folder_path)
         elif os.path.isdir(input_path):
-            return convert_files_in_directory(config, input_path, output_path, keep_all_additional_data, custom_folder_path)
+            return convert_files_in_directory(
+                config, input_path, output_path, keep_all_additional_data, custom_folder_path
+            )
         else:
             raise ValueError("Input path is invalid!")
     elif isinstance(input_path, list):
@@ -47,9 +48,15 @@ def convert(
         for input_item in input_path:
             if isinstance(input_path, str):
                 if os.path.isfile(input_item):
-                    dfs.append(convert_file(config, input_item, output_path, keep_all_additional_data, custom_folder_path))
+                    dfs.append(
+                        convert_file(config, input_item, output_path, keep_all_additional_data, custom_folder_path)
+                    )
                 elif os.path.isdir(input_item):
-                    dfs.append(convert_files_in_directory(config, input_item, output_path, keep_all_additional_data, custom_folder_path))
+                    dfs.append(
+                        convert_files_in_directory(
+                            config, input_item, output_path, keep_all_additional_data, custom_folder_path
+                        )
+                    )
                 else:
                     raise ValueError("Input path item is invalid!")
             else:
@@ -66,7 +73,7 @@ def convert_file(
     input_path: str,
     output_path: str = None,
     keep_all_additional_data: bool = False,
-    custom_folder_path: str = None
+    custom_folder_path: str = None,
 ) -> pd.DataFrame:
     """
     Standardize a measurement file according to the given configuration and returns the standardized DataFrame.
@@ -113,12 +120,12 @@ def convert_file(
 # TODO: Implement better way of handling case where output_path is None?
 @measure_time
 def convert_files_in_directory(
-        config: Config,
-        input_path: str,
-        output_path: str = None,
-        keep_all_additional_data: bool = False,
-        custom_folder_path: str = None
-) -> pd.DataFrame | None:
+    config: Config,
+    input_path: str,
+    output_path: str = None,
+    keep_all_additional_data: bool = False,
+    custom_folder_path: str = None,
+) -> list[pd.DataFrame] | None:
     """
     Standardize a directory of files according to the given configuration and outputs them to an output_path.
 
@@ -175,10 +182,9 @@ def convert_files_in_directory(
             )
             dfs.append(df)
         return dfs
-
     else:
-        os.makedirs(output_path, exist_ok=True)      
-        for filename in files:      
+        os.makedirs(output_path, exist_ok=True)
+        for filename in files:
             _process_file_and_export(
                 config,
                 config_name,
@@ -188,19 +194,19 @@ def convert_files_in_directory(
                 os.path.join(input_path, filename),
                 filename,
                 keep_all_additional_data,
-                output_path
+                output_path,
             )
-        return
+        return None
 
 
 def _process_file(
-        config: Config,
-        config_name: str,
-        current_date: str,
-        custom_folder_path: str,
-        file_path: str,
-        filename: str,
-        keep_all_additional_data: bool
+    config: Config,
+    config_name: str,
+    current_date: str,
+    custom_folder_path: str,
+    file_path: str,
+    filename: str,
+    keep_all_additional_data: bool,
 ) -> pd.DataFrame | None:
     """
     Process a single file and save the standardized DataFrame to the given output_path.
@@ -235,18 +241,19 @@ def _process_file(
         return df
     except Exception as e:
         logging.warning(f"Issue processing file {filename}: {e}")
+        return None
 
 
 def _process_file_and_export(
-        config: Config,
-        config_name: str,
-        current_date: str,
-        custom_folder_path: str,
-        data_output_filetype: DataOutputFiletype,
-        file_path: str,
-        filename: str,
-        keep_all_additional_data: bool,
-        output_path: str
+    config: Config,
+    config_name: str,
+    current_date: str,
+    custom_folder_path: str,
+    data_output_filetype: DataOutputFiletype,
+    file_path: str,
+    filename: str,
+    keep_all_additional_data: bool,
+    output_path: str,
 ) -> None:
     """
     Process a single file and save the standardized DataFrame to the given output_path.
@@ -284,9 +291,9 @@ def _process_file_and_export(
 
 
 def _convert_file_to_pandas_data_frame(
-        config: Config,
-        input_path: str,
-        custom_folder: str = None
+    config: Config,
+    input_path: str,
+    custom_folder: str = None,
 ) -> tuple[pd.DataFrame, str]:
     """
     Convert a file to a pandas DataFrame using the given configuration.
@@ -329,10 +336,10 @@ def _convert_file_to_pandas_data_frame(
 
 
 def _column_mapping(
-        df: DataFrame,
-        config: Config,
-        custom_folder: str = None
-) -> pd.DataFrame | None:
+    df: pd.DataFrame,
+    config: Config,
+    custom_folder: str = None,
+) -> pd.DataFrame:
     """
     Map the columns of a pandas DataFrame according to the given configuration.
 
@@ -397,8 +404,8 @@ def _drop_additional_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _add_metadata_to_dataframe(
-        df: pd.DataFrame,
-        meta_data: str
+    df: pd.DataFrame,
+    meta_data: str,
 ) -> pd.DataFrame:
     """
     Add the given meta data as a column in the DataFrame.
@@ -475,10 +482,10 @@ def _reorder_columns(df: pd.DataFrame) -> pd.DataFrame:
     logging.info("Combining standard and extra columns...")
     ordered_columns = ordered_standard_columns + extra_columns
 
-    reordered = df[ordered_columns]
+    df_reordered = df[ordered_columns]
     logging.info("Reordered DataFrame columns!")
 
-    return reordered
+    return df_reordered
 
 
 def _rename_duplicate_extra_columns(columns: Index) -> Index:
@@ -511,15 +518,17 @@ def _rename_duplicate_extra_columns(columns: Index) -> Index:
             duplicate_counts[col_name] += 1
 
     if any(count > 0 for count in duplicate_counts.values()):
-        logging.warning("Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names.")
+        logging.warning(
+            "Duplicate non-standard-columns were detected and renamed (by appending numbers) to ensure unique column names."
+        )
 
     return Index(result)
 
 
 def _get_data_into_format(
-        df: pd.DataFrame,
-        config: Config,
-        custom_folder: str = None
+    df: pd.DataFrame,
+    config: Config,
+    custom_folder: str = None,
 ) -> pd.DataFrame:
     """
     Apply the appropriate data formatting function to a DataFrame based on the given configuration.
@@ -568,17 +577,18 @@ def _get_data_into_format(
         try:
             custom_formatter = load_custom_module(custom_folder, "Formatter")
         except Exception as e:
-            raise ValueError(f"Error loading custom formatter module: {e}")
+            raise ValueError(f"Error loading custom formatter module: {e}") from e
         try:
             df = custom_formatter.get_data_into_format(df)
         except Exception as e:
-            raise ValueError(f"Error applying custom formatter: {e}")
+            raise ValueError(f"Error applying custom formatter: {e}") from e
     else:
         logging.info(f"Using formatter for config: {config}")
         try:
             FORMATTER_CONFIGS[config](df)
         except Exception as e:
-            raise ValueError(f"Error applying formatter: {e}")
+            raise ValueError(f"Error applying formatter: {e}") from e
 
     logging.info("Data format fixed.")
+
     return df

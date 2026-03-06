@@ -5,14 +5,16 @@ TODO Code taken from : https://github.com/citation-file-format/citeme/tree/maste
 import functools
 import json
 import pathlib
+
+from bibtexparser.bibdatabase import BibDatabase
+from bibtexparser.bwriter import BibTexWriter
 from six import iteritems
 
-from bibtexparser.bwriter import BibTexWriter
-from bibtexparser.bibdatabase import BibDatabase
 from .html_writer import BibHtmlWriter
 
+
 # Singleton!
-class CiteMe(object):
+class CiteMe:
     # Class variable!
     __instance = None
     __check_fields = True
@@ -40,8 +42,8 @@ class CiteMe(object):
 
     def print_references(self):
         for ref_type in self.references:
-            for handle, citation in iteritems(self.references[ref_type]):
-                #print(ref_type, handle, citation.description)
+            for _, citation in iteritems(self.references[ref_type]):
+                # print(ref_type, handle, citation.description)
                 print(citation.description)
 
     def write_to_bibtex(self, filename):
@@ -50,15 +52,15 @@ class CiteMe(object):
         for ref_type in self.references:
             for handle, citation in iteritems(self.references[ref_type]):
                 description = citation.description
-                description['ENTRYTYPE'] = citation.type
-                description['ID'] = handle
+                description["ENTRYTYPE"] = citation.type
+                description["ID"] = handle
                 db.entries.append(description)
         writer = BibTexWriter()
-        with open(filename, 'w') as bibfile:
+        with open(filename, "w") as bibfile:
             bibfile.write(writer.write(db))
 
     def write_to_html(self, filename, full=False):
-        with open(filename, 'w') as bibfile:
+        with open(filename, "w") as bibfile:
             bibfile.write(self.get_html(full=full))
 
     def get_html(self, full=False):
@@ -67,15 +69,15 @@ class CiteMe(object):
         for ref_type in self.references:
             for handle, citation in iteritems(self.references[ref_type]):
                 description = citation.description
-                description['ENTRYTYPE'] = citation.type
-                description['ID'] = handle
+                description["ENTRYTYPE"] = citation.type
+                description["ID"] = handle
                 db.entries.append(description)
         writer = BibHtmlWriter()
         return writer.write(db, full=full)
 
     def references_by_type(self, ref_type):
         if ref_type in self.references:
-            return self.references['ref_type']
+            return self.references["ref_type"]
         else:
             return []
 
@@ -88,7 +90,7 @@ class CiteMe(object):
         CiteMe.__check_fields = value
 
 
-class Citation(object):
+class Citation:
     def __init__(self, handle, description, the_type):
         self.handle = handle
         self.description = description
@@ -98,12 +100,13 @@ class Citation(object):
         # from https://en.wikipedia.org/wiki/BibTeX
         self._required = []
         self._optional = []
-        self._general_options = ['url', 'doi']
+        self._general_options = ["url", "doi"]
 
     def __call__(self, f):
         def wrapped_f(*args, **kwargs):
             CiteMe().add_reference(self)
             return f(*args, **kwargs)
+
         return wrapped_f
 
     def checkFields(self, pedantic):
@@ -137,126 +140,157 @@ class Citation(object):
                     too_many.append(field)
 
         if missing or too_many:
-            raise Exception("Fields for citation of type {0} is not correct:\n"
-                            "required fields: {1}\n"
-                            "optional fields: {2}\n\n"
-                            "missing fields: {3}\n"
-                            "non supported fields: {4}\n\n"
-                            "found fields: {5}".format(
-                                self.type, self._required, self._optional,
-                                missing, too_many,
-                                self.description.keys()
-                            ))
+            raise Exception(
+                f"Fields for citation of type {self.type} is not correct:\n"
+                f"required fields: {self._required}\n"
+                f"optional fields: {self._optional}\n\n"
+                f"missing fields: {missing}\n"
+                f"non supported fields: {too_many}\n\n"
+                f"found fields: {self.description.keys()}"
+            )
 
 
 class article(Citation):
     def __init__(self, handle, description):
-        super(article, self).__init__(handle, description,'article')
-        self._required = ['author', 'title', 'journal', 'year', 'volume']
-        self._optional = ['number', 'pages', 'month', 'note', 'key']
+        super().__init__(handle, description, "article")
+        self._required = ["author", "title", "journal", "year", "volume"]
+        self._optional = ["number", "pages", "month", "note", "key"]
 
 
 class book(Citation):
     def __init__(self, handle, description):
-        super(book, self).__init__(handle, description,'book')
-        self._required = [('author', 'editor'), 'title', 'publisher', 'year']
-        self._optional = [('volume', 'number'), 'series', 'address', 'edition', 'month', 'note', 'key']
+        super().__init__(handle, description, "book")
+        self._required = [("author", "editor"), "title", "publisher", "year"]
+        self._optional = [("volume", "number"), "series", "address", "edition", "month", "note", "key"]
 
 
 class booklet(Citation):
     def __init__(self, handle, description):
-        super(booklet, self).__init__(handle, description,'booklet')
-        self._required = ['title']
-        self._optional = ['author', 'howpublished', 'address', 'month', 'year', 'note', 'key']
+        super().__init__(handle, description, "booklet")
+        self._required = ["title"]
+        self._optional = ["author", "howpublished", "address", "month", "year", "note", "key"]
 
 
 class inbook(Citation):
     def __init__(self, handle, description):
-        super(inbook, self).__init__(handle, description,'inbook')
-        self._required = [('author', 'editor'), 'title', ('chapter', 'pages'), 'publisher', 'year']
-        self._optional = [('volume', 'number'), 'series', 'type', 'address', 'edition', 'month', 'note', 'key']
+        super().__init__(handle, description, "inbook")
+        self._required = [("author", "editor"), "title", ("chapter", "pages"), "publisher", "year"]
+        self._optional = [("volume", "number"), "series", "type", "address", "edition", "month", "note", "key"]
 
 
 class incollection(Citation):
     def __init__(self, handle, description):
-        super(incollection, self).__init__(handle, description,'incollection')
-        self._required = ['author', 'title', 'booktitle', 'publisher', 'year']
-        self._optional = ['editor', ('volume', 'number'), 'series', 'type', 'chapter', 'pages', 'address', 'edition', 'month', 'note', 'key']
+        super().__init__(handle, description, "incollection")
+        self._required = ["author", "title", "booktitle", "publisher", "year"]
+        self._optional = [
+            "editor",
+            ("volume", "number"),
+            "series",
+            "type",
+            "chapter",
+            "pages",
+            "address",
+            "edition",
+            "month",
+            "note",
+            "key",
+        ]
 
 
 class inproceedings(Citation):
     def __init__(self, handle, description):
-        super(inproceedings, self).__init__(handle, description,'inproceedings')
-        self._required = ['author', 'title', 'booktitle', 'year']
-        self._optional = ['editor', ('volume', 'number'), 'series', 'pages', 'address', 'month', 'organization', 'publisher', 'note', 'key']
+        super().__init__(handle, description, "inproceedings")
+        self._required = ["author", "title", "booktitle", "year"]
+        self._optional = [
+            "editor",
+            ("volume", "number"),
+            "series",
+            "pages",
+            "address",
+            "month",
+            "organization",
+            "publisher",
+            "note",
+            "key",
+        ]
 
 
 # conference has the same fields as inproceedings
 class conference(inproceedings):
     def __init__(self, handle, description):
-        super(conference, self).__init__(handle, description, 'conference')
+        super().__init__(handle, description, "conference")
 
 
 class manual(Citation):
     def __init__(self, handle, description):
-        super(manual, self).__init__(handle, description,'manual')
-        self._required = ['title']
-        self._optional = ['author', 'organization', 'address', 'edition', 'month', 'year', 'note', 'key']
+        super().__init__(handle, description, "manual")
+        self._required = ["title"]
+        self._optional = ["author", "organization", "address", "edition", "month", "year", "note", "key"]
 
 
 class mastersthesis(Citation):
     def __init__(self, handle, description):
-        super(mastersthesis, self).__init__(handle, description,'mastersthesis')
-        self._required = ['author', 'title', 'school', 'year']
-        self._optional = ['type', 'address', 'month', 'note', 'key']
+        super().__init__(handle, description, "mastersthesis")
+        self._required = ["author", "title", "school", "year"]
+        self._optional = ["type", "address", "month", "note", "key"]
 
 
 class bachelorthesis(Citation):
     def __init__(self, handle, description):
-        super(bachelorthesis, self).__init__(handle, description,'bachelorthesis')
-        self._required = ['author', 'title', 'school', 'year']
-        self._optional = ['type', 'address', 'month', 'note', 'key']
+        super().__init__(handle, description, "bachelorthesis")
+        self._required = ["author", "title", "school", "year"]
+        self._optional = ["type", "address", "month", "note", "key"]
 
 
 class internship(Citation):
     def __init__(self, handle, description):
-        super(internship, self).__init__(handle, description,'internship')
-        self._required = ['author', 'title', 'school', 'year']
-        self._optional = ['type', 'address', 'month', 'note', 'key']
+        super().__init__(handle, description, "internship")
+        self._required = ["author", "title", "school", "year"]
+        self._optional = ["type", "address", "month", "note", "key"]
 
 
 class misc(Citation):
     def __init__(self, handle, description):
-        super(misc, self).__init__(handle, description,'misc')
-        self._optional = ['author', 'title', 'howpublished', 'month', 'year', 'note', 'key']
+        super().__init__(handle, description, "misc")
+        self._optional = ["author", "title", "howpublished", "month", "year", "note", "key"]
 
 
 class phdthesis(Citation):
     def __init__(self, handle, description):
-        super(phdthesis, self).__init__(handle, description,'phdthesis')
-        self._required = ['author', 'title', 'school', 'year']
-        self._optional = ['type', 'address', 'month', 'note', 'key']
+        super().__init__(handle, description, "phdthesis")
+        self._required = ["author", "title", "school", "year"]
+        self._optional = ["type", "address", "month", "note", "key"]
 
 
 class proceedings(Citation):
     def __init__(self, handle, description):
-        super(proceedings, self).__init__(handle, description, 'proceedings')
-        self._required = ['title', 'year']
-        self._optional = ['editor', ('volume', 'number'), 'series', 'address', 'month', 'publisher', 'organization', 'note', 'key']
+        super().__init__(handle, description, "proceedings")
+        self._required = ["title", "year"]
+        self._optional = [
+            "editor",
+            ("volume", "number"),
+            "series",
+            "address",
+            "month",
+            "publisher",
+            "organization",
+            "note",
+            "key",
+        ]
 
 
 class techreport(Citation):
     def __init__(self, handle, description):
-        super(techreport, self).__init__(handle, description, 'techreport')
-        self._required = ['author', 'title', 'institution', 'year']
-        self._optional = ['type', 'number', 'address', 'month', 'note', 'key']
+        super().__init__(handle, description, "techreport")
+        self._required = ["author", "title", "institution", "year"]
+        self._optional = ["type", "number", "address", "month", "note", "key"]
 
 
 class unpublished(Citation):
     def __init__(self, handle, description):
-        super(unpublished, self).__init__(handle, description, 'unpublished')
-        self._required = ['author', 'title', 'note']
-        self._optional = ['month', 'year', 'key']
+        super().__init__(handle, description, "unpublished")
+        self._required = ["author", "title", "note"]
+        self._optional = ["month", "year", "key"]
 
 
 _CITATION_TYPES = {
@@ -286,7 +320,7 @@ def _load_reference_db():
     global _REFERENCE_CACHE
 
     if _REFERENCE_CACHE is None:
-        with open(_REFERENCE_JSON_PATH, "r", encoding="utf-8") as f:
+        with open(_REFERENCE_JSON_PATH, encoding="utf-8") as f:
             data = json.load(f)
 
         _REFERENCE_CACHE = {entry["id"]: entry for entry in data}
@@ -307,9 +341,7 @@ def from_id(ref_id):
         db = _load_reference_db()
 
         if ref_id not in db:
-            raise KeyError(
-                f"Reference ID '{ref_id}' not found in {db.get('__source__')}"
-            )
+            raise KeyError(f"Reference ID '{ref_id}' not found in {db.get('__source__')}")
 
         entry = dict(db[ref_id])  # copy
         ref_type = entry.pop("type")
@@ -329,6 +361,7 @@ def from_id(ref_id):
         return wrapped
 
     return _decorator
+
 
 def set_pedantic(value):
     CiteMe.set_pedantic(value)
@@ -353,10 +386,12 @@ def write_to_html(filename, full=False):
 def get_html(full=False):
     return CiteMe().get_html(full=full)
 
+
 try:
-    from IPython.core.display import display, HTML
+    from IPython.core.display import HTML, display
 except ImportError:
     pass
 else:
+
     def display_bibliography():
         display(HTML(get_html(full=False)))

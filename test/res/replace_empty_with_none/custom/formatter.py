@@ -1,4 +1,5 @@
 import pandas as pd
+
 from pydpeet.io.utils.formatter_utils import (
     absolute_time_timedate_typecast,
     apply_convert_to_float_if_possible,
@@ -6,7 +7,7 @@ from pydpeet.io.utils.formatter_utils import (
     nan_to_none_in_column,
     replace_empty_with_none_in_standard_columns,
     round_testtime,
-    typecast
+    typecast,
 )
 
 

@@ -1,9 +1,12 @@
-from typing import Dict
 import pandas as pd
+
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 
 
-def _match_rules(df: pd.DataFrame, rules: Dict) -> pd.Series:
+def _match_rules(
+    df: pd.DataFrame,
+    rules: dict[str, str],
+) -> pd.Series:
     """
     Match segments in a DataFrame according to rules to create a mask that matches these rules.
 
@@ -49,10 +52,15 @@ def _match_rules(df: pd.DataFrame, rules: Dict) -> pd.Series:
         mask &= df["Type"] == rules["type"]
     if "direction" in rules:
         mask &= df["Direction"] == rules["direction"]
+
     return mask
 
 
-def _get_step_mask(df, step_name, SEGMENT_SEQUENCE_CONFIG):
+def _get_step_mask(
+    df: pd.DataFrame,
+    step_name: str,
+    SEGMENT_SEQUENCE_CONFIG: dict,
+) -> pd.Series:
     """
     Get a mask for a step in a DataFrame based on its found segments that fit the SEGMENT_SEQUENCE_CONFIG.
 
@@ -70,13 +78,18 @@ def _get_step_mask(df, step_name, SEGMENT_SEQUENCE_CONFIG):
     elif "sequence" in step_cfg:
         if step_name not in df.columns:
             _tag_sequences(df, SEGMENT_SEQUENCE_CONFIG)
+
         return df[step_name] != 0
     else:
         # fallback empty mask
         return pd.Series(False, index=df.index)
 
 
-def _match_merged_sequence(df, subsequences, SEGMENT_SEQUENCE_CONFIG):
+def _match_merged_sequence(
+    df: pd.DataFrame,
+    subsequences: list[str],
+    SEGMENT_SEQUENCE_CONFIG: dict,
+) -> pd.Series:
     """
     Match a merged sequence of subsequences or segments in a DataFrame with incremental IDs.
 
@@ -121,7 +134,7 @@ def _match_merged_sequence(df, subsequences, SEGMENT_SEQUENCE_CONFIG):
         offset = 0
         for idx, mask in enumerate(masks_list):
             length = lengths[idx]
-            if not all(mask[i+offset:i+offset+length]):
+            if not all(mask[i + offset : i + offset + length]):
                 match = False
                 break
             offset += length
@@ -133,10 +146,14 @@ def _match_merged_sequence(df, subsequences, SEGMENT_SEQUENCE_CONFIG):
             i += total_length
         else:
             i += 1
+
     return df[col_name] != 0
 
 
-def _tag_simple(df: pd.DataFrame, SEGMENT_SEQUENCE_CONFIG):
+def _tag_simple(
+    df: pd.DataFrame,
+    SEGMENT_SEQUENCE_CONFIG: dict,
+) -> pd.DataFrame:
     """
     Tag simple segments in a DataFrame with incremental IDs
 
@@ -162,7 +179,10 @@ def _tag_simple(df: pd.DataFrame, SEGMENT_SEQUENCE_CONFIG):
     return df
 
 
-def _tag_sequences(df, SEGMENT_SEQUENCE_CONFIG):
+def _tag_sequences(
+    df: pd.DataFrame,
+    SEGMENT_SEQUENCE_CONFIG: dict,
+) -> pd.DataFrame:
     """
     Tag sequences in a DataFrame with incremental IDs (sequences spanning multiple rows use the same value for each row)
 
@@ -251,8 +271,10 @@ def _tag_sequences(df, SEGMENT_SEQUENCE_CONFIG):
     return df
 
 
-def _assign_longest_sequence(df: pd.DataFrame, SEGMENT_SEQUENCE_CONFIG) -> pd.DataFrame:
-
+def _assign_longest_sequence(
+    df: pd.DataFrame,
+    SEGMENT_SEQUENCE_CONFIG: dict,
+) -> pd.DataFrame:
     """
     Assigns the longest sequence found in the DataFrame to each row in the column 'Sequence' using the format "<Occurrence>_<TestName>".
 
@@ -265,8 +287,8 @@ def _assign_longest_sequence(df: pd.DataFrame, SEGMENT_SEQUENCE_CONFIG) -> pd.Da
         df (pd.DataFrame): A DataFrame containing the columns 'ID', 'Sequence', and all columns specified in SEGMENT_SEQUENCE_CONFIG.
     """
     test_names = list(SEGMENT_SEQUENCE_CONFIG.keys())
-    #df = df.copy() #  is this needed
-    df['Sequence'] = None
+    df = df.copy()
+    df["Sequence"] = None
     counters = {name: 0 for name in test_names}
     n = len(df)
     i = 0
@@ -302,7 +324,7 @@ def _assign_longest_sequence(df: pd.DataFrame, SEGMENT_SEQUENCE_CONFIG) -> pd.Da
         if best_name:
             counters[best_name] += 1
             label = f"{counters[best_name]}_{best_name}"
-            df.loc[index[i:i + best_len], 'Sequence'] = label
+            df.loc[index[i : i + best_len], "Sequence"] = label
             i += best_len
         else:
             i += 1
@@ -310,7 +332,11 @@ def _assign_longest_sequence(df: pd.DataFrame, SEGMENT_SEQUENCE_CONFIG) -> pd.Da
     return df
 
 
-def _analyze_segments(df: pd.DataFrame, SHOW_RUNTIME: bool, SEGMENT_SEQUENCE_CONFIG):
+def _analyze_segments(
+    df: pd.DataFrame,
+    SHOW_RUNTIME: bool,
+    SEGMENT_SEQUENCE_CONFIG: dict,
+) -> pd.DataFrame:
     """
     Analyzes a DataFrame and returns a DataFrame with the columns 'ID', 'Sequence', and
     all columns specified in SEGMENT_SEQUENCE_CONFIG.
@@ -338,5 +364,5 @@ def _analyze_segments(df: pd.DataFrame, SHOW_RUNTIME: bool, SEGMENT_SEQUENCE_CON
     with log_time("separate sequences and df_with_segments", SHOW_RUNTIME):
         segment_keys = [key for key in SEGMENT_SEQUENCE_CONFIG.keys() if key in df.columns]
         df_segments_and_sequences = df[["ID", "Sequence"] + segment_keys]
-    return df_segments_and_sequences
 
+    return df_segments_and_sequences

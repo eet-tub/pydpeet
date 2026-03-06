@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # --- Paths -----------------------------------------------------------------
 DOCS_DIR = Path(__file__).resolve().parent

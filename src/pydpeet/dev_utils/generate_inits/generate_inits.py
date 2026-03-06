@@ -19,33 +19,37 @@ this will enable this import:
     eet.convert.convert_file(...)
 """
 
-import os
-import json
 import datetime
+import json
+import os
 import sys
 
 CONFIG_FILENAME = "config.json"
 LOG_FILENAME = "generation_log.txt"
 
+
 def get_script_path():
     return os.path.abspath(__file__)
 
+
 def get_script_dir():
     return os.path.dirname(get_script_path())
+
 
 def header_text():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return f'"""\nAuto-generated __init__ file.\nCreated: {timestamp}\n"""\n\n'
 
+
 class Logger:
     def __init__(self, filename):
         self.filepath = os.path.join(get_script_dir(), filename)
-        with open(self.filepath, 'w', encoding='utf-8') as f:
+        with open(self.filepath, "w", encoding="utf-8") as f:
             f.write(f"--- Init Generation Log: {datetime.datetime.now()} ---\n\n")
 
     def log(self, message):
         print(message)
-        with open(self.filepath, 'a', encoding='utf-8') as f:
+        with open(self.filepath, "a", encoding="utf-8") as f:
             f.write(message + "\n")
 
 
@@ -76,7 +80,7 @@ def remove_all_inits(root_dir, logger):
     """Delete every existing __init__.py under root_dir"""
     logger.log("--- PHASE 1: Deleting all existing __init__.py files ---")
     removed = 0
-    for dirpath, dirnames, filenames in os.walk(root_dir):
+    for dirpath, _, filenames in os.walk(root_dir):
         for fn in filenames:
             if fn == "__init__.py":
                 p = os.path.join(dirpath, fn)
@@ -95,9 +99,9 @@ def create_empty_inits(root_dir, logger):
     """
     logger.log("--- PHASE 2: Creating restrictive empty __init__.py across tree ---")
     created = 0
-    for dirpath, dirnames, filenames in os.walk(root_dir):
+    for dirpath, dirnames, _ in os.walk(root_dir):
         # skip hidden dirs and __pycache__
-        dirnames[:] = [d for d in dirnames if not d.startswith('.') and d != '__pycache__']
+        dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
         init_path = os.path.join(dirpath, "__init__.py")
         try:
             with open(init_path, "w", encoding="utf-8") as f:
@@ -126,7 +130,7 @@ def module_dotted_from_path(abs_path, project_root, package_root):
 
 def apply_config(project_root, package_root, config_path, logger):
     logger.log("--- PHASE 3: Applying config.json to build the public API ---")
-    with open(config_path, 'r', encoding='utf-8') as f:
+    with open(config_path, encoding="utf-8") as f:
         config = json.load(f)
 
     # mapping: dir_path -> { 'child_packages': set(child_name),
@@ -160,7 +164,9 @@ def apply_config(project_root, package_root, config_path, logger):
         # target folder parts are first (depth - 1) entries
         target_folder_parts = rel_parts_from_project[: max(1, depth - 1)]
         # if package_root is project_root/src, drop that first element if it equals basename(package_root)
-        if os.path.normpath(package_root).endswith(os.path.sep + target_folder_parts[0]) or target_folder_parts[0] == os.path.basename(package_root):
+        if os.path.normpath(package_root).endswith(os.path.sep + target_folder_parts[0]) or (
+            target_folder_parts[0] == os.path.basename(package_root)
+        ):
             # remove the leading package root element if present (common case with 'src')
             pkg_parts = target_folder_parts[1:]
         else:
@@ -173,10 +179,8 @@ def apply_config(project_root, package_root, config_path, logger):
 
         if not pkg_parts:
             # exporting at the package root
-            target_package_dotted = ""  # special case
             target_dir = package_root
         else:
-            target_package_dotted = ".".join(pkg_parts)
             target_dir = os.path.join(package_root, *pkg_parts)
 
         # Determine full module dotted name relative to package root
@@ -195,7 +199,9 @@ def apply_config(project_root, package_root, config_path, logger):
             parent = os.path.dirname(curr)
             if parent == curr:
                 break
-            if os.path.commonpath([package_root, curr]) != os.path.normpath(package_root) and not curr.startswith(os.path.normpath(package_root)):
+            if os.path.commonpath([package_root, curr]) != os.path.normpath(package_root) and not curr.startswith(
+                os.path.normpath(package_root)
+            ):
                 # outside of package_root, stop
                 break
             # compute child name (basename of curr) relative to parent
@@ -254,8 +260,10 @@ def apply_config(project_root, package_root, config_path, logger):
         except Exception as e:
             logger.log(f"Failed to write {init_path}: {e}")
 
+    # TODO: Obsolete?
     # Ensure package_root has an __init__ that exports top-level packages (e.g., 'pydpeet')
-    root_data = get_data_for_dir(package_root)
+    # root_data = get_data_for_dir(package_root)
+
     # If package root did not get any auto exports (possible), build sensible top-level __init__
     # but don't overwrite if a specific config already created explicit exports
     init_root = os.path.join(package_root, "__init__.py")
@@ -272,8 +280,10 @@ def apply_config(project_root, package_root, config_path, logger):
                 continue
         # read the file and update __all__ if needed
         try:
-            with open(init_root, "r", encoding="utf-8") as f:
-                content = f.read()
+            # TODO: Obsolete?
+            # with open(init_root, encoding="utf-8") as f:
+            #     content = f.read()
+
             # simplistic append if not present
             if child_packages:
                 # create an augmented root __init__ that imports child packages and sets __all__

@@ -11,7 +11,9 @@ class TestMoveStringsFromColumnToMetadata(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_move_strings_from_column_to_metadata(self, mock_stdout):
         data = pandas.DataFrame({"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]})
-        expected = pandas.DataFrame({"Floats+MSG": [1.1, None, 3.3], "Meta_Data": ["Metadata_str\n\nMSG", None, None]}, dtype=object)
+        expected = pandas.DataFrame(
+            {"Floats+MSG": [1.1, None, 3.3], "Meta_Data": ["Metadata_str\n\nMSG", None, None]}, dtype=object
+        )
         column_name = "Floats+MSG"
         result = move_strings_from_column_to_metadata(data, column_name)
         pandas.testing.assert_frame_equal(result, expected)
@@ -29,7 +31,9 @@ class TestMoveStringsFromColumnToMetadata(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_column_not_in_data_frame(self, mock_stdout):
         data = pandas.DataFrame({"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]})
-        expected = pandas.DataFrame({"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]}, dtype=object)
+        expected = pandas.DataFrame(
+            {"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]}, dtype=object
+        )
         column_name = "NonExistingColumn"
         result = move_strings_from_column_to_metadata(data, column_name)
         pandas.testing.assert_frame_equal(result, expected)
@@ -47,7 +51,9 @@ class TestMoveStringsFromColumnToMetadata(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_collumn_no_str(self, mock_stdout):
         data = pandas.DataFrame({"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]})
-        expected = pandas.DataFrame({"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]}, dtype=object)
+        expected = pandas.DataFrame(
+            {"Floats+MSG": [1.1, "MSG", 3.3], "Meta_Data": ["Metadata_str", None, None]}, dtype=object
+        )
         column_name = 1523
         result = move_strings_from_column_to_metadata(data, column_name)
         pandas.testing.assert_frame_equal(result, expected)

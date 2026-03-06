@@ -2,6 +2,7 @@ import logging
 import time
 
 import numpy as np
+import pandas as pd
 from numba import njit
 
 
@@ -26,7 +27,7 @@ class StepTimer:
             logging.info(f"{self.indent}{elapsed:0.4f}s {msg}")
 
 
-def _check_columns(df, required_columns):
+def _check_columns(df: pd.DataFrame, required_columns: list[str]) -> None:
     """Checks if the required columns are present in the DataFrame, allowing for 'Segment_' prefixes."""
     columns = set(df.columns)
     mapped_columns = {col.replace("Segment_", "") for col in columns}
@@ -34,6 +35,8 @@ def _check_columns(df, required_columns):
     missing_columns = [col for col in required_columns if col not in columns and col not in mapped_columns]
     if missing_columns:
         raise KeyError(f"The following required columns are missing: {', '.join(missing_columns)}")
+
+    return None
 
 
 # Precompute arrays that are independent of chosen SOC reset method
@@ -100,7 +103,7 @@ def precompute_block_arrays_soc_methods(time, current, voltage, capacity_values,
     return delta_soc, current, abs_current, voltage_arr, c_ref_as
 
 
-def drop_duplicate_testtime(df, keep="first"):
+def drop_duplicate_testtime(df: pd.DataFrame, keep: str | bool = "first") -> pd.DataFrame:
     """
     Drop duplicate rows based on Test_Time[s].
     keep='first' keeps the first occurrence,

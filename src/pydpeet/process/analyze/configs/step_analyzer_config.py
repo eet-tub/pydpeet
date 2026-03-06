@@ -11,7 +11,9 @@ THRESHOLD_DICT_Custom = [  # ARBIN_OLD
 ]
 # use THRESHOLD_DICT = THRESHOLD_DICT_Custom if you don't want to use a predefined dictionary
 THRESHOLD_DICT = config.NEWARE_CT_4008Q_5V12A_S1
-MIN_DEFINITIVE_VOLTAGE_DIFFERENCE, MIN_DEFINITIVE_CURRENT_DIFFERENCE = calculate_minimum_definitive_differences(*THRESHOLD_DICT)
+MIN_DEFINITIVE_VOLTAGE_DIFFERENCE, MIN_DEFINITIVE_CURRENT_DIFFERENCE = calculate_minimum_definitive_differences(
+    *THRESHOLD_DICT
+)
 
 ####### depending on the Noise needs to be adjusted even for measurements of the same device #######
 SEGMENTS_TO_DETECT_CONFIG = [
@@ -32,7 +34,7 @@ ADJUST_SEGMENTS_CONFIG = [
 THRESHOLDS_PRIMITIVE_ANNOTATION = {
     "V": MIN_DEFINITIVE_VOLTAGE_DIFFERENCE,
     "I": MIN_DEFINITIVE_CURRENT_DIFFERENCE,
-    "P": MIN_DEFINITIVE_VOLTAGE_DIFFERENCE + MIN_DEFINITIVE_CURRENT_DIFFERENCE
+    "P": MIN_DEFINITIVE_VOLTAGE_DIFFERENCE + MIN_DEFINITIVE_CURRENT_DIFFERENCE,
 }
 
 ########################################################################################################################
@@ -158,11 +160,7 @@ DATA_COLUMNS = {
     "I": "Current[A]",
     "P": "Power[W]",
 }
-STANDARD_COLUMNS = [
-    "Test_Time[s]",
-    "Voltage[V]",
-    "Current[A]"
-]
+STANDARD_COLUMNS = ["Test_Time[s]", "Voltage[V]", "Current[A]"]
 #### These shouldn't be changed when using ppb Dataframes ####
 
 STEP_ANALYZER_PRIMITIVES_CONFIG = {
