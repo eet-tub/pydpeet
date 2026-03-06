@@ -5,10 +5,10 @@ from numba import njit
 
 @njit(cache=True)
 def _merge_segments_1d_optimized(
-    ids: np.array[int],
-    data: np.array[float],
+    ids: np.array,
+    data: np.array,
     threshold: float,
-) -> np.array[int]:
+) -> np.array:
     """
     Merge adjacent segments in a 1D array if the mean of the adjacent segments is within a threshold.
 

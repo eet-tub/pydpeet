@@ -10,7 +10,7 @@ from numba import njit
 def _widen_segments_numba(
     Data_arr: np.ndarray,
     ID_arr: np.ndarray,
-    thresholds: np.array[float],
+    thresholds: np.array,
 ) -> np.array:
     """
     Widen constant segments in a DataFrame by identifying contiguous segments in each column,
