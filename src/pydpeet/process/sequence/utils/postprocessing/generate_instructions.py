@@ -1,8 +1,4 @@
 import logging
-from types import (
-    Any,
-    Series,
-)
 
 import pandas as pd
 
@@ -242,7 +238,7 @@ def generate_instructions(
             action: str,
             value_str: str,
             current: float = current,
-            row: Series[Any] = row,
+            row: pd.Series = row,
             length: int = length,
             end_condition: str = end_condition,
         ) -> str:

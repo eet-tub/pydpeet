@@ -12,7 +12,7 @@ from pydpeet.process.analyze.utils import StepTimer
 def add_soh(
     df: pd.DataFrame,
     neware_bool: bool = True,
-    df_primitives: bool = None,
+    df_primitives: pd.DataFrame = None,
     config: BatteryConfig = None,
     verbose: bool = True,
 ) -> pd.DataFrame:
