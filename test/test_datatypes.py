@@ -61,10 +61,7 @@ class MyTestCase(unittest.TestCase):
         self._datatype_test(RES_PATH / "zahner" / "new" / "for_datatype_test" / "cfg3", Config.Zahner_new_3)
 
     def _datatype_test(self, input_path: Path, config: Config):
-        with_zip_files(
-            input_path,
-            lambda file: self._validate_dataframe(convert(config, file, False))
-        )
+        with_zip_files(input_path, lambda file: self._validate_dataframe(convert(config, file, False)))
 
     def _validate_dataframe(self, df):
         errors = []
@@ -76,7 +73,9 @@ class MyTestCase(unittest.TestCase):
             # Test the type
             for entry in df[column]:
                 if not (isinstance(entry, expected_type) or entry is None):
-                    errors.append(f"Entry in column '{column}' is not of expected type {expected_type.__name__} but {type(entry).__name__}")
+                    errors.append(
+                        f"Entry in column '{column}' is not of expected type {expected_type.__name__} but {type(entry).__name__}"
+                    )
 
         if errors:
             raise AssertionError("\n".join(errors))

@@ -16,7 +16,10 @@ class TestTypecastFunction(unittest.TestCase):
         self.assertEqual(result["Step_Count"].dtype, int)
         column_name = "Step_Count"
         datatype = int
-        self.assertNotEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m")
+        self.assertNotEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_to_float(self, mock_stdout):
@@ -26,7 +29,10 @@ class TestTypecastFunction(unittest.TestCase):
         self.assertEqual(result["A"].dtype, float)
         column_name = "A"
         datatype = float
-        self.assertNotEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m")
+        self.assertNotEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_to_str(self, mock_stdout):
@@ -36,7 +42,10 @@ class TestTypecastFunction(unittest.TestCase):
         self.assertEqual(result["A"].dtype, object)
         column_name = "A"
         datatype = str
-        self.assertNotEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m")
+        self.assertNotEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__} \033[0m",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_with_missing_column(self, mock_stdout):
@@ -46,7 +55,10 @@ class TestTypecastFunction(unittest.TestCase):
         pandas.testing.assert_frame_equal(result, expected)
         column_name = "B"
         datatype = int
-        self.assertEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n")
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_with_non_convertible_values(self, mock_stdout):
@@ -56,7 +68,10 @@ class TestTypecastFunction(unittest.TestCase):
         self.assertEqual(result["A"].dtype, object)
         column_name = "A"
         datatype = int
-        self.assertEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n")
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_with_empty_dataframe(self, mock_stdout):
@@ -65,7 +80,10 @@ class TestTypecastFunction(unittest.TestCase):
         self.assertEqual(result.empty, True)
         column_name = "A"
         datatype = int
-        self.assertEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n")
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_typecast_with_not_string_column(self, mock_stdout):
@@ -75,4 +93,7 @@ class TestTypecastFunction(unittest.TestCase):
         pandas.testing.assert_frame_equal(result, expected)
         column_name = 1
         datatype = int
-        self.assertEqual(mock_stdout.getvalue(), f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n")
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            f"\033[31mWARNING: Error converting column:{column_name} to {datatype.__name__}\033[0m\n",
+        )

@@ -2,43 +2,60 @@ from collections.abc import Callable
 from enum import Enum, auto
 
 from pandas import DataFrame
-# Arbin, MITS Pro v8.00.13 (PV221201)
-import pydpeet.io.device.arbin_8_00_PV221201.reader as arbin_8_00_PV221201_reader
-import pydpeet.io.device.arbin_8_00_PV221201.formatter as arbin_8_00_PV221201_formatter
-import pydpeet.io.device.arbin_8_00_PV221201.mapper as arbin_8_00_PV221201_mapper
-# arbin_old
+# Arbin MITS Pro
+# v4.23 (090331), schedule version 3.03
 import pydpeet.io.device.arbin_4_23_PV090331.formatter as arbin_4_23_PV090331_formatter
 import pydpeet.io.device.arbin_4_23_PV090331.mapper as arbin_4_23_PV090331_mapper
 import pydpeet.io.device.arbin_4_23_PV090331.reader as arbin_4_23_PV090331_reader
-# basytec
+# Arbin MITS Pro
+# v8.00 (PV221201), schedule version 8.00.13
+import pydpeet.io.device.arbin_8_00_PV221201.formatter as arbin_8_00_PV221201_formatter
+import pydpeet.io.device.arbin_8_00_PV221201.mapper as arbin_8_00_PV221201_mapper
+import pydpeet.io.device.arbin_8_00_PV221201.reader as arbin_8_00_PV221201_reader
+# BaSyTec Battery Test Software
+# File version 6.3.1.0, product version 6.2
 import pydpeet.io.device.basytec_6_3_1_0.formatter as basytec_6_3_1_0_formatter
 import pydpeet.io.device.basytec_6_3_1_0.mapper as basytec_6_3_1_0_mapper
 import pydpeet.io.device.basytec_6_3_1_0.reader as basytec_6_3_1_0_reader
-# digatron
+
+# Digatron Battery Manager and Battery Manager Workstation
+# v4.20.6.236 (2018-09-28)
 import pydpeet.io.device.digatron_4_20_6_236.formatter as digatron_4_20_6_236_formatter
 import pydpeet.io.device.digatron_4_20_6_236.mapper as digatron_4_20_6_236_mapper
 import pydpeet.io.device.digatron_4_20_6_236.reader as digatron_4_20_6_236_reader
-# digatron_eis
+
+# Digatron (EIS) Battery Manager and Battery Manager Workstation
+# v4.20.6.236 (2018-09-28)
 import pydpeet.io.device.digatron_eis_4_20_6_236.formatter as digatron_eis_4_20_6_236_formatter
 import pydpeet.io.device.digatron_eis_4_20_6_236.mapper as digatron_eis_4_20_6_236_mapper
 import pydpeet.io.device.digatron_eis_4_20_6_236.reader as digatron_eis_4_20_6_236_reader
-# neware
+
+# Neware BTS
+# Client version 8.0.0.516 (2023-05-13 R3), server version 8.0.0.323 (2023-05-13 R3)
 import pydpeet.io.device.neware_8_0_0_516.formatter as neware_8_0_0_516_formatter
 import pydpeet.io.device.neware_8_0_0_516.mapper as neware_8_0_0_516_mapper
 import pydpeet.io.device.neware_8_0_0_516.reader as neware_8_0_0_516_reader
-# parstat
+
+# Parstat VersaStudio
+# v2.63.3, firmware version 2.63.1
 import pydpeet.io.device.parstat_2_63_3.formatter as parstat_2_63_3_formatter
 import pydpeet.io.device.parstat_2_63_3.mapper as parstat_2_63_3_mapper
 import pydpeet.io.device.parstat_2_63_3.reader as parstat_2_63_3_reader
-# safion
+
+# Safion Inspectrum Suite
+# v1.9 (2023-10-18)
 import pydpeet.io.device.safion_1_9.formatter as safion_1_9_formatter
 import pydpeet.io.device.safion_1_9.mapper as safion_1_9_mapper
 import pydpeet.io.device.safion_1_9.reader as safion_1_9_reader
-# zahner
+
+# Zahner
+# TODO: Add specs
 import pydpeet.io.device.zahner.formatter as zahner_formatter
 import pydpeet.io.device.zahner.mapper as zahner_mapper
 import pydpeet.io.device.zahner.reader as zahner_reader
-# zahner_new
+
+# Zahner (new)
+# TODO: Add specs
 import pydpeet.io.device.zahner_new.formatter as zahner_new_formatter
 import pydpeet.io.device.zahner_new.mapper as zahner_new_mapper
 import pydpeet.io.device.zahner_new.reader as zahner_new_reader
@@ -86,7 +103,7 @@ class Config(Enum):
         except KeyError:
             known = ", ".join(aliases.keys())
             raise ValueError(f"Unknown config '{value}'. Known: {known}")
-    
+
     @staticmethod
     def exists(maybe_config: any) -> bool:
         """
@@ -128,7 +145,7 @@ STANDARD_COLUMNS = [
     "EIS_f[Hz]",
     "EIS_Z_Real[Ohm]",
     "EIS_Z_Imag[Ohm]",
-    "EIS_DC[A]"
+    "EIS_DC[A]",
 ]
 
 READER_CONFIGS: dict[Config, Callable[[str], DataFrame]] = {
@@ -162,11 +179,23 @@ MAPPER_CONFIGS: dict[Config, tuple[dict[str, str], list[str]]] = {
     Config.Safion_1_9: (safion_1_9_mapper.COLUMN_MAP, safion_1_9_mapper.MISSING_REQUIRED_COLUMNS),
     Config.Parstat_2_63_3: (parstat_2_63_3_mapper.COLUMN_MAP, parstat_2_63_3_mapper.MISSING_REQUIRED_COLUMNS),
     Config.Neware_8_0_0_516: (neware_8_0_0_516_mapper.COLUMN_MAP, neware_8_0_0_516_mapper.MISSING_REQUIRED_COLUMNS),
-    Config.Digatron_4_20_6_236: (digatron_4_20_6_236_mapper.COLUMN_MAP, digatron_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS),
-    Config.Digatron_EIS_4_20_6_236: (digatron_eis_4_20_6_236_mapper.COLUMN_MAP, digatron_eis_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Digatron_4_20_6_236: (
+        digatron_4_20_6_236_mapper.COLUMN_MAP,
+        digatron_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS,
+    ),
+    Config.Digatron_EIS_4_20_6_236: (
+        digatron_eis_4_20_6_236_mapper.COLUMN_MAP,
+        digatron_eis_4_20_6_236_mapper.MISSING_REQUIRED_COLUMNS,
+    ),
     Config.BaSyTec_6_3_1_0: (basytec_6_3_1_0_mapper.COLUMN_MAP, basytec_6_3_1_0_mapper.MISSING_REQUIRED_COLUMNS),
-    Config.Arbin_8_00_PV221201: (arbin_8_00_PV221201_mapper.COLUMN_MAP, arbin_8_00_PV221201_mapper.MISSING_REQUIRED_COLUMNS),
-    Config.Arbin_4_23_PV090331: (arbin_4_23_PV090331_mapper.COLUMN_MAP, arbin_4_23_PV090331_mapper.MISSING_REQUIRED_COLUMNS),
+    Config.Arbin_8_00_PV221201: (
+        arbin_8_00_PV221201_mapper.COLUMN_MAP,
+        arbin_8_00_PV221201_mapper.MISSING_REQUIRED_COLUMNS,
+    ),
+    Config.Arbin_4_23_PV090331: (
+        arbin_4_23_PV090331_mapper.COLUMN_MAP,
+        arbin_4_23_PV090331_mapper.MISSING_REQUIRED_COLUMNS,
+    ),
 }
 
 FORMATTER_CONFIGS: dict[Config, Callable[[DataFrame], DataFrame]] = {

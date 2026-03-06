@@ -4,8 +4,17 @@ from unittest.mock import patch
 
 import pandas
 
-from pydpeet.io.configs.config import STANDARD_COLUMNS, Config
-from pydpeet.io.convert import _add_metadata_to_dataframe, _column_mapping, _convert_file_to_pandas_data_frame, _drop_additional_data, _reorder_columns
+from pydpeet.io.configs.config import (
+    STANDARD_COLUMNS,
+    Config,
+)
+from pydpeet.io.convert import (
+    _add_metadata_to_dataframe,
+    _column_mapping,
+    _convert_file_to_pandas_data_frame,
+    _drop_additional_data,
+    _reorder_columns,
+)
 from pydpeet.io.utils.formatter_utils import replace_empty_with_none_in_standard_columns
 from test.utils import RES_PATH
 
@@ -17,7 +26,10 @@ class TestReplaceEmptyWithNoneInStandardColumns(unittest.TestCase):
         expected = None
         result = replace_empty_with_none_in_standard_columns(data)
         self.assertEqual(expected, result)
-        self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error replacing empty with None. Reason: dataFrame is None \033[0m\n")
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "\033[31mWARNING: Error replacing empty with None. Reason: dataFrame is None \033[0m\n",
+        )
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_df_is_empty(self, mock_stdout):
@@ -25,7 +37,10 @@ class TestReplaceEmptyWithNoneInStandardColumns(unittest.TestCase):
         expected = pandas.DataFrame()
         result = replace_empty_with_none_in_standard_columns(data)
         pandas.testing.assert_frame_equal(expected, result)
-        self.assertEqual(mock_stdout.getvalue(), "\033[31mWARNING: Error replacing empty with None. Reason: dataframe is empty \033[0m\n")
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "\033[31mWARNING: Error replacing empty with None. Reason: dataframe is empty \033[0m\n",
+        )
 
     def test_exception_handling(self):
         data = {STANDARD_COLUMNS[0]: ["", "value"]}
