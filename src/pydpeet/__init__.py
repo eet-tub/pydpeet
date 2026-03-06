@@ -1,14 +1,11 @@
 """
 Auto-generated __init__ file.
-Created: 2026-03-05 15:28:07
+Created: 2026-03-06 15:11:49
 """
 
 # Re-export selected names from source modules
 
-from pydpeet.citations.citeme import (
-    print_references,
-    write_to_bibtex,
-)
+from pydpeet.citations.citeme import print_references, write_to_bibtex
 from pydpeet.io.convert import convert
 from pydpeet.io.map import mapping
 from pydpeet.io.read import read
@@ -24,10 +21,7 @@ from pydpeet.process.analyze.extract.ocv import extract_ocv_iocv
 from pydpeet.process.analyze.resistance import add_resistance_internal
 from pydpeet.process.analyze.soc import SocMethod, add_soc
 from pydpeet.process.merge.series import merge_into_series
-from pydpeet.process.sequence.step_analyzer import (
-    add_primitive_segments,
-    extract_sequence_overview,
-)
+from pydpeet.process.sequence.step_analyzer import add_primitive_segments, extract_sequence_overview
 from pydpeet.process.sequence.utils.postprocessing.df_primitives_correction import df_primitives_correction
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
 from pydpeet.process.sequence.utils.postprocessing.generate_instructions import generate_instructions
