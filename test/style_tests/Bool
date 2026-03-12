@@ -1,0 +1,22 @@
+    def test_true(self, base_args):
+        original_df = base_args["df"].copy()
+        base_args["VARIABLE"] = True
+        result = FUNCTION(**base_args)
+        assert all(col in result.columns for col in Mocks.Mock_FUNCTION.add_columns)
+        assert pd.DataFrame.equals(result.drop(Mocks.Mock_FUNCTION.add_columns, axis=1), original_df)
+
+    def test_false(self, base_args):
+        original_df = base_args["df"].copy()
+        base_args["VARIABLE"] = False
+        result = FUNCTION(**base_args)
+        assert all(col in result.columns for col in Mocks.Mock_FUNCTION.add_columns)
+        assert pd.DataFrame.equals(result.drop(Mocks.Mock_FUNCTION.add_columns, axis=1), original_df)
+
+    def test_none(self, base_args):
+        base_args["VARIABLE"] = None
+        assert_raises_and_print(ValueError, FUNCTION, **base_args)
+
+    def test_wrong_type(self, base_args):
+        base_args["VARIABLE"] = "wrong type"
+        assert not isinstance(base_args["VARIABLE"], bool)
+        assert_raises_and_print(ValueError, FUNCTION, **base_args)

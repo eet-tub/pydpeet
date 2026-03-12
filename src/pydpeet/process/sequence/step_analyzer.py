@@ -23,6 +23,7 @@ from pydpeet.process.sequence.utils.processing.supress_smaller_segments import (
     _keep_max_segment_id,
 )
 from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
+from pydpeet.utils.guardrails import _guardrail_dataframe, _guardrail_boolean
 
 logger = logging.getLogger(__name__)
 
@@ -130,44 +131,32 @@ def add_primitive_segments(
             "Using EXAMPLE_STEP_ANALYZER_PRIMITIVES_CONFIG as fallback configuration. Manual Parameters will be kept."
         )
 
-    # TODO variable to choose if copy should be used?
-    df_step = df.copy()
-
+    # # TODO variable to choose if copy should be used?
     # --- Guardrails ---
-    if df is None or df.empty or not isinstance(df, pd.DataFrame):
-        raise ValueError("Input dataframe is None or empty")
-    if "Voltage[V]" not in df_step.columns:
-        raise ValueError("'Voltage[V]' column not found in input dataframe.")
-    if "Current[A]" not in df_step.columns:
-        raise ValueError("'Current[A]' column not found in input dataframe.")
-    if "Test_Time[s]" not in df_step.columns:
-        raise ValueError("'Test_Time[s]' column not found in input dataframe.")
-    if SEGMENTS_TO_DETECT_CONFIG is None or len(SEGMENTS_TO_DETECT_CONFIG) == 0:
-        raise ValueError("SEGMENTS_TO_DETECT_CONFIG is None or empty")
-    if ADJUST_SEGMENTS_CONFIG is None or len(ADJUST_SEGMENTS_CONFIG) == 0:
-        raise ValueError("ADJUST_SEGMENTS_CONFIG is None or empty")
-    if THRESHOLDS_PRIMITIVE_ANNOTATION is None or len(THRESHOLDS_PRIMITIVE_ANNOTATION) == 0:
-        raise ValueError("THRESHOLDS_PRIMITIVE_ANNOTATION is None or empty")
-    if THRESHOLD_CV_SEGMENTS_0A_END is None or not isinstance(THRESHOLD_CV_SEGMENTS_0A_END, float):
-        raise ValueError("THRESHOLD_CV_SEGMENTS_OA_END is None or not a float")
-    if THRESHOLD_CONSOLE_PRINTS_CV_CHECK is None or not isinstance(THRESHOLD_CONSOLE_PRINTS_CV_CHECK, int):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_CV_CHECK is None or not a int")
-    if THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is None or not isinstance(
-        THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK, int
-    ):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is None or not a int")
-    if THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is None or not isinstance(
-        THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH, int
-    ):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is None or not a int")
-    if THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is None or not isinstance(
-        THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK, int
-    ):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is None or not a int")
+    required_columns = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
+    required_column_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    _guardrail_dataframe(
+        df,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns)
+    )
+    for boolean_param in [
+        SHOW_RUNTIME,
+        check_CV_0Aend_segments_bool,
+        check_zero_length_segments_bool,
+        check_Power_zero_W_segments_bool,
+        supress_IO_warnings,
+        PRECOMPILE,
+        FORCE_PRECOMPILATION
+    ]:
+        _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
 
-    # --- Data cleanup ---
-    if not supress_IO_warnings:
-        logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
+
+    df_step = df.copy()
+    logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
     df_step.dropna(subset=["Test_Time[s]"], inplace=True)
     df_step.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
     df_step.sort_values(by=["Test_Time[s]"], inplace=True)
