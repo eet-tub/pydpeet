@@ -1,0 +1,19 @@
+    def test_valid(self):
+        raise AssertionError('Test not implemented for variable: df of add_capacity')
+
+    def test_none(self):
+        raise AssertionError('Test not implemented for variable: df of add_capacity')
+
+    def test_wrong_type(self):
+        raise AssertionError('Test not implemented for variable: df of add_capacity')
+
+    def test_negative(self):
+        raise AssertionError('Test not implemented for variable: df of add_capacity')
+
+    def test_zero(self):
+        raise AssertionError('Test not implemented for variable: df of add_capacity')
+
+
+#diskutieren ob man die bruacht
+    def test_large(self):
+        raise AssertionError('Test not implemented for variable: df of add_capacity')
