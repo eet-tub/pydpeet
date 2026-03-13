@@ -42,12 +42,19 @@ class Test_df_primitives_correction_df_primitives:
         assert_raises_and_print(ValueError, df_primitives_correction, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["df_primitives"] = base_args["df_primitives"].drop(Mocks.Mock_df_primitives_correction.required_columns)
+        base_args["df_primitives"] = base_args["df_primitives"].drop(
+            Mocks.Mock_df_primitives_correction.required_columns
+        )
         assert_raises_and_print(KeyError, df_primitives_correction, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_df_primitives_correction.required_columns] = base_args["df_primitives"][Mocks.Mock_df_primitives_correction.required_columns].astype(int)
-        assert base_args["df_primitives"][Mocks.Mock_df_primitives_correction.required_columns].dtypes != Mocks.Mock_df_primitives_correction.required_columns_dtypes
+        base_args["df_primitives"][Mocks.Mock_df_primitives_correction.required_columns] = base_args["df_primitives"][
+            Mocks.Mock_df_primitives_correction.required_columns
+        ].astype(int)
+        assert (
+            base_args["df_primitives"][Mocks.Mock_df_primitives_correction.required_columns].dtypes
+            != Mocks.Mock_df_primitives_correction.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, df_primitives_correction, **base_args)
 
     def test_nan_values(self, base_args):
@@ -66,6 +73,7 @@ class Test_df_primitives_correction_df_primitives:
 class Test_df_primitives_correction_correction_config:
     """Placeholder failing test for variable 'correction_config' of 'df_primitives_correction'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: correction_config of df_primitives_correction")
 
@@ -73,6 +81,7 @@ class Test_df_primitives_correction_correction_config:
 class Test_df_primitives_correction_data_columns:
     """Placeholder failing test for variable 'data_columns' of 'df_primitives_correction'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: data_columns of df_primitives_correction")
 
@@ -80,6 +89,7 @@ class Test_df_primitives_correction_data_columns:
 class Test_df_primitives_correction_thresholds:
     """Placeholder failing test for variable 'thresholds' of 'df_primitives_correction'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: thresholds of df_primitives_correction")
 

@@ -9,12 +9,19 @@ from src.pydpeet import convert
 @pytest.fixture
 def base_args():
     """Provides a fresh dictionary of default arguments for every test."""
-    return {"config": Mocks.Mock_convert.config, "input_path": Mocks.Mock_convert.input_path, "output_path": Mocks.Mock_convert.output_path, "keep_all_additional_data": Mocks.Mock_convert.keep_all_additional_data, "custom_folder_path": Mocks.Mock_convert.custom_folder_path}
+    return {
+        "config": Mocks.Mock_convert.config,
+        "input_path": Mocks.Mock_convert.input_path,
+        "output_path": Mocks.Mock_convert.output_path,
+        "keep_all_additional_data": Mocks.Mock_convert.keep_all_additional_data,
+        "custom_folder_path": Mocks.Mock_convert.custom_folder_path,
+    }
 
 
 class Test_convert_config:
     """Placeholder failing test for variable 'config' of 'convert'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: config of convert")
 
@@ -22,6 +29,7 @@ class Test_convert_config:
 class Test_convert_input_path:
     """Placeholder failing test for variable 'input_path' of 'convert'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: input_path of convert")
 
@@ -29,6 +37,7 @@ class Test_convert_input_path:
 class Test_convert_output_path:
     """Placeholder failing test for variable 'output_path' of 'convert'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: output_path of convert")
 
@@ -59,5 +68,6 @@ class Test_convert_keep_all_additional_data:
 class Test_convert_custom_folder_path:
     """Placeholder failing test for variable 'custom_folder_path' of 'convert'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: custom_folder_path of convert")

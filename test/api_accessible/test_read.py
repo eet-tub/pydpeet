@@ -1,10 +1,8 @@
-import numpy as np
-import pytest
 import pandas as pd
+import pytest
 
-from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
 from pydpeet.res.res_for_unittests.res import Mocks
-
+from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
 from src.pydpeet import read
 
 
@@ -19,19 +17,23 @@ def base_args():
     }
 
 
-class Test_read_config(object):
+class Test_read_config:
     """Placeholder failing test for variable 'config' of 'read'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: config of read')
+        raise NotImplementedError("Test not implemented for variable: config of read")
 
 
-class Test_read_input_path(object):
+class Test_read_input_path:
     """Placeholder failing test for variable 'input_path' of 'read'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: input_path of read')
+        raise NotImplementedError("Test not implemented for variable: input_path of read")
 
 
-class Test_read_keep_all_additional_data(object):
+class Test_read_keep_all_additional_data:
     def test_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["keep_all_additional_data"] = True
@@ -56,10 +58,9 @@ class Test_read_keep_all_additional_data(object):
         assert_raises_and_print(ValueError, read, **base_args)
 
 
-
-class Test_read_custom_folder_path(object):
+class Test_read_custom_folder_path:
     """Placeholder failing test for variable 'custom_folder_path' of 'read'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: custom_folder_path of read')
-
-
+        raise NotImplementedError("Test not implemented for variable: custom_folder_path of read")

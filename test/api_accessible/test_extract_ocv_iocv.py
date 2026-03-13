@@ -10,12 +10,20 @@ from src.pydpeet import extract_ocv_iocv
 @pytest.fixture
 def base_args():
     """Provides a fresh dictionary of default arguments for every test."""
-    return {"min_pause_lenght": Mocks.Mock_extract_ocv_iocv.min_pause_lenght, "min_loops": Mocks.Mock_extract_ocv_iocv.min_loops, "visualize": Mocks.Mock_extract_ocv_iocv.visualize, "df_primitives": Mocks.Mock_extract_ocv_iocv.df_primitives, "df": Mocks.Mock_extract_ocv_iocv.df, "config": Mocks.Mock_extract_ocv_iocv.config}
+    return {
+        "min_pause_lenght": Mocks.Mock_extract_ocv_iocv.min_pause_lenght,
+        "min_loops": Mocks.Mock_extract_ocv_iocv.min_loops,
+        "visualize": Mocks.Mock_extract_ocv_iocv.visualize,
+        "df_primitives": Mocks.Mock_extract_ocv_iocv.df_primitives,
+        "df": Mocks.Mock_extract_ocv_iocv.df,
+        "config": Mocks.Mock_extract_ocv_iocv.config,
+    }
 
 
 class Test_extract_ocv_iocv_min_pause_lenght:
     """Placeholder failing test for variable 'min_pause_lenght' of 'extract_ocv_iocv'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: min_pause_lenght of extract_ocv_iocv")
 
@@ -23,6 +31,7 @@ class Test_extract_ocv_iocv_min_pause_lenght:
 class Test_extract_ocv_iocv_min_loops:
     """Placeholder failing test for variable 'min_loops' of 'extract_ocv_iocv'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: min_loops of extract_ocv_iocv")
 
@@ -30,6 +39,7 @@ class Test_extract_ocv_iocv_min_loops:
 class Test_extract_ocv_iocv_visualize:
     """Placeholder failing test for variable 'visualize' of 'extract_ocv_iocv'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: visualize of extract_ocv_iocv")
 
@@ -57,8 +67,13 @@ class Test_extract_ocv_iocv_df_primitives:
         assert_raises_and_print(KeyError, extract_ocv_iocv, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns] = base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns].astype(int)
-        assert base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns].dtypes != Mocks.Mock_extract_ocv_iocv.required_columns_dtypes
+        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns] = base_args["df_primitives"][
+            Mocks.Mock_extract_ocv_iocv.required_columns
+        ].astype(int)
+        assert (
+            base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns].dtypes
+            != Mocks.Mock_extract_ocv_iocv.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_nan_values(self, base_args):
@@ -97,8 +112,13 @@ class Test_extract_ocv_iocv_df:
         assert_raises_and_print(KeyError, extract_ocv_iocv, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns] = base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns].astype(int)
-        assert base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns].dtypes != Mocks.Mock_extract_ocv_iocv.required_columns_dtypes
+        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns] = base_args["df"][
+            Mocks.Mock_extract_ocv_iocv.required_columns
+        ].astype(int)
+        assert (
+            base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns].dtypes
+            != Mocks.Mock_extract_ocv_iocv.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_nan_values(self, base_args):
@@ -117,5 +137,6 @@ class Test_extract_ocv_iocv_df:
 class Test_extract_ocv_iocv_config:
     """Placeholder failing test for variable 'config' of 'extract_ocv_iocv'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: config of extract_ocv_iocv")

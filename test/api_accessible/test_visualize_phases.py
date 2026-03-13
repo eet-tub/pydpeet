@@ -1,10 +1,9 @@
 import numpy as np
-import pytest
 import pandas as pd
+import pytest
 
-from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
 from pydpeet.res.res_for_unittests.res import Mocks
-
+from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
 from src.pydpeet import visualize_phases
 
 
@@ -27,8 +26,8 @@ def base_args():
     }
 
 
-class Test_visualize_phases_dataframe(object):
-    #Only first test
+class Test_visualize_phases_dataframe:
+    # Only first test
     def test_valid(self, base_args):
         original_df = base_args["dataframe"].copy()
         result = visualize_phases(**base_args)
@@ -51,8 +50,13 @@ class Test_visualize_phases_dataframe(object):
         assert_raises_and_print(KeyError, visualize_phases, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns] = base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns].astype(int)
-        assert base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns].dtypes != Mocks.Mock_visualize_phases.required_columns_dtypes
+        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns] = base_args["dataframe"][
+            Mocks.Mock_visualize_phases.required_columns
+        ].astype(int)
+        assert (
+            base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns].dtypes
+            != Mocks.Mock_visualize_phases.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
     def test_nan_values(self, base_args):
@@ -68,37 +72,47 @@ class Test_visualize_phases_dataframe(object):
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
 
-class Test_visualize_phases_start_time(object):
+class Test_visualize_phases_start_time:
     """Placeholder failing test for variable 'start_time' of 'visualize_phases'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: start_time of visualize_phases')
+        raise NotImplementedError("Test not implemented for variable: start_time of visualize_phases")
 
 
-class Test_visualize_phases_end_time(object):
+class Test_visualize_phases_end_time:
     """Placeholder failing test for variable 'end_time' of 'visualize_phases'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: end_time of visualize_phases')
+        raise NotImplementedError("Test not implemented for variable: end_time of visualize_phases")
 
 
-class Test_visualize_phases_visualize_phases_config(object):
+class Test_visualize_phases_visualize_phases_config:
     """Placeholder failing test for variable 'visualize_phases_config' of 'visualize_phases'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: visualize_phases_config of visualize_phases')
+        raise NotImplementedError("Test not implemented for variable: visualize_phases_config of visualize_phases")
 
 
-class Test_visualize_phases_segment_alpha(object):
+class Test_visualize_phases_segment_alpha:
     """Placeholder failing test for variable 'segment_alpha' of 'visualize_phases'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: segment_alpha of visualize_phases')
+        raise NotImplementedError("Test not implemented for variable: segment_alpha of visualize_phases")
 
 
-class Test_visualize_phases_line_visualization_config(object):
+class Test_visualize_phases_line_visualization_config:
     """Placeholder failing test for variable 'line_visualization_config' of 'visualize_phases'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: line_visualization_config of visualize_phases')
+        raise NotImplementedError("Test not implemented for variable: line_visualization_config of visualize_phases")
 
 
-class Test_visualize_phases_use_lines_for_segments(object):
+class Test_visualize_phases_use_lines_for_segments:
     def test_true(self, base_args):
         original_df = base_args["dataframe"].copy()
         base_args["use_lines_for_segments"] = True
@@ -123,8 +137,7 @@ class Test_visualize_phases_use_lines_for_segments(object):
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
 
-
-class Test_visualize_phases_show_column_names(object):
+class Test_visualize_phases_show_column_names:
     def test_true(self, base_args):
         original_df = base_args["dataframe"].copy()
         base_args["show_column_names"] = True
@@ -149,8 +162,7 @@ class Test_visualize_phases_show_column_names(object):
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
 
-
-class Test_visualize_phases_show_time(object):
+class Test_visualize_phases_show_time:
     def test_true(self, base_args):
         original_df = base_args["dataframe"].copy()
         base_args["show_time"] = True
@@ -175,8 +187,7 @@ class Test_visualize_phases_show_time(object):
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
 
-
-class Test_visualize_phases_show_id(object):
+class Test_visualize_phases_show_id:
     def test_true(self, base_args):
         original_df = base_args["dataframe"].copy()
         base_args["show_id"] = True
@@ -201,14 +212,15 @@ class Test_visualize_phases_show_id(object):
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
 
-
-class Test_visualize_phases_width_height_ratio(object):
+class Test_visualize_phases_width_height_ratio:
     """Placeholder failing test for variable 'width_height_ratio' of 'visualize_phases'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: width_height_ratio of visualize_phases')
+        raise NotImplementedError("Test not implemented for variable: width_height_ratio of visualize_phases")
 
 
-class Test_visualize_phases_show_runtime(object):
+class Test_visualize_phases_show_runtime:
     def test_true(self, base_args):
         original_df = base_args["dataframe"].copy()
         base_args["show_runtime"] = True
@@ -231,5 +243,3 @@ class Test_visualize_phases_show_runtime(object):
         base_args["show_runtime"] = "wrong type"
         assert not isinstance(base_args["show_runtime"], bool)
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
-
-

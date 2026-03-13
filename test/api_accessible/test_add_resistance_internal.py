@@ -43,8 +43,13 @@ class Test_add_resistance_internal_df:
         assert_raises_and_print(KeyError, add_resistance_internal, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns] = base_args["df"][Mocks.Mock_add_resistance_internal.required_columns].astype(int)
-        assert base_args["df"][Mocks.Mock_add_resistance_internal.required_columns].dtypes != Mocks.Mock_add_resistance_internal.required_columns_dtypes
+        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns] = base_args["df"][
+            Mocks.Mock_add_resistance_internal.required_columns
+        ].astype(int)
+        assert (
+            base_args["df"][Mocks.Mock_add_resistance_internal.required_columns].dtypes
+            != Mocks.Mock_add_resistance_internal.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
 
     def test_nan_values(self, base_args):
@@ -63,6 +68,7 @@ class Test_add_resistance_internal_df:
 class Test_add_resistance_internal_config:
     """Placeholder failing test for variable 'config' of 'add_resistance_internal'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: config of add_resistance_internal")
 
