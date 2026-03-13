@@ -3,18 +3,21 @@
 
 class Test__annotate_id_df(object):
     """Placeholder failing test for variable 'df' of '_annotate_id'."""
+
     def test_placeholder(self):
         raise AssertionError('Test not implemented for variable: df of _annotate_id')
 
 
 class Test__annotate_id_data_columns(object):
     """Placeholder failing test for variable 'data_columns' of '_annotate_id'."""
+
     def test_placeholder(self):
         raise AssertionError('Test not implemented for variable: data_columns of _annotate_id')
 
 
 class Test__annotate_id_show_runtime(object):
     """Placeholder failing test for variable 'show_runtime' of '_annotate_id'."""
+
     def test_placeholder(self):
         raise AssertionError('Test not implemented for variable: show_runtime of _annotate_id')
 

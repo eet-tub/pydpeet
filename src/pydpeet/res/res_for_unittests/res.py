@@ -24,8 +24,11 @@ class Mocks:
         neware_bool = True
         config = BatteryConfig()
         verbose = True
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
+        required_columns_df = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
+        required_column_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+        required_columns_df_primitives = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
+        required_column_dtypes_df_primitives = [("PLACEHOLDER", float), ("PLACEHOLDER", float), ("PLACEHOLDER", float)]
+
         add_columns = ["Capacity[Ah]"]
 
     class Mock_add_primitive_segments:
