@@ -1,10 +1,9 @@
 import numpy as np
-import pytest
 import pandas as pd
+import pytest
 
-from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
 from pydpeet.res.res_for_unittests.res import Mocks
-
+from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
 from src.pydpeet import generate_instructions
 
 
@@ -18,10 +17,8 @@ def base_args():
     }
 
 
-
-
-class Test_generate_instructions_df_primitives(object):
-    #Only first test
+class Test_generate_instructions_df_primitives:
+    # Only first test
     def test_valid(self, base_args):
         original_df = base_args["VARIABLE"].copy()
         result = generate_instructions(**base_args)
@@ -46,8 +43,13 @@ class Test_generate_instructions_df_primitives(object):
         assert_raises_and_print(KeyError, generate_instructions, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns] = base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns].astype(int)
-        assert base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns].dtypes != Mocks.Mock_generate_instructions.required_columns_dtypes
+        base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns] = base_args["VARIABLE"][
+            Mocks.Mock_generate_instructions.required_columns
+        ].astype(int)
+        assert (
+            base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns].dtypes
+            != Mocks.Mock_generate_instructions.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
     def test_nan_values(self, base_args):
@@ -63,15 +65,17 @@ class Test_generate_instructions_df_primitives(object):
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
 
-class Test_generate_instructions_end_condition_map(object):
+class Test_generate_instructions_end_condition_map:
     """Placeholder failing test for variable 'end_condition_map' of 'generate_instructions'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: end_condition_map of generate_instructions')
+        raise NotImplementedError("Test not implemented for variable: end_condition_map of generate_instructions")
 
 
-class Test_generate_instructions_threshold_warnings(object):
+class Test_generate_instructions_threshold_warnings:
     """Placeholder failing test for variable 'threshold_warnings' of 'generate_instructions'."""
+
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError('Test not implemented for variable: threshold_warnings of generate_instructions')
-
-
+        raise NotImplementedError("Test not implemented for variable: threshold_warnings of generate_instructions")

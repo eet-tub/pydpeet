@@ -17,6 +17,7 @@ def base_args():
 class Test_write_data_input:
     """Placeholder failing test for variable 'data_input' of 'write'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: data_input of write")
 
@@ -24,6 +25,7 @@ class Test_write_data_input:
 class Test_write_output_path:
     """Placeholder failing test for variable 'output_path' of 'write'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: output_path of write")
 
@@ -31,6 +33,7 @@ class Test_write_output_path:
 class Test_write_output_file_name:
     """Placeholder failing test for variable 'output_file_name' of 'write'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: output_file_name of write")
 
