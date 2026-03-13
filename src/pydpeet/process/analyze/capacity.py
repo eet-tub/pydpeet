@@ -13,13 +13,14 @@ from pydpeet.process.analyze.utils import (
 )
 from pydpeet.process.sequence.step_analyzer import extract_sequence_overview
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
+from pydpeet.utils.guardrails import _guardrail_dataframe
 
 
 def add_capacity(
     df: pd.DataFrame,
     df_primitives: pd.DataFrame,
-    neware_bool: bool = True,
     config: BatteryConfig = None,
+    neware_bool: bool = True,
     verbose: bool = True,
 ) -> pd.DataFrame:
     """
@@ -34,16 +35,35 @@ def add_capacity(
 
     Parameters:
         df (pandas.DataFrame): Input DataFrame containing battery test data
+        df_primitives (pandas.DataFrame): Input DataFrame containing primitive segments
+        neware_bool (bool, optional): If True, use Neware-specific filtering rules. Defaults to True.
         config (BatteryConfig, optional): Configuration object containing battery test parameters
         verbose (bool, optional): If True, print debug messages. Defaults to False.
 
     Returns:
         pandas.DataFrame: DataFrame with added 'Capacity[Ah]' column
-        :param THRESHOLD_DICT: threshold dictionary for neware params
     """
-    # Check if the required columns are present
-    required_cols = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
-    _check_columns(df, required_cols)
+    required_columns_df = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
+    required_column_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    required_columns_df_primitives = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
+    required_column_dtypes_df_primitives = [("PLACEHOLDER", float), ("PLACEHOLDER", float), ("PLACEHOLDER", float)]
+    _guardrail_dataframe(
+        df,
+        hard_fail_missing_required_columns=(True, required_columns_df),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes_df),
+        hard_fail_inf_values=(False, required_columns_df),
+        hard_fail_nan_values=(False, required_columns_df),
+        hard_fail_none_values=(False, required_columns_df)
+    )
+    #TODO
+    # _guardrail_dataframe(
+    #     df_primitives,
+    #     hard_fail_missing_required_columns=(True, required_columns_df_primitives),
+    #     hard_fail_wrong_column_dtypes=(True, required_column_dtypes_df_primitives),
+    #     hard_fail_inf_values=(False, required_columns_df_primitives),
+    #     hard_fail_nan_values=(False, required_columns_df_primitives),
+    #     hard_fail_none_values=(False, required_columns_df_primitives)
+    # )
 
     if config is None:
         func_name = inspect.currentframe().f_code.co_name
