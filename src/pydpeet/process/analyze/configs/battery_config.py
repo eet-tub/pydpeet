@@ -9,7 +9,7 @@ class BatteryConfig:
     max_voltage: float = 4.2
     min_voltage: float = 2.5
     threshold_current: float = 0.075
-    voltage_intervall: float = 0.04
+    voltage_intervall: float = 0.01
     # ----- values for capacity calculation -----
     minimal_current_for_capacity: float = -1.2
     maximal_current_for_capacity: float = -0.8

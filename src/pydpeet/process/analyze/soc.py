@@ -1,6 +1,5 @@
 import gc
 import logging
-import warnings
 from enum import Enum
 
 import numpy as np
@@ -222,7 +221,7 @@ def add_soc(
     # Add capacity if missing
     if "Capacity[Ah]" not in df.columns:
         # TODO: Assumed stack level for now
-        warnings.warn("Column 'Capacity[Ah]' missing, adding with function add_capacity.", stacklevel=2)
+        logging.warning("Column 'Capacity[Ah]' missing, adding with function add_capacity.", stacklevel=2)
         with StepTimer(verbose) as st:
             if df_primitives is None:
                 logging.info("df_primitives is None, please provide a valid df_primitives for add_capacity function")
