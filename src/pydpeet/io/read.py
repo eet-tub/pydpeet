@@ -32,7 +32,7 @@ def read(
     elif isinstance(input_path, list):
         dfs = []
         for input_item in input_path:
-            if isinstance(input_path, str):
+            if isinstance(input_item, str):
                 if os.path.isfile(input_item):
                     dfs.append(convert_file(config, input_item, None, keep_all_additional_data, custom_folder_path))
                 elif os.path.isdir(input_item):
