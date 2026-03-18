@@ -46,7 +46,7 @@ def convert(
     elif isinstance(input_path, list):
         dfs = []
         for input_item in input_path:
-            if isinstance(input_path, str):
+            if isinstance(input_item, str):
                 if os.path.isfile(input_item):
                     dfs.append(
                         convert_file(config, input_item, output_path, keep_all_additional_data, custom_folder_path)
