@@ -1,20 +1,22 @@
-from ppb.configs.config import DataOutputFiletype
+<!-- from ppb.configs.config import DataOutputFiletype -->
 
-# **PPB24 - Conversion of Battery Measurement Data to a Standardized Format**
+# PyDPEET - Fast and Easy Battery Data Unification, Processing, and Analysis
 
 [[_TOC_]]
 
 ## Description
-This project enables you to convert battery measurement data to a standardized format.
+
+<!-- This project enables you to convert battery measurement data to a standardized format.
 
 Cycler output their measurement data in different formats and different file types, like for example .csv and .xslx. Each has to be handled differently which makes it difficult to work with the data and that's the reason why we created a standardized format.
 The standardized Data and Metadata can be used inside of the code and can be output as a .csv (Data), .xlsx (Data) or parquet(Data) to a output_path of your choosing.
 
-Keeping additional data outside of our definition of the standardized columns and custom cycler handling is also possible.
+Keeping additional data outside of our definition of the standardized columns and custom cycler handling is also possible. -->
 
 
-## Standardized Format
-The standardized columns are defined as follows:
+## Standardised Format
+
+The standard columns are defined as follows:
 
 ```python
 STANDARD_COLUMNS = [
@@ -32,8 +34,8 @@ STANDARD_COLUMNS = [
 ]
 ```
 
-## Metadata
-Currently, metadata is not standardized. It contains all additional information from the provided measurement file and is stored as a string in the first row of the `Meta_Data` column.
+## Meta data
+Currently, metadata is not standardized. It contains all additional information from the provided measurement file and is stored as a string in the first row of the "Meta_Data" column.
 
 ## Supported Cyclers
 PyDPEET supports conversion from the following cyclers:
@@ -358,25 +360,3 @@ def to_dataframe(input_path: str) -> (pd.DataFrame, str):
 7. don't forget imports
 
 ![alt_text](Pictures%20ReadMe/How%20to%20add%20a%20Custom%20Handling%20to%20the%20Project6.png)
-
-## Roadmap + Contributing 
-You can see planned features and updates here:
-https://git.tu-berlin.de/eet/ppb/ppb24/-/issues/?sort=created_date&state=opened&first_page_size=100
-
-## Authors and acknowledgment
-Daniel Schröder (458278) 
-
-Cataldo De Simone (483710)
-
-Alexander Hinrichsen (457492)
-
-Jan Kalisch (455583)
-
-## Support TODO
-Support will be defined once published officially.
-
-## License TODO
-License will follow once published officially.
-
-## Project status
-Will likely be worked on by future groups.
