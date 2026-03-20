@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyDPEET"
-version = "0.1.0"
-description = "This project enables you to convert battery measurement data to a standardized format and process it for further analysis."
+version = "0.2.0"
+description = "Python package to read, unify, and convert battery measurement data from arbitrary battery cyclers to Parquet files. This package also provides functions to process, evaluate, and visualise the standardised data."
 authors = [
     { name = "Anton Schlösser", email = "a.schloesser@tu-berlin.de"},
     { name = "Martin Otto", email = "m.otto.1@tu-berlin.de"},
