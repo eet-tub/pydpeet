@@ -1,6 +1,6 @@
 # Define the order of pipeline stages.
 # Stages are executed sequentially from top to bottom.
-stages: [lint, notebooks, docs]
+stages: [lint, docs, release]
 
 # -------------------------------
 # LINT STAGE
@@ -60,3 +60,20 @@ docs_build:
   rules:
     - if: '$CI_COMMIT_BRANCH'
 
+
+Testpypi_release:
+  stage: release
+  image: python:3.13-slim
+  before_script:
+    - python -m pip install --upgrade pip
+    - python -m pip install build twine
+  script:
+    - python -m build
+    - twine check dist/*
+    - twine upload -u __token__ -p "$TestPyPi_Token" dist/*
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 14 days
