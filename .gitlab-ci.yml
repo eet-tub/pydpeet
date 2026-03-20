@@ -71,7 +71,8 @@ Testpypi_release:
     - python -m build
     - twine check dist/*
     - test -n "$TestPyPi_Token"
-    - twine upload --repository-url https://test.pypi.org/legacy/ -u __token__ -p "$TestPyPi_Token" dist/*
+    #- twine upload --repository-url https://test.pypi.org/legacy/ -u __token__ -p "$TestPyPi_Token" dist/*
+    - twine upload -u __token__ -p "$PyPI_Token" dist/*
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
   artifacts:
