@@ -30,7 +30,11 @@ class Test_visualize_phases_dataframe:
     # Only first test
     def test_valid(self, base_args):
         original_df = base_args["dataframe"].copy()
+
         result = visualize_phases(**base_args)
+        raise NotImplementedError(
+            f"Test not implemented for variable: dataframe of visualize_phases {original_df}{result}"
+        )
 
     def test_none(self, base_args):
         base_args["dataframe"] = None

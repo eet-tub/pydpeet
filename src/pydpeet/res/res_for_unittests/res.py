@@ -11,11 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent
 # Build correct file paths
 df_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted.parquet"
 df_primitives_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-primitives.parquet"
-#df_segments_and_sequences_path = BASE_DIR / "PLACEHOLDER.parquet"
+# df_segments_and_sequences_path = BASE_DIR / "PLACEHOLDER.parquet"
 # Read parquet files
-DF = pd.read_parquet(df_path) #TODO updaten zu neuem bennenungs standard
-DF_PRIMITIVES = pd.read_parquet(df_primitives_path) #TODO updaten zu neuem bennenungs standard
-#DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
+DF = pd.read_parquet(df_path)  # TODO updaten zu neuem bennenungs standard
+DF_PRIMITIVES = pd.read_parquet(df_primitives_path)  # TODO updaten zu neuem bennenungs standard
+# DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
+
 
 class Mocks:
     class Mock_add_capacity:
@@ -26,8 +27,38 @@ class Mocks:
         verbose = True
         required_columns_df = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
         required_column_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
-        required_columns_df_primitives = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_column_dtypes_df_primitives = [("PLACEHOLDER", float), ("PLACEHOLDER", float), ("PLACEHOLDER", float)]
+        required_columns_df_primitives = [
+            "Test_Time[s]",
+            "Voltage[V]",
+            "Current[A]",
+            "Power[W]",
+            "ID",
+            "Variable",
+            "Duration",
+            "Length",
+            "Min",
+            "Max",
+            "Avg",
+            "Type",
+            "Direction",
+            "Slope",
+        ]
+        required_column_dtypes_df_primitives = [
+            ("Test_Time[s]", float),
+            ("Voltage[V]", float),
+            ("Current[A]", float),
+            ("Power[W]", float),
+            ("ID", int),
+            ("Variable", str),
+            ("Duration", float),
+            ("Length", float),
+            ("Min", float),
+            ("Max", float),
+            ("Avg", float),
+            ("Type", str),
+            ("Direction", str),
+            ("Slope", float),
+        ]
 
         add_columns = ["Capacity[Ah]"]
 
@@ -41,7 +72,9 @@ class Mocks:
         THRESHOLD_CONSOLE_PRINTS_CV_CHECK = FALLBACK_CONFIG["THRESHOLD_CONSOLE_PRINTS_CV_CHECK"]
         THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK = FALLBACK_CONFIG["THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK"]
         THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH = FALLBACK_CONFIG["THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH"]
-        THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK = FALLBACK_CONFIG["THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK"]
+        THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK = FALLBACK_CONFIG[
+            "THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK"
+        ]
         SHOW_RUNTIME = True
         check_CV_0Aend_segments_bool = True
         check_zero_length_segments_bool = True
@@ -51,15 +84,27 @@ class Mocks:
         FORCE_PRECOMPILATION = True
         required_columns = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
         required_columns_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
-        add_columns = ["Power[W]", "ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
+        add_columns = [
+            "Power[W]",
+            "ID",
+            "Variable",
+            "Duration",
+            "Length",
+            "Min",
+            "Max",
+            "Avg",
+            "Type",
+            "Direction",
+            "Slope",
+        ]
 
     class Mock_add_resistance_internal:
         df = DF
         config = BatteryConfig()
         verbose = True
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        add_columns = ["PLACEHOLDER"]
+        required_columns = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
+        required_columns_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+        add_columns = ["InternalResistance[ohm]"]
 
     class Mock_add_soc:
         df = DF.copy()
@@ -116,10 +161,10 @@ class Mocks:
         result_columns = ["PLACEHOLDER"]
 
     class Mock_filter_and_split_df_by_blocks:
-        df_segments_and_sequences = "PLACEHOLDER"#DF_SEGMENTS_AND_SEQUENCES
+        df_segments_and_sequences = "PLACEHOLDER"  # DF_SEGMENTS_AND_SEQUENCES
         df_primitives = DF_PRIMITIVES.copy()
         rules = ["PLACEHOLDER"]
-        combine_op = 'or'
+        combine_op = "or"
         print_blocks = False
         also_return_filtered_df = True
         required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
@@ -139,9 +184,8 @@ class Mocks:
         required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
         add_columns = ["PLACEHOLDER"]
 
-
     class Mock_merge_into_series:
-        df_list =  [DF.copy(), DF.copy()],
+        df_list = ([DF.copy(), DF.copy()],)
         time_between_tests_seconds = 60.0
         verbose = True
         sort_dfs = True
@@ -188,8 +232,3 @@ class Mocks:
 
     class Mock_write_to_bibtex:
         filename = "PLACEHOLDER"
-
-
-
-
-

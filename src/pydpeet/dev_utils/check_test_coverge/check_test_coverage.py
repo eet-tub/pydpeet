@@ -8,7 +8,7 @@ from pathlib import Path
 
 def _load_config(config: str | Path | dict) -> dict:
     """Load config.json from a path or return a dict unchanged."""
-    if isinstance(config, (str, Path)):
+    if isinstance(config, str | Path):
         with open(Path(config), encoding="utf-8") as fh:
             return json.load(fh)
     elif isinstance(config, dict):
@@ -49,7 +49,7 @@ def _resolve_path_with_base(pathish: str | Path, base_dir: Path | None) -> Path:
 def _collect_exported_names(cfg: dict) -> set[str]:
     """Collect the exported names from the config structure."""
     names: set[str] = set()
-    for module_path, details in cfg.items():
+    for _module_path, details in cfg.items():
         if not isinstance(details, dict):
             continue
         ex = details.get("exports", [])
@@ -82,7 +82,7 @@ def _collect_top_level_names_from_file(path: Path) -> set[str]:
 
     names: set[str] = set()
     for node in tree.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
             if isinstance(node.name, str):
                 names.add(node.name)
     return names
@@ -102,7 +102,7 @@ def _collect_defs_from_file(path: Path) -> dict[str, dict]:
         return result
 
     for node in tree.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             # get arg names (positional only, posargs, kwonly) but skip 'self' or 'cls'
             args = []
             for a in node.args.args:
@@ -122,9 +122,17 @@ def _collect_defs_from_file(path: Path) -> dict[str, dict]:
                     for a in item.args.args:
                         if a.arg not in ("self", "cls"):
                             init_args.append(a.arg)
-                    if getattr(item.args, "vararg", None) and item.args.vararg and item.args.vararg.arg not in ("self", "cls"):
+                    if (
+                        getattr(item.args, "vararg", None)
+                        and item.args.vararg
+                        and item.args.vararg.arg not in ("self", "cls")
+                    ):
                         init_args.append(item.args.vararg.arg)
-                    if getattr(item.args, "kwarg", None) and item.args.kwarg and item.args.kwarg.arg not in ("self", "cls"):
+                    if (
+                        getattr(item.args, "kwarg", None)
+                        and item.args.kwarg
+                        and item.args.kwarg.arg not in ("self", "cls")
+                    ):
                         init_args.append(item.args.kwarg.arg)
                     break
             result[node.name] = {"type": "class", "params": init_args, "path": path.resolve()}
@@ -147,7 +155,9 @@ def collect_defs_from_src(
     result: dict[str, dict] = {}
 
     for root, dirs, files in os.walk(src_dir):
-        dirs[:] = [d for d in dirs if d not in exclude_dirs and not d.startswith(".venv") and not d.startswith("__pycache__")]
+        dirs[:] = [
+            d for d in dirs if d not in exclude_dirs and not d.startswith(".venv") and not d.startswith("__pycache__")
+        ]
         root_path = Path(root)
         for f in files:
             if not f.endswith(file_pattern):
@@ -213,7 +223,12 @@ def _append_failing_test_classes(
         if _class_exists_in_test_source(text, class_name):
             continue
         # Prepare class source
-        cls_src = f"class {class_name}(object):\n" f'    """Placeholder failing test for variable \'{p}\' of \'{export_name}\'."""\n' f"    def test_placeholder(self):\n" f"        raise NotImplementedError('Test not implemented for variable: {p} of {export_name}')\n\n\n"
+        cls_src = (
+            f"class {class_name}(object):\n"
+            f'    """Placeholder failing test for variable \'{p}\' of \'{export_name}\'."""\n'
+            f"    def test_placeholder(self):\n"
+            f"        raise NotImplementedError('Test not implemented for variable: {p} of {export_name}')\n\n\n"
+        )
         added_text_parts.append(cls_src)
         created_classes.append(class_name)
 
@@ -254,7 +269,12 @@ def _create_placeholder_test_file(
             if not p:
                 continue
             cls_name = f"Test_{_sanitize_identifier(export_name)}_{_sanitize_identifier(p)}"
-            cls_src = f"class {cls_name}(object):\n" f'    """Placeholder failing test for variable \'{p}\' of \'{export_name}\'."""\n' f"    def test_placeholder(self):\n" f"        raise NotImplementedError('Test not implemented for variable: {p} of {export_name}')\n\n"
+            cls_src = (
+                f"class {cls_name}(object):\n"
+                f'    """Placeholder failing test for variable \'{p}\' of \'{export_name}\'."""\n'
+                f"    def test_placeholder(self):\n"
+                f"        raise NotImplementedError('Test not implemented for variable: {p} of {export_name}')\n\n"
+            )
             body_parts.append(cls_src)
 
     content = header + "".join(body_parts) + "\n"
@@ -313,9 +333,17 @@ def ensure_test_classes_for_input_variables(
                 missing_var_entries.add((name, p))
 
         # append placeholder classes for missing params
-        missing_for_file = [p for p in params if not _class_exists_in_test_source(existing_src, f"Test_{_sanitize_identifier(name)}_{_sanitize_identifier(p)}")]
+        missing_for_file = [
+            p
+            for p in params
+            if not _class_exists_in_test_source(
+                existing_src, f"Test_{_sanitize_identifier(name)}_{_sanitize_identifier(p)}"
+            )
+        ]
         if missing_for_file:
-            changed, created_classes = _append_failing_test_classes(test_file_path, name, missing_for_file, case_sensitive, test_prefix)
+            changed, created_classes = _append_failing_test_classes(
+                test_file_path, name, missing_for_file, case_sensitive, test_prefix
+            )
             if changed:
                 # determine whether this was a create vs modify
                 if test_file_path.exists() and existing_src:
@@ -353,7 +381,9 @@ def collect_top_level_names_from_src(
     for root, dirs, files in os.walk(src_dir):
         # prune excluded directories (matching directory names)
         # mutate dirs in-place so os.walk won't descend into them
-        dirs[:] = [d for d in dirs if d not in exclude_dirs and not d.startswith(".venv") and not d.startswith("__pycache__")]
+        dirs[:] = [
+            d for d in dirs if d not in exclude_dirs and not d.startswith(".venv") and not d.startswith("__pycache__")
+        ]
         root_path = Path(root)
         for f in files:
             if not f.endswith(file_pattern):
@@ -388,7 +418,7 @@ def check_tests_and_generate_missing_test_files(
     exported names or private names that currently have no test file at all (useful for exports without params).
     """
     # Determine a sensible base directory to resolve relative paths.
-    if isinstance(config, (str, Path)):
+    if isinstance(config, str | Path):
         cfg_path = Path(config)
         if not cfg_path.is_absolute():
             cfg_path = _resolve_path_with_base(cfg_path, _find_project_root())
@@ -417,7 +447,9 @@ def check_tests_and_generate_missing_test_files(
         actual_list = list(api_tests_dir.iterdir())
     except FileNotFoundError:
         actual_list = []
-    actual_test_files = {p.name for p in actual_list if p.is_file() and p.name.startswith(test_prefix) and p.name.endswith(test_ext)}
+    actual_test_files = {
+        p.name for p in actual_list if p.is_file() and p.name.startswith(test_prefix) and p.name.endswith(test_ext)
+    }
 
     # Build expected test filenames for exported names
     expected_export_files = {_expected_test_filename(name, test_prefix, test_ext) for name in exported_names}
@@ -431,7 +463,7 @@ def check_tests_and_generate_missing_test_files(
 
         def map_back(lower_set: set[str], original_set: set[str]) -> set[str]:
             mapping = {s.lower(): s for s in original_set}
-            return {mapping[l] for l in lower_set if l in mapping}
+            return {mapping[_l] for _l in lower_set if _l in mapping}
 
         exports_missing_files = map_back(missing_export_lower, expected_export_files)
         extra_test_files = map_back(extra_lower, actual_test_files)
@@ -451,7 +483,7 @@ def check_tests_and_generate_missing_test_files(
     if include_private:
         src_map = collect_top_level_names_from_src(src_dir=src_dir, exclude_dirs=exclude_dirs)
         # collect private top-level names (leading underscore) that are not declared in config exports
-        for path, names in src_map.items():
+        for _path, names in src_map.items():
             for n in names:
                 if n.startswith("_") and n not in exported_names:
                     private_names_found.add(n)
@@ -463,7 +495,9 @@ def check_tests_and_generate_missing_test_files(
             private_list = list(private_tests_dir.iterdir())
         except FileNotFoundError:
             private_list = []
-        actual_test_files_private = {p.name for p in private_list if p.is_file() and p.name.startswith(test_prefix) and p.name.endswith(test_ext)}
+        actual_test_files_private = {
+            p.name for p in private_list if p.is_file() and p.name.startswith(test_prefix) and p.name.endswith(test_ext)
+        }
 
         if not case_sensitive:
             expected_private_lower = {s.lower() for s in expected_private_files}
@@ -471,7 +505,7 @@ def check_tests_and_generate_missing_test_files(
             missing_private_lower = expected_private_lower - actual_private_lower
 
             mapping = {s.lower(): s for s in expected_private_files}
-            private_missing_test_files = {mapping[l] for l in missing_private_lower if l in mapping}
+            private_missing_test_files = {mapping[_l] for _l in missing_private_lower if _l in mapping}
             private_covered = len(expected_private_files) - len(private_missing_test_files)
             private_total = len(expected_private_files)
         else:
@@ -492,7 +526,9 @@ def check_tests_and_generate_missing_test_files(
             # params for this export if available
             info = src_defs.get(export_name)
             params = info.get("params") if info else None
-            created = _create_placeholder_test_file(test_file_path, export_name, params=params, include_param_placeholders=False)
+            created = _create_placeholder_test_file(
+                test_file_path, export_name, params=params, include_param_placeholders=False
+            )
             if created:
                 created_placeholder_files.add(str(test_file_path.resolve()))
                 actual_test_files.add(expected_filename)
@@ -506,7 +542,9 @@ def check_tests_and_generate_missing_test_files(
                 test_file_path = private_tests_dir / expected_filename
                 info = src_defs.get(private_name)
                 params = info.get("params") if info else None
-                created = _create_placeholder_test_file(test_file_path, private_name, params=params, include_param_placeholders=False)
+                created = _create_placeholder_test_file(
+                    test_file_path, private_name, params=params, include_param_placeholders=False
+                )
                 if created:
                     created_placeholder_files.add(str(test_file_path.resolve()))
 
@@ -634,7 +672,9 @@ def check_tests_and_generate_missing_test_files(
             for f in sorted(input_var_check_summary_private.get("modified_files") or []):
                 print("    -", f)
 
-    print(f"Overall coverage (exports + private): {result['coverage']['overall_pct']}% ({overall_covered}/{overall_total})")
+    print(
+        f"Overall coverage (exports + private): {result['coverage']['overall_pct']}% ({overall_covered}/{overall_total})"
+    )
     print("===============================================")
     if overall_coverage_pct < 100:
         raise ValueError("Test coverage check failed")

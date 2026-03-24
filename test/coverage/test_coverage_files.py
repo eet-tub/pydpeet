@@ -26,7 +26,7 @@ class TestCoverage:
                 auto_create_missing_input_var_tests=True,
             )
         except Exception as e:
-            if e == "ValueError":
+            if isinstance(e, ValueError):
                 msg = "the test should work on rerun since it automatically creates the missing test files and classes with placeholders"
-                raise AssertionError(f"Test failed with error: {e}. {msg} \n")
-            raise AssertionError(f"Test failed with error: {e} \n")
+                raise AssertionError(f"Test failed with error: {e}. {msg} \n") from e
+            raise AssertionError(f"Test failed with error: {e} \n") from e

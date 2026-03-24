@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pydpeet import add_primitive_segments
 from pydpeet.res.res_for_unittests.res import Mocks
 from pydpeet.utils.assert_raises_and_print import assert_raises_and_print
-from pydpeet import add_primitive_segments
 
 
 @pytest.fixture
@@ -59,9 +59,11 @@ class Test_add_primitive_segments_df:
         assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        for col, dtype in Mocks.Mock_add_primitive_segments.required_columns_dtypes:
-            base_args["df"][col] = base_args["df"][col].astype(int)
-        expected_dtypes = pd.Series({col: dtype for col, dtype in Mocks.Mock_add_primitive_segments.required_columns_dtypes})
+        for col, _dtype in Mocks.Mock_add_primitive_segments.required_columns_dtypes:
+            base_args["df"][col] = base_args["df"][col].astype(str)
+        expected_dtypes = pd.Series(
+            {col: dtype for col, dtype in Mocks.Mock_add_primitive_segments.required_columns_dtypes}
+        )
         actual_dtypes = base_args["df"][Mocks.Mock_add_primitive_segments.required_columns].dtypes
         assert not actual_dtypes.equals(expected_dtypes)
         assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
@@ -71,7 +73,10 @@ class Test_add_primitive_segments_df:
         with caplog.at_level(logging.WARNING):
             add_primitive_segments(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
-        assert any(f"Column '{Mocks.Mock_add_primitive_segments.required_columns[0]}' contains NaN values." in record.message for record in caplog.records)
+        assert any(
+            f"Column '{Mocks.Mock_add_primitive_segments.required_columns[0]}' contains NaN values." in record.message
+            for record in caplog.records
+        )
 
     def test_none_values(self, base_args, caplog):
         # assert True due to dtype == float (in all required columns) is it impossible to check None since it
@@ -83,14 +88,21 @@ class Test_add_primitive_segments_df:
         with caplog.at_level(logging.WARNING):
             add_primitive_segments(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
-        assert any(f"Column '{Mocks.Mock_add_primitive_segments.required_columns[0]}' contains infinite values." in record.message for record in caplog.records)
+        assert any(
+            f"Column '{Mocks.Mock_add_primitive_segments.required_columns[0]}' contains infinite values."
+            in record.message
+            for record in caplog.records
+        )
+
 
 class Test_add_primitive_segments_STEP_ANALYZER_PRIMITIVES_CONFIG:
     """Placeholder failing test for variable 'STEP_ANALYZER_PRIMITIVES_CONFIG' of 'add_primitive_segments'."""
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: STEP_ANALYZER_PRIMITIVES_CONFIG of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: STEP_ANALYZER_PRIMITIVES_CONFIG of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_SEGMENTS_TO_DETECT_CONFIG:
@@ -98,7 +110,9 @@ class Test_add_primitive_segments_SEGMENTS_TO_DETECT_CONFIG:
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: SEGMENTS_TO_DETECT_CONFIG of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: SEGMENTS_TO_DETECT_CONFIG of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_ADJUST_SEGMENTS_CONFIG:
@@ -114,7 +128,9 @@ class Test_add_primitive_segments_THRESHOLDS_PRIMITIVE_ANNOTATION:
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: THRESHOLDS_PRIMITIVE_ANNOTATION of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: THRESHOLDS_PRIMITIVE_ANNOTATION of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_THRESHOLD_CV_SEGMENTS_0A_END:
@@ -122,7 +138,9 @@ class Test_add_primitive_segments_THRESHOLD_CV_SEGMENTS_0A_END:
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: THRESHOLD_CV_SEGMENTS_0A_END of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: THRESHOLD_CV_SEGMENTS_0A_END of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_CV_CHECK:
@@ -130,7 +148,9 @@ class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_CV_CHECK:
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_CV_CHECK of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_CV_CHECK of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
@@ -138,7 +158,9 @@ class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH:
@@ -146,7 +168,9 @@ class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH:
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK:
@@ -154,7 +178,9 @@ class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK of add_primitive_segments")
+        raise NotImplementedError(
+            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK of add_primitive_segments"
+        )
 
 
 class Test_add_primitive_segments_SHOW_RUNTIME:
@@ -174,7 +200,7 @@ class Test_add_primitive_segments_SHOW_RUNTIME:
 
     def test_none(self, base_args):
         base_args["SHOW_RUNTIME"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
@@ -203,7 +229,7 @@ class Test_add_primitive_segments_check_CV_0Aend_segments_bool:
 
     def test_none(self, base_args):
         base_args["check_CV_0Aend_segments_bool"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
@@ -232,7 +258,7 @@ class Test_add_primitive_segments_check_zero_length_segments_bool:
 
     def test_none(self, base_args):
         base_args["check_zero_length_segments_bool"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
@@ -261,7 +287,7 @@ class Test_add_primitive_segments_check_Power_zero_W_segments_bool:
 
     def test_none(self, base_args):
         base_args["check_Power_zero_W_segments_bool"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
@@ -290,7 +316,7 @@ class Test_add_primitive_segments_supress_IO_warnings:
 
     def test_none(self, base_args):
         base_args["supress_IO_warnings"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
@@ -319,7 +345,7 @@ class Test_add_primitive_segments_PRECOMPILE:
 
     def test_none(self, base_args):
         base_args["PRECOMPILE"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
@@ -348,7 +374,7 @@ class Test_add_primitive_segments_FORCE_PRECOMPILATION:
 
     def test_none(self, base_args):
         base_args["FORCE_PRECOMPILATION"] = None
-        #assume replaced with true
+        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
