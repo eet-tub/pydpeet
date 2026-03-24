@@ -10,7 +10,11 @@ from src.pydpeet import extract_sequence_overview
 @pytest.fixture
 def base_args():
     """Provides a fresh dictionary of default arguments for every test."""
-    return {"df_primitives": Mocks.Mock_extract_sequence_overview.df_primitives.copy(), "SEGMENT_SEQUENCE_CONFIG": Mocks.Mock_extract_sequence_overview.SEGMENT_SEQUENCE_CONFIG, "SHOW_RUNTIME": Mocks.Mock_extract_sequence_overview.SHOW_RUNTIME}
+    return {
+        "df_primitives": Mocks.Mock_extract_sequence_overview.df_primitives.copy(),
+        "SEGMENT_SEQUENCE_CONFIG": Mocks.Mock_extract_sequence_overview.SEGMENT_SEQUENCE_CONFIG,
+        "SHOW_RUNTIME": Mocks.Mock_extract_sequence_overview.SHOW_RUNTIME,
+    }
 
 
 class Test_extract_sequence_overview_df_primitives:
@@ -36,12 +40,19 @@ class Test_extract_sequence_overview_df_primitives:
         assert_raises_and_print(ValueError, extract_sequence_overview, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["df_primitives"] = base_args["df_primitives"].drop(Mocks.Mock_extract_sequence_overview.required_columns)
+        base_args["df_primitives"] = base_args["df_primitives"].drop(
+            Mocks.Mock_extract_sequence_overview.required_columns
+        )
         assert_raises_and_print(KeyError, extract_sequence_overview, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_extract_sequence_overview.required_columns] = base_args["df_primitives"][Mocks.Mock_extract_sequence_overview.required_columns].astype(int)
-        assert base_args["df_primitives"][Mocks.Mock_extract_sequence_overview.required_columns].dtypes != Mocks.Mock_extract_sequence_overview.required_columns_dtypes
+        base_args["df_primitives"][Mocks.Mock_extract_sequence_overview.required_columns] = base_args["df_primitives"][
+            Mocks.Mock_extract_sequence_overview.required_columns
+        ].astype(int)
+        assert (
+            base_args["df_primitives"][Mocks.Mock_extract_sequence_overview.required_columns].dtypes
+            != Mocks.Mock_extract_sequence_overview.required_columns_dtypes
+        )
         assert_raises_and_print(ValueError, extract_sequence_overview, **base_args)
 
     def test_nan_values(self, base_args):
@@ -61,7 +72,9 @@ class Test_extract_sequence_overview_SEGMENT_SEQUENCE_CONFIG:
     """Placeholder failing test for variable 'SEGMENT_SEQUENCE_CONFIG' of 'extract_sequence_overview'."""
 
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: SEGMENT_SEQUENCE_CONFIG of extract_sequence_overview")
+        raise NotImplementedError(
+            "Test not implemented for variable: SEGMENT_SEQUENCE_CONFIG of extract_sequence_overview"
+        )
 
 
 class Test_extract_sequence_overview_SHOW_RUNTIME:

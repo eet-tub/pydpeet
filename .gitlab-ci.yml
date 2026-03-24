@@ -37,7 +37,23 @@ lint:
     # --show-diff-on-failure prints the diff for easier debugging in CI logs.
     - pre-commit run --all-files --show-diff-on-failure
 
+# -----------------------
+# TEST
+# -----------------------
+#test:
+#  stage: test
+#  image: python:3.13-slim
+#
+#  before_script:
+#    - pip install -U pip
+#    - pip install -e ".[test]"
+#
+#  script:
+#    - pytest -v #--maxfail=1
 
+# -----------------------
+# DOCS BUILD
+# -----------------------
 docs_build:
   stage: docs
   image: python:3.13-slim

@@ -44,12 +44,14 @@ class Test_convert_output_path:
 
 class Test_convert_keep_all_additional_data:
     def test_true(self, base_args):
+        original_df = base_args["dataframe"].copy()
         base_args["keep_all_additional_data"] = True
         result = convert(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_convert.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_convert.add_columns, axis=1), original_df)
 
     def test_false(self, base_args):
+        original_df = base_args["dataframe"].copy()
         base_args["keep_all_additional_data"] = False
         result = convert(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_convert.add_columns)

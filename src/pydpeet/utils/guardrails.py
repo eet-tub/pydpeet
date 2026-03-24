@@ -48,13 +48,38 @@ def _guardrail_dataframe(
 
     if len(hard_fail_wrong_column_dtypes[1]) > 0:
         for col, expected_dtype in hard_fail_wrong_column_dtypes[1]:
-            if col in data_frame.columns and data_frame[col].dtype != expected_dtype:
-                message = f"Column '{col}' has wrong data type. Expected: {expected_dtype} but got {data_frame[col].dtype}."
-                _handle_failure(message, hard_fail_wrong_column_dtypes[0])
+            if col in data_frame.columns:
+                actual_dtype = data_frame[col].dtype
+                if expected_dtype == str and actual_dtype == object:  # noqa: E721
+                    if all(isinstance(x, str) for x in data_frame[col].dropna()):
+                        message = (
+                            f"Column '{col}' has wrong data type."
+                            f"Expected: {expected_dtype} but got {actual_dtype}."
+                            f"Column '{col}' has rows that are None and is therefore treated as a object."
+                        )
+                        _handle_failure(message, False)
+                        continue  # This is actually correct - strings stored as object when there are None rows; jump into next loop
+
+                if expected_dtype == float and actual_dtype in (int, np.int64, np.int32, np.int16, np.int8):  # noqa: E721
+                    message = (
+                        f"Column '{col}' expected: {expected_dtype} but got {actual_dtype}."
+                        f"Auto-converting column '{col}' from {actual_dtype} to {expected_dtype}"
+                    )
+                    data_frame[col] = data_frame[col].astype(expected_dtype)
+                    _handle_failure(message, False)
+                    continue  # Skip the final check since we already converted to the expected_dtype
+
+                if actual_dtype != expected_dtype:
+                    message = f"Column '{col}' has wrong data type. Expected: {expected_dtype} but got {actual_dtype}."
+                    _handle_failure(message, hard_fail_wrong_column_dtypes[0])
 
     if len(hard_fail_inf_values[1]) > 0:
         for col in hard_fail_inf_values[1]:
-            if col in data_frame.columns and np.isinf(data_frame[col]).any():
+            if (
+                col in data_frame.columns
+                and pd.api.types.is_numeric_dtype(data_frame[col])
+                and np.isinf(data_frame[col]).any()
+            ):
                 message = f"Column '{col}' contains infinite values."
                 _handle_failure(message, hard_fail_inf_values[0])
 

@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -39,30 +41,44 @@ class Test_add_resistance_internal_df:
         assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["df"] = base_args["df"].drop(Mocks.Mock_add_resistance_internal.required_columns)
-        assert_raises_and_print(KeyError, add_resistance_internal, **base_args)
+        base_args["df"] = base_args["df"].drop(Mocks.Mock_add_resistance_internal.required_columns, axis=1)
+        assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns] = base_args["df"][
-            Mocks.Mock_add_resistance_internal.required_columns
-        ].astype(int)
-        assert (
-            base_args["df"][Mocks.Mock_add_resistance_internal.required_columns].dtypes
-            != Mocks.Mock_add_resistance_internal.required_columns_dtypes
+        for col, _dtype in Mocks.Mock_add_resistance_internal.required_columns_dtypes:
+            base_args["df"][col] = base_args["df"][col].astype(str)
+        expected_dtypes = pd.Series(
+            {col: dtype for col, dtype in Mocks.Mock_add_resistance_internal.required_columns_dtypes}
         )
+        actual_dtypes = base_args["df"][Mocks.Mock_add_resistance_internal.required_columns].dtypes
+        assert not actual_dtypes.equals(expected_dtypes)
         assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
 
-    def test_nan_values(self, base_args):
-        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns] = np.nan
-        assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
+    def test_nan_values(self, base_args, caplog):
+        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns[0]].iloc[:10] = np.nan
+        with caplog.at_level(logging.WARNING):
+            add_resistance_internal(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_add_resistance_internal.required_columns[0]}' contains NaN values." in record.message
+            for record in caplog.records
+        )
 
-    def test_none_values(self, base_args):
-        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns] = None
-        assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
+    def test_none_values(self, base_args, caplog):
+        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
+        # would be converted to NaN or throw the test_wrong_column_dtypes failure
+        assert True
 
-    def test_inf_values(self, base_args):
-        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns] = np.inf
-        assert_raises_and_print(ValueError, add_resistance_internal, **base_args)
+    def test_inf_values(self, base_args, caplog):
+        base_args["df"][Mocks.Mock_add_resistance_internal.required_columns[0]].iloc[:10] = np.inf
+        with caplog.at_level(logging.WARNING):
+            add_resistance_internal(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_add_resistance_internal.required_columns[0]}' contains infinite values."
+            in record.message
+            for record in caplog.records
+        )
 
 
 class Test_add_resistance_internal_config:

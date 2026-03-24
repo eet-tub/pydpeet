@@ -23,7 +23,7 @@ from pydpeet.process.sequence.utils.processing.supress_smaller_segments import (
     _keep_max_segment_id,
 )
 from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
-from pydpeet.utils.guardrails import _guardrail_dataframe, _guardrail_boolean
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 logger = logging.getLogger(__name__)
 
@@ -133,15 +133,15 @@ def add_primitive_segments(
 
     # # TODO variable to choose if copy should be used?
     # --- Guardrails ---
-    required_columns = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
     required_column_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    required_columns = [col for col, _ in required_column_dtypes]
     _guardrail_dataframe(
         df,
         hard_fail_missing_required_columns=(True, required_columns),
         hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
         hard_fail_inf_values=(False, required_columns),
         hard_fail_nan_values=(False, required_columns),
-        hard_fail_none_values=(False, required_columns)
+        hard_fail_none_values=(False, required_columns),
     )
     for boolean_param in [
         SHOW_RUNTIME,
@@ -150,10 +150,9 @@ def add_primitive_segments(
         check_Power_zero_W_segments_bool,
         supress_IO_warnings,
         PRECOMPILE,
-        FORCE_PRECOMPILATION
+        FORCE_PRECOMPILATION,
     ]:
         _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
-
 
     df_step = df.copy()
     logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
