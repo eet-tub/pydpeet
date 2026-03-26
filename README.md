@@ -1,7 +1,7 @@
 # PyDPEET - Fast and Easy Battery Data Unification, Processing, and Analysis
 
 <!-- ## Contact
-Just in case of future expansion to, e.g., Matrix or a blog -->
+Just in case of future expansion to, e.g., Matrix or a blog or a YouTube channel -->
 
 <!-- ## Technical Components
 alternatively: "Dependencies"
@@ -9,12 +9,19 @@ Probably not necessary? -->
 
 ## Project Goals
 
-<!-- This project enables you to convert battery measurement data to a standardized format.
+PyDPEET is a Python package developed to handle battery measurement data from various cyclers and other measurement devices by
+* converting input data into a standardised format using Pandas data frames,
+* allowing users to merge multiple single tests into test series of one cell, and multiple test series into multi-cell measurement campaigns, and
+* adding sequence info either by automatically synthesising from an existing schedule or automatically analysing in case of unknown measurement procedure.
 
-Cycler output their measurement data in different formats and different file types, like for example .csv and .xslx. Each has to be handled differently which makes it difficult to work with the data and that's the reason why we created a standardized format.
-The standardized Data and Metadata can be used inside of the code and can be output as a .csv (Data), .xlsx (Data) or parquet(Data) to a output_path of your choosing.
+Standardised data can then be analysed using various functions which add additional data columns to a data frame:
+* power, energy, capacity,
+* inner resistance,
+* state of charge (SOC), state of health (SOH),
+* OCV points, DVA and ICA,
+* and more...
 
-Keeping additional data outside of our definition of the standardized columns and custom cycler handling is also possible. -->
+Processed data can be exported to highly efficient Parquet files to be stored and re-imported later -- or to CSV or XLSX formats to maintain legacy workflows.
 
 ## Documentation
 
@@ -37,25 +44,58 @@ Keeping additional data outside of our definition of the standardized columns an
 <!-- * TODO: ref to 'visualize' docs? (FUTURE) -->
 <!-- * TODO: ref to 'modelling' docs? (FUTURE) -->
 
+<!-- ### Wiki
+Necessary or even feasible with parallel GitLab and Github setups? -->
+
 ## Installation
 
 ### For Users
 
+PyDPEET is available at PyPI. To install, simply use `pip`:
+
+```
+pip install pydpeet
+```
+
 ### For Developers
+
+1. Set up a suitable development environment (e.g., VS Code).
+2. If you want to be able to edit Jupyter notebooks, make sure to create a python environment with an `ipykernel` (e.g., using `conda`).
+3. Clone the PyDPEET repo:
+    ```
+    git clone https://github.com/eet-tub/pydpeet.git
+    ```
+4. Install PyDPEET in [editable mode](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-e) from your local Git repo:
+    ```
+    pip install -e .
+    ```
+5. Install the `pre-commit` package:
+    ```
+    pip install pre-commit
+    ```
+    or
+    ```
+    conda install -n <your env> pre-commit
+    ```
+6. Refer to [Development Guidelines](#development-guidelines) and [Development Workflow](#development-workflow) for more details.
 
 ## Current Status
 
 ## Roadmap
 
-## How to Cite this Package?
-
 <!-- ## FAQ -->
 
-## How to Contribute?
+## Citing PyDPEET
+
+## Contributing to PyDPEET
+
+### Reporting Issues
+
+### Request for Data Conversion
 
 ### Development Guidelines
 
-### Workflow
+### Development Workflow
 
 #### Basic Setup
 
