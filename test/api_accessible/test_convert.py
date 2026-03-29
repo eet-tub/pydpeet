@@ -44,18 +44,18 @@ class Test_convert_output_path:
 
 class Test_convert_keep_all_additional_data:
     def test_true(self, base_args):
-        original_df = base_args["dataframe"].copy()
         base_args["keep_all_additional_data"] = True
         result = convert(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_convert.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_convert.add_columns, axis=1), original_df)
+        expected_df = Mocks.Mock_convert.df_expected_with_additional_data
+        assert isinstance(result, pd.DataFrame)
+        assert pd.DataFrame.equals(result, expected_df)
 
     def test_false(self, base_args):
-        original_df = base_args["dataframe"].copy()
         base_args["keep_all_additional_data"] = False
         result = convert(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_convert.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_convert.add_columns, axis=1), original_df)
+        expected_df = Mocks.Mock_convert.df_expected_without_additional_data
+        assert isinstance(result, pd.DataFrame)
+        assert pd.DataFrame.equals(result, expected_df)
 
     def test_none(self, base_args):
         base_args["keep_all_additional_data"] = None

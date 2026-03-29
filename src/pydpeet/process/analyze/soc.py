@@ -13,6 +13,7 @@ from pydpeet.process.analyze.utils import (
     StepTimer,
     precompute_block_arrays_soc_methods,
 )
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 
 class SocMethod(Enum):
@@ -210,14 +211,27 @@ def add_soc(
     Returns:
         pandas.DataFrame: DataFrame with added 'SOC_<method_name>' columns
     """
+    # Guardrail checks for df and df_primitives
+    required_column_dtypes = [("Test_Time[s]", float), ("Current[A]", float), ("Voltage[V]", float)]
+    required_columns = [col for col, _ in required_column_dtypes]
+
+    for dataframe_param in [df, df_primitives]:
+        _guardrail_dataframe(
+            dataframe_param,
+            hard_fail_missing_required_columns=(True, required_columns),
+            hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+            hard_fail_inf_values=(False, required_columns),
+            hard_fail_nan_values=(False, required_columns),
+            hard_fail_none_values=(False, required_columns),
+        )
+
+    for boolean_param in [neware_bool, verbose, restart_for_testindex]:
+        _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
+
     if methods is None:
         methods = [standard_method] if standard_method is not None else []
     if not methods:
         raise ValueError("No SOC methods supplied (methods or standard_method).")
-    # Required columns check
-    for col in ["Test_Time[s]", "Current[A]", "Voltage[V]"]:
-        if col not in df.columns:
-            raise ValueError(f"Column: {col} is missing! Can't proceed")
 
     # Add capacity if missing
     if "Capacity[Ah]" not in df.columns:
@@ -227,7 +241,7 @@ def add_soc(
             if df_primitives is None:
                 logging.info("df_primitives is None, please provide a valid df_primitives for add_capacity function")
             else:
-                df = add_capacity(df, df_primitives, neware_bool, config=config, verbose=verbose)
+                df = add_capacity(df, df_primitives, neware_bool=neware_bool, config=config, verbose=verbose)
                 st.log("added Capacity[Ah] column")
 
     # Copy df so it can be safely modified

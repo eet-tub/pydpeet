@@ -1,6 +1,7 @@
 import pandas as pd
 
 from pydpeet.process.sequence.utils.annotate.annotate_primitives import _merged_annotations
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 
 def df_primitives_correction(
@@ -34,6 +35,26 @@ def df_primitives_correction(
     Returns:
     pd.DataFrame: The corrected dataframe with the added columns for annotated primitives.
     """
+    # Guardrails validation
+    required_columns_dtypes = [
+        ("Voltage[V]", float),
+        ("Current[A]", float),
+        ("Test_Time[s]", float),
+        ("Power[W]", float),
+        ("ID", int),
+        ("Variable", str),
+    ]
+    required_columns = [col for col, _ in required_columns_dtypes]
+    _guardrail_dataframe(
+        df_primitives,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_columns_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
+    _guardrail_boolean(reindex)
+    _guardrail_boolean(reannotate)
 
     df = df_primitives.copy()
     max_id = df["ID"].max() + 1  # for new IDs
