@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from pydpeet import BatteryConfig
+from pydpeet import BatteryConfig, SocMethod
 from pydpeet.process.sequence.utils.configs.CONFIG_Fallback import FALLBACK_CONFIG
 
 # Get the directory where the current script is located
@@ -10,11 +10,18 @@ BASE_DIR = Path(__file__).resolve().parent
 
 # Build correct file paths
 df_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted.parquet"
+df_with_additional_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-with-additional.parquet"
 df_primitives_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-primitives.parquet"
+df_primitives_correction_expected_path = (
+    BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-primitives-corrected.parquet"
+)
+
 # df_segments_and_sequences_path = BASE_DIR / "PLACEHOLDER.parquet"
 # Read parquet files
-DF = pd.read_parquet(df_path)  # TODO updaten zu neuem bennenungs standard
-DF_PRIMITIVES = pd.read_parquet(df_primitives_path)  # TODO updaten zu neuem bennenungs standard
+DF = pd.read_parquet(df_path)
+DF_WITH_ADDITIONAL = pd.read_parquet(df_with_additional_path)
+DF_PRIMITIVES = pd.read_parquet(df_primitives_path)
+DF_PRIMITIVES_CORRECTION_EXPECTED = pd.read_parquet(df_primitives_correction_expected_path)
 # DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
 
 
@@ -110,8 +117,8 @@ class Mocks:
         df = DF.copy()
         df_primitives = DF_PRIMITIVES.copy()
         neware_bool = True
-        standard_method = "PLACEHOLDER"
-        methods = "PLACEHOLDER"
+        standard_method = SocMethod.WITHOUT_RESET
+        methods = [SocMethod.WITHOUT_RESET, SocMethod.WITH_RESET_WHEN_FULL]
         config = BatteryConfig()
         lower_soc_for_voltage = 0.0
         upper_soc_for_voltage = 1.0
@@ -119,38 +126,102 @@ class Mocks:
         upper_voltage_for_soc = 0.0
         verbose = True
         restart_for_testindex = True
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        add_columns = ["PLACEHOLDER"]
+        required_columns = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
+        required_columns_dtypes = [("Test_Time[s]", float), ("Current[A]", float), ("Voltage[V]", float)]
+        add_columns = ["Capacity[Ah]", "SOC", "SOC_WITH_RESET_WHEN_FULL"]
 
     class Mock_convert:
-        config = "neware_8_0_0_516"
-        input_path = "PLACEHOLDER"
-        output_path = "PLACEHOLDER"
+        config = "basytec_6_3_1_0"
+        input_path = str(BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg.txt")
+        output_path = None
         keep_all_additional_data = False
-        custom_folder_path = "PLACEHOLDER"
+        custom_folder_path = None
+        required_columns = [
+            "Meta_Data",
+            "Step_Count",
+            "Voltage[V]",
+            "Current[A]",
+            "Temperature[°C]",
+            "Test_Time[s]",
+            "Date_Time",
+            "EIS_f[Hz]",
+            "EIS_Z_Real[Ohm]",
+            "EIS_Z_Imag[Ohm]",
+            "EIS_DC[A]",
+        ]
+        df_expected_without_additional_data = DF.copy()
+        df_expected_with_additional_data = DF_WITH_ADDITIONAL.copy()
 
     class Mock_df_primitives_correction:
-        df_primitives = DF.copy()
-        correction_config = "PLACEHOLDER"
-        data_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        thresholds = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
+        df_primitives = DF_PRIMITIVES.copy()
+        correction_config = {
+            "replace_ID": {5: "V"},
+            "replace_time": {(100.0, 200.0): "I"},
+            "replace_time_and_merge": {(500.0, 600.0): "P"},
+            "merge_left": [10],
+            "merge_right": [15],
+            "merge_range": [(20, 25)],
+        }
+        data_columns = {"I": "Current[A]", "P": "Power[W]", "V": "Voltage[V]"}
+        thresholds = {"V": 0.1, "I": 0.1, "P": 0.1}
         reindex = True
         reannotate = True
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        add_columns = ["PLACEHOLDER"]
+        required_columns = [
+            "Voltage[V]",
+            "Current[A]",
+            "Test_Time[s]",
+            "Power[W]",
+            "ID",
+            "Variable",
+            # "Duration", #TODO look if they all are needed or not
+            # "Length",
+            # "Min",
+            # "Max",
+            # "Avg",
+            # "Type",
+            # "Direction",
+            # "Slope",
+        ]
+        required_columns_dtypes = [
+            ("Voltage[V]", float),
+            ("Current[A]", float),
+            ("Test_Time[s]", float),
+            ("Power[W]", float),
+            ("ID", int),
+            ("Variable", str),
+            # ("Duration", float),
+            # ("Length", float),
+            # ("Min", float),
+            # ("Max", float),
+            # ("Avg", float),
+            # ("Type", str),
+            # ("Direction", str),
+            # ("Slope", float),
+        ]
+        add_columns = []
+        df_primitives_expected = DF_PRIMITIVES_CORRECTION_EXPECTED.copy()
 
     class Mock_extract_ocv_iocv:
-        min_pause_lenght = "PLACEHOLDER"
-        min_loops = "PLACEHOLDER"
-        visualize = "PLACEHOLDER"
+        # TODO beispiel daten + expected result wo eine gute iocv kurve rauskommt
+        min_pause_lenght = 120.0
+        min_loops = 70.0
+        visualize = False
         df_primitives = DF_PRIMITIVES.copy()
         df = DF.copy()
-        config = "PLACEHOLDER"
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        result_columns = ["PLACEHOLDER"]
+        config = BatteryConfig()
+        # Required columns for df (raw dataframe) - needed by add_primitive_segments
+        required_columns_df = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
+        required_columns_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+        # Required columns for df_primitives (already processed)
+        required_columns_df_primitives = ["Test_Time[s]", "Type", "Duration", "ID", "Voltage[V]"]
+        required_columns_dtypes_df_primitives = [
+            ("Test_Time[s]", float),
+            ("Type", str),
+            ("Duration", float),
+            ("ID", int),
+            ("Voltage[V]", float),
+        ]
+        result_columns = ["iOCV_type", "SOC"]
 
     class Mock_extract_sequence_overview:
         df_primitives = DF_PRIMITIVES.copy()

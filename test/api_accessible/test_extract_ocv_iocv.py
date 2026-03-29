@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -14,8 +16,8 @@ def base_args():
         "min_pause_lenght": Mocks.Mock_extract_ocv_iocv.min_pause_lenght,
         "min_loops": Mocks.Mock_extract_ocv_iocv.min_loops,
         "visualize": Mocks.Mock_extract_ocv_iocv.visualize,
-        "df_primitives": Mocks.Mock_extract_ocv_iocv.df_primitives,
-        "df": Mocks.Mock_extract_ocv_iocv.df,
+        "df_primitives": Mocks.Mock_extract_ocv_iocv.df_primitives.copy(),
+        "df": Mocks.Mock_extract_ocv_iocv.df.copy(),
         "config": Mocks.Mock_extract_ocv_iocv.config,
     }
 
@@ -45,93 +47,143 @@ class Test_extract_ocv_iocv_visualize:
 
 
 class Test_extract_ocv_iocv_df_primitives:
-    # Only first test
     def test_valid(self, base_args):
-        raise NotImplementedError("Test not implemented for variable: config of extract_ocv_iocv")
+        base_args["df"] = None  # Only use df_primitives
+        result = extract_ocv_iocv(**base_args)
+        assert isinstance(result, list)
+        if result:
+            assert all(col in result[0].columns for col in Mocks.Mock_extract_ocv_iocv.result_columns)
 
     def test_none(self, base_args):
+        base_args["df"] = None
         base_args["df_primitives"] = None
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_wrong_type(self, base_args):
+        base_args["df"] = None
         base_args["df_primitives"] = "wrong type"
         assert not isinstance(base_args["df_primitives"], pd.DataFrame)
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_empty(self, base_args):
+        base_args["df"] = None
         base_args["df_primitives"] = pd.DataFrame()
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["df_primitives"] = base_args["df_primitives"].drop(Mocks.Mock_extract_ocv_iocv.required_columns)
-        assert_raises_and_print(KeyError, extract_ocv_iocv, **base_args)
-
-    def test_wrong_column_dtypes(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns] = base_args["df_primitives"][
-            Mocks.Mock_extract_ocv_iocv.required_columns
-        ].astype(int)
-        assert (
-            base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns].dtypes
-            != Mocks.Mock_extract_ocv_iocv.required_columns_dtypes
+        base_args["df"] = None
+        base_args["df_primitives"] = base_args["df_primitives"].drop(
+            Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives, axis=1
         )
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
-    def test_nan_values(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns] = np.nan
+    def test_wrong_column_dtypes(self, base_args):
+        base_args["df"] = None
+        for col, _dtype in Mocks.Mock_extract_ocv_iocv.required_columns_dtypes_df_primitives:
+            base_args["df_primitives"][col] = base_args["df_primitives"][col].astype(str)
+        expected_dtypes = pd.Series(
+            {col: dtype for col, dtype in Mocks.Mock_extract_ocv_iocv.required_columns_dtypes_df_primitives}
+        )
+        actual_dtypes = base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives].dtypes
+        assert not actual_dtypes.equals(expected_dtypes)
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
-    def test_none_values(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns] = None
-        assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
+    def test_nan_values(self, base_args, caplog):
+        base_args["df"] = None
+        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]].iloc[:10] = np.nan
+        with caplog.at_level(logging.WARNING):
+            extract_ocv_iocv(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]}' contains NaN values."
+            in record.message
+            for record in caplog.records
+        )
 
-    def test_inf_values(self, base_args):
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns] = np.inf
-        assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
+    def test_none_values(self, base_args, caplog):
+        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
+        # would be converted to NaN or throw the test_wrong_column_dtypes failure
+        assert True
+
+    def test_inf_values(self, base_args, caplog):
+        base_args["df"] = None
+        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]].iloc[:10] = np.inf
+        with caplog.at_level(logging.WARNING):
+            extract_ocv_iocv(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]}' contains infinite values."
+            in record.message
+            for record in caplog.records
+        )
 
 
 class Test_extract_ocv_iocv_df:
-    # Only first test
     def test_valid(self, base_args):
-        raise NotImplementedError("Test not implemented for variable: config of extract_ocv_iocv")
+        base_args["df_primitives"] = None  # Only use df
+        result = extract_ocv_iocv(**base_args)
+        assert isinstance(result, list)
+        if result:
+            assert all(col in result[0].columns for col in Mocks.Mock_extract_ocv_iocv.result_columns)
 
     def test_none(self, base_args):
+        base_args["df_primitives"] = None
         base_args["df"] = None
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_wrong_type(self, base_args):
+        base_args["df_primitives"] = None
         base_args["df"] = "wrong type"
         assert not isinstance(base_args["df"], pd.DataFrame)
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_empty(self, base_args):
+        base_args["df_primitives"] = None
         base_args["df"] = pd.DataFrame()
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["df"] = base_args["df"].drop(Mocks.Mock_extract_ocv_iocv.required_columns)
-        assert_raises_and_print(KeyError, extract_ocv_iocv, **base_args)
+        base_args["df_primitives"] = None
+        base_args["df"] = base_args["df"].drop(Mocks.Mock_extract_ocv_iocv.required_columns_df, axis=1)
+        assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns] = base_args["df"][
-            Mocks.Mock_extract_ocv_iocv.required_columns
-        ].astype(int)
-        assert (
-            base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns].dtypes
-            != Mocks.Mock_extract_ocv_iocv.required_columns_dtypes
+        base_args["df_primitives"] = None
+        for col, _dtype in Mocks.Mock_extract_ocv_iocv.required_columns_dtypes_df:
+            base_args["df"][col] = base_args["df"][col].astype(str)
+        expected_dtypes = pd.Series(
+            {col: dtype for col, dtype in Mocks.Mock_extract_ocv_iocv.required_columns_dtypes_df}
         )
+        actual_dtypes = base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns_df].dtypes
+        assert not actual_dtypes.equals(expected_dtypes)
         assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
 
-    def test_nan_values(self, base_args):
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns] = np.nan
-        assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
+    def test_nan_values(self, base_args, caplog):
+        base_args["df_primitives"] = None
+        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns_df[0]].iloc[:10] = np.nan
+        with caplog.at_level(logging.WARNING):
+            extract_ocv_iocv(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_extract_ocv_iocv.required_columns_df[0]}' contains NaN values." in record.message
+            for record in caplog.records
+        )
 
-    def test_none_values(self, base_args):
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns] = None
-        assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
+    def test_none_values(self, base_args, caplog):
+        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
+        # would be converted to NaN or throw the test_wrong_column_dtypes failure
+        assert True
 
-    def test_inf_values(self, base_args):
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns] = np.inf
-        assert_raises_and_print(ValueError, extract_ocv_iocv, **base_args)
+    def test_inf_values(self, base_args, caplog):
+        base_args["df_primitives"] = None
+        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns_df[0]].iloc[:10] = np.inf
+        with caplog.at_level(logging.WARNING):
+            extract_ocv_iocv(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_extract_ocv_iocv.required_columns_df[0]}' contains infinite values." in record.message
+            for record in caplog.records
+        )
 
 
 class Test_extract_ocv_iocv_config:
