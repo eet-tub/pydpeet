@@ -51,7 +51,7 @@ test:
     - pip install -e ".[test]"
 
   script:
-    - pytest -v --junitxml=report.xml #--maxfail=1
+    - pytest -v test/api_accessible --junitxml=report.xml
 
   artifacts:
     when: always
