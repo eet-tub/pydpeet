@@ -9,14 +9,18 @@ from pydpeet.process.sequence.utils.console_prints.log_time import log_time
 # -------------------------------------------------------------------
 # Compute screen dimensions once
 # -------------------------------------------------------------------
-_root = tk.Tk()
-_root.withdraw()
-_root.update_idletasks()
-_SCREEN_DIMS = (_root.winfo_screenwidth(), _root.winfo_screenheight())
 try:
-    _root.destroy()
+    _root = tk.Tk()
+    _root.withdraw()
+    _root.update_idletasks()
+    _SCREEN_DIMS = (_root.winfo_screenwidth(), _root.winfo_screenheight())
+    try:
+        _root.destroy()
+    except tk.TclError:
+        pass
 except tk.TclError:
-    pass
+    # Fallback for headless environments (CI, Docker, etc.)
+    _SCREEN_DIMS = (1920, 1080)
 
 
 def _visualize_phases(
