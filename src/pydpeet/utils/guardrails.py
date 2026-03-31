@@ -60,6 +60,10 @@ def _guardrail_dataframe(
                         _handle_failure(message, False)
                         continue  # This is actually correct - strings stored as object when there are None rows; jump into next loop
 
+                # Handle pandas string dtypes (string[python], str, etc.)
+                if expected_dtype == str and pd.api.types.is_string_dtype(actual_dtype):  # noqa: E721
+                    continue  # pandas string dtype is valid for expected str
+
                 if expected_dtype == float and actual_dtype in (int, np.int64, np.int32, np.int16, np.int8):  # noqa: E721
                     message = (
                         f"Column '{col}' expected: {expected_dtype} but got {actual_dtype}."
