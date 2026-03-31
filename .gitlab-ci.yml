@@ -1,6 +1,6 @@
 # Define the order of pipeline stages.
 # Stages are executed sequentially from top to bottom.
-stages: [lint, notebooks, docs]
+stages: [lint, test, notebooks, docs]
 
 # -------------------------------
 # LINT STAGE
@@ -40,16 +40,16 @@ lint:
 # -----------------------
 # TEST
 # -----------------------
-#test:
-#  stage: test
-#  image: python:3.13-slim
-#
-#  before_script:
-#    - pip install -U pip
-#    - pip install -e ".[test]"
-#
-#  script:
-#    - pytest -v #--maxfail=1
+test:
+  stage: test
+  image: python:3.13-slim
+
+  before_script:
+    - pip install -U pip
+    - pip install -e ".[test]"
+
+  script:
+    - pytest -v #--maxfail=1
 
 # -----------------------
 # DOCS BUILD

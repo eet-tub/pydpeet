@@ -45,6 +45,10 @@ docs = [
   "sphinx-copybutton",
   "bibtexparser",
 ]
+test = [
+    "pytest",
+    "pytest-cov"
+]
 
 
 [tool.ruff]

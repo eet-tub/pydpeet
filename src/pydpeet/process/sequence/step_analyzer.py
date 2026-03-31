@@ -341,27 +341,36 @@ def extract_sequence_overview(
     if SEGMENT_SEQUENCE_CONFIG is None or not isinstance(SEGMENT_SEQUENCE_CONFIG, dict):
         raise ValueError("SEGMENT_SEQUENCE_CONFIG is None or not a dict")
 
-    if df_primitives is None or not isinstance(df_primitives, pd.DataFrame):
-        raise ValueError("df_primitives is None or not a DataFrame")
+    # --- Guardrails ---
+    # Check boolean first (fast) before expensive dataframe checks (slow O(N))
+    _guardrail_boolean(SHOW_RUNTIME, hard_fail_none=True, hard_fail_wrong_type=True)
 
-    standard_columns = [
-        "Test_Time[s]",
-        "Voltage[V]",
-        "Current[A]",
-        "Power[W]",
-        "ID",
-        "Variable",
-        "Duration",
-        "Length",
-        "Min",
-        "Max",
-        "Avg",
-        "Type",
-        "Direction",
-        "Slope",
+    required_column_dtypes = [
+        ("Test_Time[s]", float),
+        ("Voltage[V]", float),
+        ("Current[A]", float),
+        ("Power[W]", float),
+        ("ID", int),
+        ("Variable", str),
+        ("Duration", float),
+        ("Length", float),
+        ("Min", float),
+        ("Max", float),
+        ("Avg", float),
+        ("Type", str),
+        ("Direction", str),
+        ("Slope", float),
     ]
-    if not set(standard_columns).issubset(set(df_primitives.columns)):
-        logger.warning("df_primitives doesn't have the standard columns.")
+    required_columns = [col for col, _ in required_column_dtypes]
+    _guardrail_dataframe(
+        df_primitives,
+        hard_fail_empty=True,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
 
     if SHOW_RUNTIME:
         logger.info("analyzing segments...")

@@ -51,8 +51,9 @@ class Test_extract_ocv_iocv_df_primitives:
         base_args["df"] = None  # Only use df_primitives
         result = extract_ocv_iocv(**base_args)
         assert isinstance(result, list)
-        if result:
-            assert all(col in result[0].columns for col in Mocks.Mock_extract_ocv_iocv.result_columns)
+        assert len(result) == len(Mocks.Mock_extract_ocv_iocv.expected_ocv_iocv)
+        for i, expected_df in enumerate(Mocks.Mock_extract_ocv_iocv.expected_ocv_iocv):
+            pd.testing.assert_frame_equal(result[i], expected_df)
 
     def test_none(self, base_args):
         base_args["df"] = None
@@ -123,8 +124,9 @@ class Test_extract_ocv_iocv_df:
         base_args["df_primitives"] = None  # Only use df
         result = extract_ocv_iocv(**base_args)
         assert isinstance(result, list)
-        if result:
-            assert all(col in result[0].columns for col in Mocks.Mock_extract_ocv_iocv.result_columns)
+        assert len(result) == len(Mocks.Mock_extract_ocv_iocv.expected_ocv_iocv)
+        for i, expected_df in enumerate(Mocks.Mock_extract_ocv_iocv.expected_ocv_iocv):
+            pd.testing.assert_frame_equal(result[i], expected_df)
 
     def test_none(self, base_args):
         base_args["df_primitives"] = None

@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from pydpeet import BatteryConfig, SocMethod
-from pydpeet.process.sequence.utils.configs.CONFIG_Fallback import FALLBACK_CONFIG
+from pydpeet.process.sequence.utils.configs.CONFIG_Fallback import FALLBACK_CONFIG, SEGMENT_SEQUENCE_CONFIG
 
 # Get the directory where the current script is located
 BASE_DIR = Path(__file__).resolve().parent
@@ -17,11 +17,25 @@ df_primitives_correction_expected_path = (
 )
 
 # df_segments_and_sequences_path = BASE_DIR / "PLACEHOLDER.parquet"
+df_neware_path = BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3.parquet"
+df_neware_expected_ocv_iocv_block_0_path = (
+    BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_extract_ocv_iocv_block_0.parquet"
+)
+df_neware_expected_ocv_iocv_block_1_path = (
+    BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_extract_ocv_iocv_block_1.parquet"
+)
+df_neware_primitives_path = BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_primitives.parquet"
 # Read parquet files
 DF = pd.read_parquet(df_path)
 DF_WITH_ADDITIONAL = pd.read_parquet(df_with_additional_path)
 DF_PRIMITIVES = pd.read_parquet(df_primitives_path)
 DF_PRIMITIVES_CORRECTION_EXPECTED = pd.read_parquet(df_primitives_correction_expected_path)
+
+# Read neware data files
+DF_NEWARE = pd.read_parquet(df_neware_path)
+DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_0 = pd.read_parquet(df_neware_expected_ocv_iocv_block_0_path)
+DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_1 = pd.read_parquet(df_neware_expected_ocv_iocv_block_1_path)
+DF_NEWARE_PRIMITIVES = pd.read_parquet(df_neware_primitives_path)
 # DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
 
 
@@ -68,6 +82,7 @@ class Mocks:
         ]
 
         add_columns = ["Capacity[Ah]"]
+        # TODO add expected result
 
     class Mock_add_primitive_segments:
         df = DF
@@ -104,6 +119,7 @@ class Mocks:
             "Direction",
             "Slope",
         ]
+        # TODO add expected result
 
     class Mock_add_resistance_internal:
         df = DF
@@ -112,6 +128,7 @@ class Mocks:
         required_columns = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
         required_columns_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
         add_columns = ["InternalResistance[ohm]"]
+        # TODO add expected result
 
     class Mock_add_soc:
         df = DF.copy()
@@ -129,6 +146,7 @@ class Mocks:
         required_columns = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
         required_columns_dtypes = [("Test_Time[s]", float), ("Current[A]", float), ("Voltage[V]", float)]
         add_columns = ["Capacity[Ah]", "SOC", "SOC_WITH_RESET_WHEN_FULL"]
+        # TODO add expected result
 
     class Mock_convert:
         config = "basytec_6_3_1_0"
@@ -202,17 +220,18 @@ class Mocks:
         df_primitives_expected = DF_PRIMITIVES_CORRECTION_EXPECTED.copy()
 
     class Mock_extract_ocv_iocv:
-        # TODO beispiel daten + expected result wo eine gute iocv kurve rauskommt
         min_pause_lenght = 120.0
         min_loops = 70.0
         visualize = False
-        df_primitives = DF_PRIMITIVES.copy()
-        df = DF.copy()
-        config = BatteryConfig()
-        # Required columns for df (raw dataframe) - needed by add_primitive_segments
+        df = DF_NEWARE.copy()
+        df_primitives = DF_NEWARE_PRIMITIVES.copy()
+        config = BatteryConfig(
+            c_ref=4.75,
+            max_voltage=4.2,
+            min_voltage=2.5,
+        )
         required_columns_df = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
         required_columns_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
-        # Required columns for df_primitives (already processed)
         required_columns_df_primitives = ["Test_Time[s]", "Type", "Duration", "ID", "Voltage[V]"]
         required_columns_dtypes_df_primitives = [
             ("Test_Time[s]", float),
@@ -222,14 +241,49 @@ class Mocks:
             ("Voltage[V]", float),
         ]
         result_columns = ["iOCV_type", "SOC"]
+        expected_ocv_iocv = [
+            DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_0.copy(),
+            DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_1.copy(),
+        ]
 
     class Mock_extract_sequence_overview:
         df_primitives = DF_PRIMITIVES.copy()
-        SEGMENT_SEQUENCE_CONFIG = "PLACEHOLDER"
+        SEGMENT_SEQUENCE_CONFIG = SEGMENT_SEQUENCE_CONFIG.copy()
         SHOW_RUNTIME = True
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        result_columns = ["PLACEHOLDER"]
+        required_columns = [
+            "Test_Time[s]",
+            "Voltage[V]",
+            "Current[A]",
+            "Power[W]",
+            "ID",
+            "Variable",
+            "Duration",
+            "Length",
+            "Min",
+            "Max",
+            "Avg",
+            "Type",
+            "Direction",
+            "Slope",
+        ]
+        required_columns_dtypes = [
+            ("Test_Time[s]", float),
+            ("Voltage[V]", float),
+            ("Current[A]", float),
+            ("Power[W]", float),
+            ("ID", int),
+            ("Variable", str),
+            ("Duration", float),
+            ("Length", float),
+            ("Min", float),
+            ("Max", float),
+            ("Avg", float),
+            ("Type", str),
+            ("Direction", str),
+            ("Slope", float),
+        ]
+        add_columns = ["Sequence"]
+        # TODO add expected result
 
     class Mock_filter_and_split_df_by_blocks:
         df_segments_and_sequences = "PLACEHOLDER"  # DF_SEGMENTS_AND_SEQUENCES
