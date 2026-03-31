@@ -35,7 +35,7 @@ def filter_df(
         df_filtered_IDs = df_segments_and_sequences[combined_mask]["ID"].values
 
     # Create standard and non-standard dataframes
-    df_standard = df_primitives[standard_columns + ["ID", "Power[W]"]]
+    df_standard = df_primitives[standard_columns + ["ID"]]
     df_non_standard = df_primitives[
         [col for col in df_primitives.columns if col not in standard_columns + ["Power[W]"]]
     ]
