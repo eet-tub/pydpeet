@@ -49,8 +49,13 @@ test:
     - pip install -e ".[test]"
 
   script:
-    - pytest -v #--maxfail=1
+    - pytest -v --junitxml=report.xml #--maxfail=1
 
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+    expire_in: 14 days
 # -----------------------
 # DOCS BUILD
 # -----------------------
