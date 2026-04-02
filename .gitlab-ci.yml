@@ -51,7 +51,7 @@ test:
     - pip install -e ".[test]"
 
   script:
-    - pytest -v test/api_accessible --junitxml=report.xml
+    - pytest -v test/api_accessible --junitxml=report.xml -n 10
 
   artifacts:
     when: always
