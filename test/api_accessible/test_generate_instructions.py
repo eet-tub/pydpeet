@@ -11,9 +11,9 @@ from src.pydpeet import generate_instructions
 def base_args():
     """Provides a fresh dictionary of default arguments for every test."""
     return {
-        "df_primitives": Mocks.df_primitives.copy(),
-        "end_condition_map": Mocks.end_condition_map,
-        "threshold_warnings": Mocks.threshold_warnings,
+        "df_primitives": Mocks.Mock_generate_instructions.df_primitives.copy(),
+        "end_condition_map": Mocks.Mock_generate_instructions.end_condition_map,
+        "threshold_warnings": Mocks.Mock_generate_instructions.threshold_warnings,
     }
 
 
