@@ -16,7 +16,9 @@ df_primitives_correction_expected_path = (
     BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-primitives-corrected.parquet"
 )
 
-# df_segments_and_sequences_path = BASE_DIR / "PLACEHOLDER.parquet"
+df_segments_and_sequences_path = (
+    BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-segments-and-sequences.parquet"
+)
 df_neware_path = BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3.parquet"
 df_neware_expected_ocv_iocv_block_0_path = (
     BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_extract_ocv_iocv_block_0.parquet"
@@ -36,7 +38,19 @@ DF_NEWARE = pd.read_parquet(df_neware_path)
 DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_0 = pd.read_parquet(df_neware_expected_ocv_iocv_block_0_path)
 DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_1 = pd.read_parquet(df_neware_expected_ocv_iocv_block_1_path)
 DF_NEWARE_PRIMITIVES = pd.read_parquet(df_neware_primitives_path)
-# DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
+DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
+
+# Load expected results for filter_and_split_df_by_blocks from subfolder
+EXPECTED_RESULTS_DIR = BASE_DIR / "filter_and_split_df_by_blocks_expected"
+DF_FILTERED = pd.read_parquet(EXPECTED_RESULTS_DIR / "df_filtered.parquet")
+
+# Load expected blocks for filter_and_split_df_by_blocks
+EXPECTED_BLOCKS = []
+if EXPECTED_RESULTS_DIR.exists():
+    # Sort numerically by extracting number from filename (block_0, block_1, block_2... not block_0, block_1, block_10)
+    block_files = sorted(EXPECTED_RESULTS_DIR.glob("block_*.parquet"), key=lambda f: int(f.stem.split("_")[1]))
+    for block_file in block_files:
+        EXPECTED_BLOCKS.append(pd.read_parquet(block_file))
 
 
 class Mocks:
@@ -158,6 +172,7 @@ class Mocks:
             "Meta_Data",
             "Step_Count",
             "Voltage[V]",
+            "Voltage[V]",
             "Current[A]",
             "Temperature[°C]",
             "Test_Time[s]",
@@ -225,11 +240,7 @@ class Mocks:
         visualize = False
         df = DF_NEWARE.copy()
         df_primitives = DF_NEWARE_PRIMITIVES.copy()
-        config = BatteryConfig(
-            c_ref=4.75,
-            max_voltage=4.2,
-            min_voltage=2.5,
-        )
+        config = BatteryConfig(c_ref=4.75, max_voltage=4.2, min_voltage=2.5, voltage_intervall=0.01)
         required_columns_df = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
         required_columns_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
         required_columns_df_primitives = ["Test_Time[s]", "Type", "Duration", "ID", "Voltage[V]"]
@@ -286,15 +297,31 @@ class Mocks:
         # TODO add expected result
 
     class Mock_filter_and_split_df_by_blocks:
-        df_segments_and_sequences = "PLACEHOLDER"  # DF_SEGMENTS_AND_SEQUENCES
+        df_segments_and_sequences = DF_SEGMENTS_AND_SEQUENCES.copy()
         df_primitives = DF_PRIMITIVES.copy()
-        rules = ["PLACEHOLDER"]
+        rules = ["CC_Discharge", "Pause"]
         combine_op = "or"
         print_blocks = False
         also_return_filtered_df = True
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        result_columns = ["PLACEHOLDER"]
+        # Required columns for df_segments_and_sequences: ID + rule columns
+        required_columns_df_segments = ["ID", "CC_Discharge", "Pause"]
+        required_columns_dtypes_df_segments = [("ID", int), ("CC_Discharge", int), ("Pause", int)]
+        # Required columns for df_primitives: ID, Test_Time[s], Voltage[V], Current[A], Power[W], Variable
+        required_columns_df_primitives = ["ID", "Test_Time[s]", "Voltage[V]", "Current[A]", "Power[W]", "Variable"]
+        required_columns_dtypes_df_primitives = [
+            ("ID", int),
+            ("Test_Time[s]", float),
+            ("Voltage[V]", float),
+            ("Current[A]", float),
+            ("Power[W]", float),
+            ("Variable", str),
+        ]
+        # Columns to use for NaN/inf testing (must be float columns)
+        nan_inf_test_column_df_segments = "Test_Time[s]"  # Use from df_primitives since df_segments has no float cols
+        nan_inf_test_column_df_primitives = "Test_Time[s]"
+        # Expected results
+        expected_dfs_per_block = EXPECTED_BLOCKS
+        expected_df_filtered = DF_FILTERED.copy()
 
     class Mock_generate_instructions:
         df_primitives = DF_PRIMITIVES.copy()
