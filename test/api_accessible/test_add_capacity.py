@@ -28,6 +28,9 @@ class Test_add_capacity_df:
         result = add_capacity(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_capacity.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_capacity.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_capacity.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["df"] = None
@@ -87,6 +90,9 @@ class Test_add_capacity_df_primitives:
         result = add_capacity(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_capacity.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_capacity.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_capacity.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["df_primitives"] = None
@@ -160,6 +166,9 @@ class Test_add_capacity_neware_bool:
         result = add_capacity(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_capacity.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_capacity.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_capacity.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
         original_df = base_args["df"].copy()
@@ -167,6 +176,9 @@ class Test_add_capacity_neware_bool:
         result = add_capacity(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_capacity.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_capacity.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_capacity.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["neware_bool"] = None
@@ -185,6 +197,9 @@ class Test_add_capacity_verbose:
         result = add_capacity(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_capacity.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_capacity.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_capacity.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
         original_df = base_args["df"].copy()
@@ -192,6 +207,9 @@ class Test_add_capacity_verbose:
         result = add_capacity(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_capacity.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_capacity.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_capacity.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["verbose"] = None

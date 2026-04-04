@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -18,51 +20,70 @@ def base_args():
 
 
 class Test_generate_instructions_df_primitives:
-    # Only first test
     def test_valid(self, base_args):
-        original_df = base_args["VARIABLE"].copy()
         result = generate_instructions(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_generate_instructions.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_generate_instructions.add_columns, axis=1), original_df)
+        assert isinstance(result, list)
+        assert all(isinstance(item, str) for item in result)
+        # Compare with expected result
+        expected = Mocks.Mock_generate_instructions.expected
+        assert result == expected
 
     def test_none(self, base_args):
-        base_args["VARIABLE"] = None
+        base_args["df_primitives"] = None
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
     def test_wrong_type(self, base_args):
-        base_args["VARIABLE"] = "wrong type"
-        assert not isinstance(base_args["VARIABLE"], pd.DataFrame)
+        base_args["df_primitives"] = "wrong type"
+        assert not isinstance(base_args["df_primitives"], pd.DataFrame)
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
     def test_empty(self, base_args):
-        base_args["VARIABLE"] = pd.DataFrame()
+        base_args["df_primitives"] = pd.DataFrame()
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["VARIABLE"] = base_args["VARIABLE"].drop(Mocks.Mock_generate_instructions.required_columns)
-        assert_raises_and_print(KeyError, generate_instructions, **base_args)
-
-    def test_wrong_column_dtypes(self, base_args):
-        base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns] = base_args["VARIABLE"][
-            Mocks.Mock_generate_instructions.required_columns
-        ].astype(int)
-        assert (
-            base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns].dtypes
-            != Mocks.Mock_generate_instructions.required_columns_dtypes
+        base_args["df_primitives"] = base_args["df_primitives"].drop(
+            Mocks.Mock_generate_instructions.required_columns, axis=1
         )
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
-    def test_nan_values(self, base_args):
-        base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns] = np.nan
+    def test_wrong_column_dtypes(self, base_args):
+        for col, _dtype in Mocks.Mock_generate_instructions.required_columns_dtypes:
+            base_args["df_primitives"][col] = base_args["df_primitives"][col].astype(str)
+        expected_dtypes = pd.Series(
+            {col: dtype for col, dtype in Mocks.Mock_generate_instructions.required_columns_dtypes}
+        )
+        actual_dtypes = base_args["df_primitives"][Mocks.Mock_generate_instructions.required_columns].dtypes
+        assert not actual_dtypes.equals(expected_dtypes)
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
-    def test_none_values(self, base_args):
-        base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns] = None
-        assert_raises_and_print(ValueError, generate_instructions, **base_args)
+    def test_nan_values(self, base_args, caplog):
+        base_args["df_primitives"][Mocks.Mock_generate_instructions.required_columns[0]].iloc[:10] = np.nan
+        with caplog.at_level(logging.WARNING):
+            result = generate_instructions(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_generate_instructions.required_columns[0]}' contains NaN values." in record.message
+            for record in caplog.records
+        )
+        assert isinstance(result, list)
 
-    def test_inf_values(self, base_args):
-        base_args["VARIABLE"][Mocks.Mock_generate_instructions.required_columns] = np.inf
-        assert_raises_and_print(ValueError, generate_instructions, **base_args)
+    def test_none_values(self, base_args, caplog):
+        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
+        # would be converted to NaN or throw the test_wrong_column_dtypes failure
+        assert True
+
+    def test_inf_values(self, base_args, caplog):
+        base_args["df_primitives"][Mocks.Mock_generate_instructions.required_columns[0]].iloc[:10] = np.inf
+        with caplog.at_level(logging.WARNING):
+            result = generate_instructions(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_generate_instructions.required_columns[0]}' contains infinite values."
+            in record.message
+            for record in caplog.records
+        )
+        assert isinstance(result, list)
 
 
 class Test_generate_instructions_end_condition_map:

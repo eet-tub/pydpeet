@@ -27,6 +27,28 @@ df_neware_expected_ocv_iocv_block_1_path = (
     BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_extract_ocv_iocv_block_1.parquet"
 )
 df_neware_primitives_path = BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_primitives.parquet"
+# Expected result for add_capacity
+df_add_capacity_expected_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-add_capacity.parquet"
+# Expected result for add_primitive_segments
+df_add_primitive_segments_expected_path = (
+    BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-add_primitive_segments.parquet"
+)
+# Expected result for add_resistance_internal
+df_add_resistance_internal_expected_path = (
+    BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-add_resistance_internal.parquet"
+)
+# Expected result for add_soc
+df_add_soc_expected_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-add_soc.parquet"
+# Expected result for extract_sequence_overview
+df_extract_sequence_overview_expected_path = (
+    BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-extract_sequence_overview.parquet"
+)
+# Expected result for generate_instructions
+df_generate_instructions_expected_path = (
+    BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-generate_instructions.txt"
+)
+# Expected result for merge_into_series
+df_merge_into_series_expected_path = BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-merge_into_series.parquet"
 # Read parquet files
 DF = pd.read_parquet(df_path)
 DF_WITH_ADDITIONAL = pd.read_parquet(df_with_additional_path)
@@ -39,6 +61,15 @@ DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_0 = pd.read_parquet(df_neware_expected_ocv_ioc
 DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_1 = pd.read_parquet(df_neware_expected_ocv_iocv_block_1_path)
 DF_NEWARE_PRIMITIVES = pd.read_parquet(df_neware_primitives_path)
 DF_SEGMENTS_AND_SEQUENCES = pd.read_parquet(df_segments_and_sequences_path)
+DF_ADD_CAPACITY_EXPECTED = pd.read_parquet(df_add_capacity_expected_path)
+DF_ADD_PRIMITIVE_SEGMENTS_EXPECTED = pd.read_parquet(df_add_primitive_segments_expected_path)
+DF_ADD_RESISTANCE_INTERNAL_EXPECTED = pd.read_parquet(df_add_resistance_internal_expected_path)
+DF_ADD_SOC_EXPECTED = pd.read_parquet(df_add_soc_expected_path)
+DF_EXTRACT_SEQUENCE_OVERVIEW_EXPECTED = pd.read_parquet(df_extract_sequence_overview_expected_path)
+DF_MERGE_INTO_SERIES_EXPECTED = pd.read_parquet(df_merge_into_series_expected_path)
+# Load generate_instructions expected result from text file
+with open(df_generate_instructions_expected_path, encoding="utf-8") as f:
+    GENERATE_INSTRUCTIONS_EXPECTED = [line.strip() for line in f if line.strip()]
 
 # Load expected results for filter_and_split_df_by_blocks from subfolder
 EXPECTED_RESULTS_DIR = BASE_DIR / "filter_and_split_df_by_blocks_expected"
@@ -96,7 +127,7 @@ class Mocks:
         ]
 
         add_columns = ["Capacity[Ah]"]
-        # TODO add expected result
+        df_expected = DF_ADD_CAPACITY_EXPECTED.copy()
 
     class Mock_add_primitive_segments:
         df = DF
@@ -133,7 +164,7 @@ class Mocks:
             "Direction",
             "Slope",
         ]
-        # TODO add expected result
+        df_expected = DF_ADD_PRIMITIVE_SEGMENTS_EXPECTED.copy()
 
     class Mock_add_resistance_internal:
         df = DF
@@ -142,7 +173,7 @@ class Mocks:
         required_columns = ["Voltage[V]", "Current[A]", "Test_Time[s]"]
         required_columns_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
         add_columns = ["InternalResistance[ohm]"]
-        # TODO add expected result
+        df_expected = DF_ADD_RESISTANCE_INTERNAL_EXPECTED.copy()
 
     class Mock_add_soc:
         df = DF.copy()
@@ -160,7 +191,7 @@ class Mocks:
         required_columns = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
         required_columns_dtypes = [("Test_Time[s]", float), ("Current[A]", float), ("Voltage[V]", float)]
         add_columns = ["Capacity[Ah]", "SOC", "SOC_WITH_RESET_WHEN_FULL"]
-        # TODO add expected result
+        df_expected = DF_ADD_SOC_EXPECTED.copy()
 
     class Mock_convert:
         config = "basytec_6_3_1_0"
@@ -294,7 +325,7 @@ class Mocks:
             ("Slope", float),
         ]
         add_columns = ["Sequence"]
-        # TODO add expected result
+        df_expected = DF_EXTRACT_SEQUENCE_OVERVIEW_EXPECTED.copy()
 
     class Mock_filter_and_split_df_by_blocks:
         df_segments_and_sequences = DF_SEGMENTS_AND_SEQUENCES.copy()
@@ -325,23 +356,76 @@ class Mocks:
 
     class Mock_generate_instructions:
         df_primitives = DF_PRIMITIVES.copy()
-        end_condition_map = "PLACEHOLDER"
-        threshold_warnings = "PLACEHOLDER"
+        end_condition_map = {"CC": "voltage", "CV": "current", "CP": "voltage", "Pause": "time"}
+        threshold_warnings = 5
+        required_columns = [
+            "Test_Time[s]",
+            "Voltage[V]",
+            "Current[A]",
+            "Power[W]",
+            "ID",
+            "Variable",
+            "Duration",
+            "Length",
+            "Min",
+            "Max",
+            "Avg",
+            "Type",
+            "Direction",
+            "Slope",
+        ]
+        required_columns_dtypes = [
+            ("Test_Time[s]", float),
+            ("Voltage[V]", float),
+            ("Current[A]", float),
+            ("Power[W]", float),
+            ("ID", int),
+            ("Variable", str),
+            ("Duration", float),
+            ("Length", float),
+            ("Min", float),
+            ("Max", float),
+            ("Avg", float),
+            ("Type", str),
+            ("Direction", str),
+            ("Slope", float),
+        ]
+        expected = GENERATE_INSTRUCTIONS_EXPECTED.copy()
 
     class Mock_mapping:
-        df = DF.copy()
-        column_map = "PLACEHOLDER"
-        missing_columns = "PLACEHOLDER"
-        required_columns = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        required_columns_dtypes = ["PLACEHOLDER", "PLACEHOLDER", "PLACEHOLDER"]
-        add_columns = ["PLACEHOLDER"]
+        # Create raw DataFrame by reversing column_map on converted DF
+        _column_map = {
+            "Time[h]": "Test_Time[s]",
+            "U[V]": "Voltage[V]",
+            "I[A]": "Current[A]",
+            "T1[°C]": "Temperature[°C]",
+            "Line": "Step_Count",
+        }
+        _inverse_map = {v: k for k, v in _column_map.items()}
+        df = DF.copy().rename(columns=_inverse_map)
+        column_map = _column_map.copy()
+        missing_columns = ["Date_Time", "EIS_f[Hz]", "EIS_Z_Real[Ohm]", "EIS_Z_Imag[Ohm]", "EIS_DC[A]"]
+        required_columns = list(_column_map.keys())
+        required_columns_dtypes = [
+            ("Time[h]", float),
+            ("U[V]", float),
+            ("I[A]", float),
+            ("T1[°C]", float),
+            ("Line", int),
+        ]
+        add_columns = ["Meta_Data", "Date_Time", "EIS_f[Hz]", "EIS_Z_Real[Ohm]", "EIS_Z_Imag[Ohm]", "EIS_DC[A]"]
 
     class Mock_merge_into_series:
-        df_list = ([DF.copy(), DF.copy()],)
+        # Create a list of DataFrames to merge (use smaller slices for testing)
+        _df1 = DF.copy().iloc[:1000].reset_index(drop=True)
+        _df2 = DF.copy().iloc[1000:2000].reset_index(drop=True)
+        df_list = [_df1, _df2]
         time_between_tests_seconds = 60.0
         verbose = True
         sort_dfs = True
-        add_columns = []
+        required_columns = ["Test_Time[s]"]  # Required in each DataFrame
+        add_columns = ["TestIndex"]  # Column added by the function
+        df_expected = DF_MERGE_INTO_SERIES_EXPECTED.copy()
 
     class Mock_read:
         config = "PLACEHOLDER"

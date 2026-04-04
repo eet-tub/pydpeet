@@ -24,6 +24,9 @@ class Test_extract_sequence_overview_df_primitives:
     def test_valid(self, base_args):
         result = extract_sequence_overview(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
+        # Compare with expected result
+        expected = Mocks.Mock_extract_sequence_overview.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["df_primitives"] = None
@@ -99,11 +102,17 @@ class Test_extract_sequence_overview_SHOW_RUNTIME:
         base_args["SHOW_RUNTIME"] = True
         result = extract_sequence_overview(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
+        # Compare with expected result
+        expected = Mocks.Mock_extract_sequence_overview.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
         base_args["SHOW_RUNTIME"] = False
         result = extract_sequence_overview(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
+        # Compare with expected result
+        expected = Mocks.Mock_extract_sequence_overview.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["SHOW_RUNTIME"] = None
