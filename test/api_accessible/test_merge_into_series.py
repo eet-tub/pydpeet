@@ -10,7 +10,7 @@ from src.pydpeet import merge_into_series
 def base_args():
     """Provides a fresh dictionary of default arguments for every test."""
     return {
-        "df_list": Mocks.Mock_merge_into_series.df_list,
+        "dfs": [df.copy() for df in Mocks.Mock_merge_into_series.df_list],
         "time_between_tests_seconds": Mocks.Mock_merge_into_series.time_between_tests_seconds,
         "verbose": Mocks.Mock_merge_into_series.verbose,
         "sort_dfs": Mocks.Mock_merge_into_series.sort_dfs,
@@ -35,20 +35,22 @@ class Test_merge_into_series_time_between_tests_seconds:
 
 class Test_merge_into_series_verbose:
     def test_true(self, base_args):
-        raise NotImplementedError("Test not implemented for variable: verbose of merge_into_series")
-        original_df = base_args["df"].copy()
         base_args["verbose"] = True
         result = merge_into_series(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_merge_into_series.add_columns, axis=1), original_df)
+        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+        expected = Mocks.Mock_merge_into_series.df_expected
+        pd.testing.assert_frame_equal(result, expected)
 
     def test_false(self, base_args):
-        raise NotImplementedError("Test not implemented for variable: verbose of merge_into_series")
-        original_df = base_args["df"].copy()
         base_args["verbose"] = False
         result = merge_into_series(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_merge_into_series.add_columns, axis=1), original_df)
+        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+        expected = Mocks.Mock_merge_into_series.df_expected
+        pd.testing.assert_frame_equal(result, expected)
 
     def test_none(self, base_args):
         base_args["verbose"] = None
@@ -62,20 +64,22 @@ class Test_merge_into_series_verbose:
 
 class Test_merge_into_series_sort_dfs:
     def test_true(self, base_args):
-        raise NotImplementedError("Test not implemented for variable: verbose of merge_into_series")
-        original_df = base_args["df"].copy()
         base_args["sort_dfs"] = True
         result = merge_into_series(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_merge_into_series.add_columns, axis=1), original_df)
+        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+        expected = Mocks.Mock_merge_into_series.df_expected
+        pd.testing.assert_frame_equal(result, expected)
 
     def test_false(self, base_args):
-        raise NotImplementedError("Test not implemented for variable: verbose of merge_into_series")
-        original_df = base_args["df"].copy()
         base_args["sort_dfs"] = False
         result = merge_into_series(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_merge_into_series.add_columns, axis=1), original_df)
+        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+        expected = Mocks.Mock_merge_into_series.df_expected
+        pd.testing.assert_frame_equal(result, expected)
 
     def test_none(self, base_args):
         base_args["sort_dfs"] = None

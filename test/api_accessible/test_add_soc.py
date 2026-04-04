@@ -35,6 +35,9 @@ class Test_add_soc_df:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["df"] = None
@@ -94,6 +97,9 @@ class Test_add_soc_df_primitives:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["df_primitives"] = None
@@ -153,6 +159,9 @@ class Test_add_soc_neware_bool:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
         original_df = base_args["df"].copy()
@@ -160,6 +169,9 @@ class Test_add_soc_neware_bool:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["neware_bool"] = None
@@ -234,6 +246,9 @@ class Test_add_soc_verbose:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
         original_df = base_args["df"].copy()
@@ -241,6 +256,9 @@ class Test_add_soc_verbose:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["verbose"] = None
@@ -259,6 +277,9 @@ class Test_add_soc_restart_for_testindex:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
         original_df = base_args["df"].copy()
@@ -266,6 +287,9 @@ class Test_add_soc_restart_for_testindex:
         result = add_soc(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_soc.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_soc.add_columns, axis=1), original_df)
+        # Compare with expected result
+        expected = Mocks.Mock_add_soc.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["restart_for_testindex"] = None
