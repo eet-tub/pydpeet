@@ -35,18 +35,16 @@ class Test_read_input_path:
 
 class Test_read_keep_all_additional_data:
     def test_true(self, base_args):
-        original_df = base_args["df"].copy()
         base_args["keep_all_additional_data"] = True
         result = read(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_read.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_read.add_columns, axis=1), original_df)
+        expected = Mocks.Mock_read.df_expected_with_additional_data
+        assert pd.DataFrame.equals(result, expected)
 
     def test_false(self, base_args):
-        original_df = base_args["df"].copy()
         base_args["keep_all_additional_data"] = False
         result = read(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_read.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_read.add_columns, axis=1), original_df)
+        expected = Mocks.Mock_read.df_expected_without_additional_data
+        assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
         base_args["keep_all_additional_data"] = None

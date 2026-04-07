@@ -428,14 +428,16 @@ class Mocks:
         df_expected = DF_MERGE_INTO_SERIES_EXPECTED.copy()
 
     class Mock_read:
-        config = "PLACEHOLDER"
-        input_path = "PLACEHOLDER"
+        config = "basytec_6_3_1_0"
+        input_path = str(BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg.txt")
         keep_all_additional_data = False
         custom_folder_path = None
+        df_expected_without_additional_data = DF.copy()
+        df_expected_with_additional_data = DF_WITH_ADDITIONAL.copy()
 
     class Mock_set_logging_style:
-        level = "PLACEHOLDER"
-        formatting_string = "PLACEHOLDER"
+        level = "WARNING"
+        formatting_string = "%(levelname)s | %(pathname)s:%(lineno)d | %(message)s"
 
     class Mock_visualize_phases:
         dataframe = DF_PRIMITIVES.copy()
@@ -459,6 +461,15 @@ class Mocks:
         width_height_ratio = [1.0, 0.3]
         show_runtime = True
         add_columns = []
+        required_columns = ["Test_Time[s]", "ID", "Variable", "Voltage[V]", "Current[A]", "Power[W]"]
+        required_columns_dtypes = [
+            ("Test_Time[s]", float),
+            ("ID", int),
+            ("Variable", str),
+            ("Voltage[V]", float),
+            ("Current[A]", float),
+            ("Power[W]", float),
+        ]
 
     class Mock_write:
         data_input = "PLACEHOLDER"

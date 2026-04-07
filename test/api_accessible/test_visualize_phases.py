@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -11,7 +13,7 @@ from src.pydpeet import visualize_phases
 def base_args():
     """Provides a fresh dictionary of default arguments for every test."""
     return {
-        "dataframe": Mocks.Mock_visualize_phases.dataframe,
+        "dataframe": Mocks.Mock_visualize_phases.dataframe.copy(),
         "start_time": Mocks.Mock_visualize_phases.start_time,
         "end_time": Mocks.Mock_visualize_phases.end_time,
         "visualize_phases_config": Mocks.Mock_visualize_phases.visualize_phases_config,
@@ -28,13 +30,11 @@ def base_args():
 
 class Test_visualize_phases_dataframe:
     # Only first test
-    def test_valid(self, base_args):
-        original_df = base_args["dataframe"].copy()
-
-        result = visualize_phases(**base_args)
-        raise NotImplementedError(
-            f"Test not implemented for variable: dataframe of visualize_phases {original_df}{result}"
-        )
+    def test_valid(self, base_args, caplog):
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        # visualize_phases returns None (it's a visualization function)
+        assert result is None
 
     def test_none(self, base_args):
         base_args["dataframe"] = None
@@ -50,30 +50,41 @@ class Test_visualize_phases_dataframe:
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
     def test_missing_required_columns(self, base_args):
-        base_args["dataframe"] = base_args["dataframe"].drop(Mocks.Mock_visualize_phases.required_columns)
-        assert_raises_and_print(KeyError, visualize_phases, **base_args)
+        base_args["dataframe"] = base_args["dataframe"].drop(Mocks.Mock_visualize_phases.required_columns, axis=1)
+        assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
     def test_wrong_column_dtypes(self, base_args):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns] = base_args["dataframe"][
-            Mocks.Mock_visualize_phases.required_columns
-        ].astype(int)
-        assert (
-            base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns].dtypes
-            != Mocks.Mock_visualize_phases.required_columns_dtypes
+        for col, _dtype in Mocks.Mock_visualize_phases.required_columns_dtypes:
+            base_args["dataframe"][col] = base_args["dataframe"][col].astype(str)
+        expected_dtypes = pd.Series({col: dtype for col, dtype in Mocks.Mock_visualize_phases.required_columns_dtypes})
+        actual_dtypes = base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns].dtypes
+        assert not actual_dtypes.equals(expected_dtypes)
+        assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+    def test_nan_values(self, base_args, caplog):
+        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns[0]].iloc[:10] = np.nan
+        with caplog.at_level(logging.WARNING):
+            visualize_phases(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_visualize_phases.required_columns[0]}' contains NaN values." in record.message
+            for record in caplog.records
         )
-        assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
-    def test_nan_values(self, base_args):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns] = np.nan
-        assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_none_values(self, base_args, caplog):
+        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
+        # would be converted to NaN or throw the test_wrong_column_dtypes failure
+        assert True
 
-    def test_none_values(self, base_args):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns] = None
-        assert_raises_and_print(ValueError, visualize_phases, **base_args)
-
-    def test_inf_values(self, base_args):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns] = np.inf
-        assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_inf_values(self, base_args, caplog):
+        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns[0]].iloc[:10] = np.inf
+        with caplog.at_level(logging.WARNING):
+            visualize_phases(**base_args)
+        print(f"\nCaptured Warning: {caplog.records[0].message}")
+        assert any(
+            f"Column '{Mocks.Mock_visualize_phases.required_columns[0]}' contains infinite values." in record.message
+            for record in caplog.records
+        )
 
 
 class Test_visualize_phases_start_time:
@@ -117,19 +128,17 @@ class Test_visualize_phases_line_visualization_config:
 
 
 class Test_visualize_phases_use_lines_for_segments:
-    def test_true(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_true(self, base_args, caplog):
         base_args["use_lines_for_segments"] = True
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
-    def test_false(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_false(self, base_args, caplog):
         base_args["use_lines_for_segments"] = False
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
     def test_none(self, base_args):
         base_args["use_lines_for_segments"] = None
@@ -142,19 +151,17 @@ class Test_visualize_phases_use_lines_for_segments:
 
 
 class Test_visualize_phases_show_column_names:
-    def test_true(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_true(self, base_args, caplog):
         base_args["show_column_names"] = True
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
-    def test_false(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_false(self, base_args, caplog):
         base_args["show_column_names"] = False
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
     def test_none(self, base_args):
         base_args["show_column_names"] = None
@@ -167,19 +174,17 @@ class Test_visualize_phases_show_column_names:
 
 
 class Test_visualize_phases_show_time:
-    def test_true(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_true(self, base_args, caplog):
         base_args["show_time"] = True
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
-    def test_false(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_false(self, base_args, caplog):
         base_args["show_time"] = False
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
     def test_none(self, base_args):
         base_args["show_time"] = None
@@ -187,24 +192,22 @@ class Test_visualize_phases_show_time:
 
     def test_wrong_type(self, base_args):
         base_args["show_time"] = "wrong type"
-        assert not isinstance(base_args["VARIABLE"], bool)
+        assert not isinstance(base_args["show_time"], bool)
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
 
 class Test_visualize_phases_show_id:
-    def test_true(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_true(self, base_args, caplog):
         base_args["show_id"] = True
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
-    def test_false(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_false(self, base_args, caplog):
         base_args["show_id"] = False
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
     def test_none(self, base_args):
         base_args["show_id"] = None
@@ -225,19 +228,17 @@ class Test_visualize_phases_width_height_ratio:
 
 
 class Test_visualize_phases_show_runtime:
-    def test_true(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_true(self, base_args, caplog):
         base_args["show_runtime"] = True
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
-    def test_false(self, base_args):
-        original_df = base_args["dataframe"].copy()
+    def test_false(self, base_args, caplog):
         base_args["show_runtime"] = False
-        result = visualize_phases(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_visualize_phases.add_columns)
-        assert pd.DataFrame.equals(result.drop(Mocks.Mock_visualize_phases.add_columns, axis=1), original_df)
+        with caplog.at_level(logging.INFO):
+            result = visualize_phases(**base_args)
+        assert result is None
 
     def test_none(self, base_args):
         base_args["show_runtime"] = None

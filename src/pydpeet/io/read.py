@@ -10,6 +10,7 @@ from pydpeet.io.convert import (
     convert_file,
     convert_files_in_directory,
 )
+from pydpeet.utils.guardrails import _guardrail_boolean
 
 ConfigLike = Config | str
 PathLike = str | Path
@@ -21,6 +22,9 @@ def read(
     keep_all_additional_data: bool = False,
     custom_folder_path: str = None,
 ) -> pd.DataFrame | list[pd.DataFrame]:
+    # Validate boolean parameter using guardrail
+    _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)
+
     # TODO: Docstring
     if isinstance(input_path, str):
         if os.path.isfile(input_path):
