@@ -41,5 +41,6 @@ class Test_write_output_file_name:
 class Test_write_data_output_filetype:
     """Placeholder failing test for variable 'data_output_filetype' of 'write'."""
 
+    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: data_output_filetype of write")

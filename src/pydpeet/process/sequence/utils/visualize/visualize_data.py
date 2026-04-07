@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from pydpeet.process.sequence.utils.console_prints.log_time import log_time
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 # -------------------------------------------------------------------
 # Compute screen dimensions once
@@ -211,6 +212,29 @@ def visualize_phases(
     width_height_ratio: tuple[float, float] | list[float] = None,
     show_runtime: bool = True,
 ) -> None:
+    # Guardrail checks for dataframe
+    required_column_dtypes = [
+        ("Test_Time[s]", float),
+        ("ID", int),
+        ("Variable", str),
+        ("Voltage[V]", float),
+        ("Current[A]", float),
+        ("Power[W]", float),
+    ]
+    required_columns = [col for col, _ in required_column_dtypes]
+
+    _guardrail_dataframe(
+        dataframe,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
+
+    # Guardrail checks for boolean parameters
+    for boolean_param in [use_lines_for_segments, show_column_names, show_time, show_id, show_runtime]:
+        _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
     # Set default values for mutable data structures
     if visualize_phases_config is None:
         visualize_phases_config = [
