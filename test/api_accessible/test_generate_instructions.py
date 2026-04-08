@@ -58,7 +58,7 @@ class Test_generate_instructions_df_primitives:
         assert_raises_and_print(ValueError, generate_instructions, **base_args)
 
     def test_nan_values(self, base_args, caplog):
-        base_args["df_primitives"][Mocks.Mock_generate_instructions.required_columns[0]].iloc[:10] = np.nan
+        base_args["df_primitives"].loc[:9, Mocks.Mock_generate_instructions.required_columns[0]] = np.nan
         with caplog.at_level(logging.WARNING):
             result = generate_instructions(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
@@ -74,7 +74,7 @@ class Test_generate_instructions_df_primitives:
         assert True
 
     def test_inf_values(self, base_args, caplog):
-        base_args["df_primitives"][Mocks.Mock_generate_instructions.required_columns[0]].iloc[:10] = np.inf
+        base_args["df_primitives"].loc[:9, Mocks.Mock_generate_instructions.required_columns[0]] = np.inf
         with caplog.at_level(logging.WARNING):
             result = generate_instructions(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")

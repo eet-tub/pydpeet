@@ -54,7 +54,7 @@ class Test_mapping_data_frame:
         assert True
 
     def test_nan_values(self, base_args, caplog):
-        base_args["data_frame"][Mocks.Mock_mapping.required_columns[0]].iloc[:10] = np.nan
+        base_args["data_frame"].loc[:9, Mocks.Mock_mapping.required_columns[0]] = np.nan
         with caplog.at_level(logging.WARNING):
             result = mapping(**base_args)
         # Check result has mapped columns with NaN values preserved
@@ -68,7 +68,7 @@ class Test_mapping_data_frame:
         assert True
 
     def test_inf_values(self, base_args, caplog):
-        base_args["data_frame"][Mocks.Mock_mapping.required_columns[0]].iloc[:10] = np.inf
+        base_args["data_frame"].loc[:9, Mocks.Mock_mapping.required_columns[0]] = np.inf
         with caplog.at_level(logging.WARNING):
             result = mapping(**base_args)
         # Check result has mapped columns with inf values preserved
