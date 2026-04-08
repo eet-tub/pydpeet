@@ -47,7 +47,9 @@ docs = [
 ]
 test = [
     "pytest",
-    "pytest-cov"
+    "pytest-cov",
+    "pytest-xdist",
+    "pytest-rerunfailures"
 ]
 
 
@@ -67,3 +69,11 @@ ignore = ["E501"]
 [tool.ruff.format]
  # Use this option to keep lists and parameters lists as multi-line code when ended by a trailing comma
 skip-magic-trailing-comma = false
+
+# for local testing of test coverage
+[tool.coverage.run]
+source = ["src/pydpeet"]
+omit = [
+    "*/dev_utils/*",
+    "*/res/*",
+]
