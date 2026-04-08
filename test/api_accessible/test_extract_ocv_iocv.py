@@ -91,7 +91,7 @@ class Test_extract_ocv_iocv_df_primitives:
 
     def test_nan_values(self, base_args, caplog):
         base_args["df"] = None
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]].iloc[:10] = np.nan
+        base_args["df_primitives"].loc[:9, Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]] = np.nan
         with caplog.at_level(logging.WARNING):
             extract_ocv_iocv(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
@@ -108,7 +108,7 @@ class Test_extract_ocv_iocv_df_primitives:
 
     def test_inf_values(self, base_args, caplog):
         base_args["df"] = None
-        base_args["df_primitives"][Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]].iloc[:10] = np.inf
+        base_args["df_primitives"].loc[:9, Mocks.Mock_extract_ocv_iocv.required_columns_df_primitives[0]] = np.inf
         with caplog.at_level(logging.WARNING):
             extract_ocv_iocv(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
@@ -162,7 +162,7 @@ class Test_extract_ocv_iocv_df:
 
     def test_nan_values(self, base_args, caplog):
         base_args["df_primitives"] = None
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns_df[0]].iloc[:10] = np.nan
+        base_args["df"].loc[:9, Mocks.Mock_extract_ocv_iocv.required_columns_df[0]] = np.nan
         with caplog.at_level(logging.WARNING):
             extract_ocv_iocv(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
@@ -178,7 +178,7 @@ class Test_extract_ocv_iocv_df:
 
     def test_inf_values(self, base_args, caplog):
         base_args["df_primitives"] = None
-        base_args["df"][Mocks.Mock_extract_ocv_iocv.required_columns_df[0]].iloc[:10] = np.inf
+        base_args["df"].loc[:9, Mocks.Mock_extract_ocv_iocv.required_columns_df[0]] = np.inf
         with caplog.at_level(logging.WARNING):
             extract_ocv_iocv(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")

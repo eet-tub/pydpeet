@@ -62,7 +62,7 @@ class Test_visualize_phases_dataframe:
         assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
     def test_nan_values(self, base_args, caplog):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns[0]].iloc[:10] = np.nan
+        base_args["dataframe"].loc[:9, Mocks.Mock_visualize_phases.required_columns[0]] = np.nan
         with caplog.at_level(logging.WARNING):
             visualize_phases(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
@@ -77,7 +77,7 @@ class Test_visualize_phases_dataframe:
         assert True
 
     def test_inf_values(self, base_args, caplog):
-        base_args["dataframe"][Mocks.Mock_visualize_phases.required_columns[0]].iloc[:10] = np.inf
+        base_args["dataframe"].loc[:9, Mocks.Mock_visualize_phases.required_columns[0]] = np.inf
         with caplog.at_level(logging.WARNING):
             visualize_phases(**base_args)
         print(f"\nCaptured Warning: {caplog.records[0].message}")
