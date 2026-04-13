@@ -48,7 +48,6 @@ test:
     - apt-get update
     - apt-get install -y python3-tk
     - pip install -U pip
-    - pip install -r requirements.txt
     - pip install -e ".[test]"
 
   script:
