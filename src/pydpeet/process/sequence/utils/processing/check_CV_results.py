@@ -192,19 +192,20 @@ def _check_CV_0Aend_segments(
 
         df_CV_0Aend_segments = df_primitives.loc[mask]
 
-        df_CV_0Aend_segments = df_primitives_correction(
-            df_primitives=df_CV_0Aend_segments,
-            correction_config=correction_config,
-            data_columns=DATA_COLUMNS,
-            thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION,
-            reindex=False,
-            reannotate=False,
-        )
+        if not df_CV_0Aend_segments.empty:
+            df_CV_0Aend_segments = df_primitives_correction(
+                df_primitives=df_CV_0Aend_segments,
+                correction_config=correction_config,
+                data_columns=DATA_COLUMNS,
+                thresholds=THRESHOLDS_PRIMITIVE_ANNOTATION,
+                reindex=False,
+                reannotate=False,
+            )
 
-        # Update df_primitives with df_CV_0Aend_segments
-        df_CV_0Aend_segments["ID"] = -2
-        cols_to_update = ["ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
-        df_primitives.loc[df_CV_0Aend_segments.index, cols_to_update] = df_CV_0Aend_segments[cols_to_update]
+            # Update df_primitives with df_CV_0Aend_segments
+            df_CV_0Aend_segments["ID"] = -2
+            cols_to_update = ["ID", "Variable", "Duration", "Length", "Min", "Max", "Avg", "Type", "Direction", "Slope"]
+            df_primitives.loc[df_CV_0Aend_segments.index, cols_to_update] = df_CV_0Aend_segments[cols_to_update]
 
         # Extract as numpy arrays
         ids = df_primitives["ID"].to_numpy(dtype=np.int64)

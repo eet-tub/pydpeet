@@ -22,6 +22,7 @@ from pydpeet.io.utils.ext_path import ExtPath
 from pydpeet.io.utils.load_custom_module import load_custom_module
 from pydpeet.io.utils.timing import measure_time
 from pydpeet.io.write import write
+from pydpeet.utils.guardrails import _guardrail_boolean
 
 ConfigLike = Config | str
 PathLike = str | Path
@@ -34,6 +35,9 @@ def convert(
     keep_all_additional_data: bool = False,
     custom_folder_path: str = None,
 ) -> pd.DataFrame | list[pd.DataFrame] | None:
+    # Boolean guardrails
+    _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)
+
     if isinstance(input_path, str):
         if os.path.isfile(input_path):
             return convert_file(config, input_path, output_path, keep_all_additional_data, custom_folder_path)

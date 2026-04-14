@@ -5,6 +5,8 @@ from functools import reduce
 import pandas as pd
 from pandas import DataFrame
 
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
+
 
 # TODO: Docstring
 def filter_df(
@@ -35,7 +37,7 @@ def filter_df(
         df_filtered_IDs = df_segments_and_sequences[combined_mask]["ID"].values
 
     # Create standard and non-standard dataframes
-    df_standard = df_primitives[standard_columns + ["ID", "Power[W]"]]
+    df_standard = df_primitives[standard_columns + ["ID"]]
     df_non_standard = df_primitives[
         [col for col in df_primitives.columns if col not in standard_columns + ["Power[W]"]]
     ]
@@ -146,6 +148,42 @@ def filter_and_split_df_by_blocks(
     print_blocks: bool = False,
     also_return_filtered_df: bool = True,
 ) -> tuple[list[DataFrame], DataFrame] | list[DataFrame]:
+    # Required columns and dtypes for validation
+    required_columns_df_segments = ["ID"] + rules if rules else ["ID"]
+    required_columns_dtypes_df_segments = [("ID", int)]
+    for rule in rules if rules else []:
+        required_columns_dtypes_df_segments.append((rule, int))
+
+    required_columns_dtypes_df_primitives = [
+        ("Test_Time[s]", float),
+        ("Voltage[V]", float),
+        ("Current[A]", float),
+        ("Power[W]", float),
+        ("ID", int),
+        ("Variable", str),
+    ]
+    required_columns_df_primitives = [col for col, _ in required_columns_dtypes_df_primitives]
+
+    for boolean_param in [print_blocks, also_return_filtered_df]:
+        _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
+
+    _guardrail_dataframe(
+        df_segments_and_sequences,
+        hard_fail_missing_required_columns=(True, required_columns_df_segments),
+        hard_fail_wrong_column_dtypes=(True, required_columns_dtypes_df_segments),
+        hard_fail_inf_values=(False, required_columns_df_segments),
+        hard_fail_nan_values=(False, required_columns_df_segments),
+        hard_fail_none_values=(False, required_columns_df_segments),
+    )
+    _guardrail_dataframe(
+        df_primitives,
+        hard_fail_missing_required_columns=(True, required_columns_df_primitives),
+        hard_fail_wrong_column_dtypes=(True, required_columns_dtypes_df_primitives),
+        hard_fail_inf_values=(False, required_columns_df_primitives),
+        hard_fail_nan_values=(False, required_columns_df_primitives),
+        hard_fail_none_values=(False, required_columns_df_primitives),
+    )
+
     standard_columns = ["Test_Time[s]", "Voltage[V]", "Current[A]", "Power[W]"]
     logging.warning("Using default standard columns:")
     logging.warning(standard_columns)

@@ -3,10 +3,11 @@ import logging
 import pandas as pd
 
 from pydpeet.io.configs.config import STANDARD_COLUMNS
+from pydpeet.utils.guardrails import _guardrail_dataframe
 
 
 def mapping(
-    df: pd.DataFrame,
+    data_frame: pd.DataFrame,
     column_map: dict,
     missing_columns: list,
 ) -> pd.DataFrame:
@@ -16,7 +17,7 @@ def mapping(
     Non-mapped columns will remain unchanged in the resulting DataFrame.
 
     Parameters:
-    dataFrame (pandas.DataFrame): The input DataFrame to be processed.
+    data_frame (pandas.DataFrame): The input DataFrame to be processed.
     column_map (dict): A dictionary mapping existing column names to new standardized names.
     missing_columns (list): A list of column names to ensure their existence in the DataFrame.
 
@@ -27,14 +28,22 @@ def mapping(
     column_map and missing_columns contain all standard columns
     (If you want to rename more or add more columns do it after the conversion)
     """
-    if df is None:
-        raise ValueError("dataFrame is None")
+    # Guardrail checks for data_frame
+    required_columns = list(column_map.keys())
+    _guardrail_dataframe(
+        data_frame,
+        hard_fail_missing_required_columns=(True, required_columns),
+        # removed cause there is no info on the correct dtypes
+        # hard_fail_wrong_column_dtypes=(False, required_columns_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
+
     if column_map is None:
         raise ValueError("column_map is None")
     if missing_columns is None:
         raise ValueError("missing_columns is None")
-    if type(df) is not pd.DataFrame:
-        raise ValueError("dataFrame is not a DataFrame")
     if type(column_map) is not dict:
         raise ValueError("column_map is not a dictionary")
     if type(missing_columns) is not list:
@@ -46,7 +55,7 @@ def mapping(
         raise ValueError("column_map and missing_columns contain columns that are not standard columns")
 
     # Create a copy of the DataFrame to avoid modifying the original
-    df_copy = df.copy()
+    df_copy = data_frame.copy()
 
     # Add missing columns with None values if they do not exist, and issue warnings
     for missing in missing_columns:
