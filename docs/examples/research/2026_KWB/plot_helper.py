@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.gridspec import GridSpec
 
-def KWB_plot(df_merged, ocv_data):
 
+def KWB_plot(df_merged, ocv_data):
     plt.set_loglevel("error")
     # =========================================================
     # Einstellungen
@@ -12,8 +12,6 @@ def KWB_plot(df_merged, ocv_data):
     lw_left = 1
     lw_right = 1
     alpha = 1
-
-
 
     colors = [
         (255 / 255, 102 / 255, 178 / 255),
