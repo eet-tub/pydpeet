@@ -29,9 +29,9 @@ lgm50lt_nmc_4800 = BatteryConfig(
     c_ref=4.8,
     max_voltage=4.2,
     min_voltage=2.5,
-    min_current_diff=1,
-    max_time_diff=0.5,
-    min_voltage_diff=0,
+    min_current_diff=0.5,
+    max_time_diff=5,
+    min_voltage_diff=0.0001,
     ignore_negative_resistance_values=True,
 )
 

@@ -15,15 +15,15 @@ authors = [
     { name = "Cataldo De Simone" },
 ]
 dependencies = [
-    "pandas==2.2.3",
-    "numpy==2.2.4",
-    "pyarrow==19.0.1",
-    "python-calamine==0.3.1",
-    "numba==0.64.0",
-    "matplotlib==3.10.8",
-    "scipy==1.17.1",
-    "bibtexparser==1.4.4",
-    "scikit-learn==1.8.0"
+    "pandas>=2.2.3,<3",
+    "numpy>=2.2.4",
+    "pyarrow>=19.0.1",
+    "python-calamine>=0.3.1",
+    "numba>=0.64.0",
+    "matplotlib>=3.10.8",
+    "scipy>=1.17.1",
+    "bibtexparser>=1.4.4",
+    "scikit-learn>=1.8.0"
 ]
 requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -76,4 +76,9 @@ source = ["src/pydpeet"]
 omit = [
     "*/dev_utils/*",
     "*/res/*",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
 ]
