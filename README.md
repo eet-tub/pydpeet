@@ -23,6 +23,8 @@ Standardised data can then be analysed using various functions which add additio
 
 Processed data can be exported to highly efficient Parquet files to be stored and re-imported later -- or to CSV or XLSX formats to maintain legacy workflows.
 
+## Citing PyDPEET
+
 ## Documentation
 
 ![PyDPEET Workflow](docs/res/PyDPEET_Overview.svg "PyDPEET Workflow")
@@ -34,18 +36,6 @@ Processed data can be exported to highly efficient Parquet files to be stored an
 * [Quickstart](https://eet-tub.github.io/pydpeet/quickstart.html)
 * [API reference](https://eet-tub.github.io/pydpeet/api/index.html)
 * [Example notebooks](https://eet-tub.github.io/pydpeet/examples/notebooks/index.html)
-
-### Nested READMEs
-
-* TODO: ref to 'io' docs?
-* TODO: ref to 'merge' docs?
-* TODO: ref to 'sequence' docs?
-* TODO: ref to 'analyze' docs?
-<!-- * TODO: ref to 'visualize' docs? (FUTURE) -->
-<!-- * TODO: ref to 'modelling' docs? (FUTURE) -->
-
-<!-- ### Wiki
-Necessary or even feasible with parallel GitLab and Github setups? -->
 
 ## Installation
 
@@ -85,8 +75,6 @@ pip install pydpeet
 
 <!-- ## FAQ -->
 
-## Citing PyDPEET
-
 ## Contributing to PyDPEET
 
 ### Reporting Issues
@@ -95,12 +83,12 @@ pip install pydpeet
 
 ### Development Guidelines
 
-### Development Workflow
+<!-- ### Development Workflow -->
 
-#### Basic Setup
+<!-- #### Basic Setup -->
 
-#### Pre-Commit Hook
+<!-- #### Pre-Commit Hook -->
 
-#### Autogeneration
+<!-- #### Autogeneration -->
 
-#### Linting and Formatting
+<!-- #### Linting and Formatting -->
