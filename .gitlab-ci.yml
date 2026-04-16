@@ -47,11 +47,11 @@ test:
   before_script:
     - apt-get update
     - apt-get install -y python3-tk
-    - pip install -U pip
-    - pip install -e ".[test]"
+    - pip install uv
+    - uv sync --frozen --extra test # --extra specifies which optional dependency group to install from your pyproject.toml.
 
   script:
-    - pytest -v test/api_accessible --junitxml=report.xml -n 10 --cov=src/pydpeet --cov-report=term --cov-report=html:coverage_html --cov-report=xml:coverage.xml --reruns 5 --only-rerun numpy._core._exceptions._ArrayMemoryError
+    - uv run pytest -v test/api_accessible --junitxml=report.xml -n 10 --cov=src/pydpeet --cov-report=term --cov-report=html:coverage_html --cov-report=xml:coverage.xml --reruns 5 --only-rerun numpy._core._exceptions._ArrayMemoryError
 
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
