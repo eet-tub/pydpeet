@@ -23,7 +23,7 @@ dependencies = [
     "matplotlib==3.10.8",
     "scipy==1.17.1",
     "bibtexparser==1.4.4",
-    "scikit-learn==1.8.0"
+    "scikit-learn==1.8.0",
 ]
 requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -37,6 +37,9 @@ where = ["src"]
 pythonpath = ["."]
 
 [project.optional-dependencies]
+dev = [
+    "pre-commit",
+]
 docs = [
   "sphinx",
   "pydata-sphinx-theme",
@@ -49,7 +52,7 @@ test = [
     "pytest",
     "pytest-cov",
     "pytest-xdist",
-    "pytest-rerunfailures"
+    "pytest-rerunfailures",
 ]
 
 

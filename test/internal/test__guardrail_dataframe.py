@@ -44,3 +44,24 @@ class Test__guardrail_dataframe_hard_fail_wrong_column_dtypes:
 
     def test_placeholder(self):
         raise AssertionError("Test not implemented for variable: hard_fail_wrong_column_dtypes of _guardrail_dataframe")
+
+
+class Test__guardrail_dataframe_hard_fail_inf_values:
+    """Placeholder failing test for variable 'hard_fail_inf_values' of '_guardrail_dataframe'."""
+
+    def test_placeholder(self):
+        raise NotImplementedError("Test not implemented for variable: hard_fail_inf_values of _guardrail_dataframe")
+
+
+class Test__guardrail_dataframe_hard_fail_nan_values:
+    """Placeholder failing test for variable 'hard_fail_nan_values' of '_guardrail_dataframe'."""
+
+    def test_placeholder(self):
+        raise NotImplementedError("Test not implemented for variable: hard_fail_nan_values of _guardrail_dataframe")
+
+
+class Test__guardrail_dataframe_hard_fail_none_values:
+    """Placeholder failing test for variable 'hard_fail_none_values' of '_guardrail_dataframe'."""
+
+    def test_placeholder(self):
+        raise NotImplementedError("Test not implemented for variable: hard_fail_none_values of _guardrail_dataframe")
