@@ -27,7 +27,10 @@ def load_custom_module(
     if not os.path.exists(module_path):
         raise FileNotFoundError(f"Module {module_name}.py not found in the specified folder: {folder_path}")
     spec = spec_from_file_location(module_name, module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Failed to load module spec for {module_name}")
     module = module_from_spec(spec)
+    spec.loader.exec_module(module)
     spec.loader.exec_module(module)
 
     return module

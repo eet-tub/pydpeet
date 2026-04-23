@@ -54,6 +54,12 @@ test = [
     "pytest-xdist",
     "pytest-rerunfailures",
 ]
+mypy = [
+    "mypy>=1.0",
+    "types-python-dateutil",
+    "types-six",
+    "pre-commit",
+]
 
 
 [tool.ruff]
@@ -64,7 +70,11 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 # E501: Ignore line length limit
-ignore = ["E501"]
+# UP007: Ignore this, cause automated "fixes" causes mypy errors
+#   foo: Union[int, str] = 1
+#   Use instead:
+#   foo: int | str = 1
+ignore = ["E501", "UP007"]
 
 [tool.ruff.lint.per-file-ignores]
 "*.ipynb" = ["E402"]
@@ -72,6 +82,30 @@ ignore = ["E501"]
 [tool.ruff.format]
  # Use this option to keep lists and parameters lists as multi-line code when ended by a trailing comma
 skip-magic-trailing-comma = false
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+#https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+# Mypy will not try inferring the types of any 3rd party libraries
+# you have installed unless they either have declared themselves to
+# be PEP 561 compliant stub package (e.g. with a py.typed file) or have
+# registered themselves on typeshed, the repository of types for the standard
+# library and some 3rd party libraries.
+ignore_missing_imports = true
+exclude = [
+    "tests/",
+    "test/",
+    "docs/",
+    "benchmarks/",
+    "dev_utils/",
+    "res/",
+    ".*egg-info/",
+]
 
 # for local testing of test coverage
 [tool.coverage.run]

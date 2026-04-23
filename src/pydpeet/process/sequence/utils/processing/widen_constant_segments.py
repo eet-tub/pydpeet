@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -136,7 +137,7 @@ def _widen_constant_segments(
     n_rows = ID_arr.shape[0]
 
     # Store start and end indices of original segments per column
-    original_segments = {col: [] for col in ID_columns_name_list}
+    original_segments: dict[str, list[tuple[Optional[int], int]]] = {col: [] for col in ID_columns_name_list}
     for i, col in enumerate(ID_columns_name_list):
         ids = ID_arr[:, i]
         current_id = ids[0]

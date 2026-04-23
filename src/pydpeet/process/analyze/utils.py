@@ -23,6 +23,7 @@ class StepTimer:
 
     def log(self, msg: str):
         if self.verbose:
+            assert self.start is not None
             elapsed = time.perf_counter() - self.start
             logging.info(f"{self.indent}{elapsed:0.4f}s {msg}")
 

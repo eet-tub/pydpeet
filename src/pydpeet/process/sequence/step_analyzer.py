@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 import pandas as pd
 
@@ -30,15 +31,15 @@ logger = logging.getLogger(__name__)
 
 def add_primitive_segments(
     df: pd.DataFrame,
-    STEP_ANALYZER_PRIMITIVES_CONFIG: dict = None,
-    SEGMENTS_TO_DETECT_CONFIG: list[tuple[str, float]] = None,
-    ADJUST_SEGMENTS_CONFIG: list[tuple[str, float]] = None,
-    THRESHOLDS_PRIMITIVE_ANNOTATION: dict[str, float] = None,
-    THRESHOLD_CV_SEGMENTS_0A_END: float = None,
-    THRESHOLD_CONSOLE_PRINTS_CV_CHECK: int = None,
-    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: int = None,
-    THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH: int = None,
-    THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK: int = None,
+    STEP_ANALYZER_PRIMITIVES_CONFIG: Optional[dict] = None,
+    SEGMENTS_TO_DETECT_CONFIG: Optional[list[tuple[str, float]]] = None,
+    ADJUST_SEGMENTS_CONFIG: Optional[list[tuple[str, float]]] = None,
+    THRESHOLDS_PRIMITIVE_ANNOTATION: Optional[dict[str, float]] = None,
+    THRESHOLD_CV_SEGMENTS_0A_END: Optional[float] = None,
+    THRESHOLD_CONSOLE_PRINTS_CV_CHECK: Optional[int] = None,
+    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: Optional[int] = None,
+    THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH: Optional[int] = None,
+    THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK: Optional[int] = None,
     SHOW_RUNTIME: bool = True,
     check_CV_0Aend_segments_bool: bool = True,
     check_zero_length_segments_bool: bool = True,
@@ -161,6 +162,16 @@ def add_primitive_segments(
     df_step.sort_values(by=["Test_Time[s]"], inplace=True)
 
     # --- Guardrails & IO Warnings ---
+
+    assert SEGMENTS_TO_DETECT_CONFIG is not None
+    assert ADJUST_SEGMENTS_CONFIG is not None
+    assert THRESHOLDS_PRIMITIVE_ANNOTATION is not None
+    assert THRESHOLD_CV_SEGMENTS_0A_END is not None
+    assert THRESHOLD_CONSOLE_PRINTS_CV_CHECK is not None
+    assert THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is not None
+    assert THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is not None
+    assert THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is not None
+
     if not supress_IO_warnings:
         for column_name, threshold in SEGMENTS_TO_DETECT_CONFIG:
             if threshold < 0:
@@ -305,7 +316,7 @@ def add_primitive_segments(
 
 def extract_sequence_overview(
     df_primitives: pd.DataFrame,
-    SEGMENT_SEQUENCE_CONFIG: dict = None,
+    SEGMENT_SEQUENCE_CONFIG: Optional[dict] = None,
     SHOW_RUNTIME: bool = True,
 ) -> pd.DataFrame:
     """

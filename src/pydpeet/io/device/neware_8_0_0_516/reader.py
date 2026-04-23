@@ -28,6 +28,8 @@ def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
 
     sheets = _read_sheets(input_path)
+    if sheets is None:
+        raise ValueError(f"Failed to read sheets from {input_path}")
     with ThreadPoolExecutor() as executor:
         record_auxvol_auxtemp_future = executor.submit(
             _handle_record_auxvol_auxtemp, sheets["record"], sheets.get("auxVol"), sheets.get("auxTemp")
@@ -147,10 +149,10 @@ def _read_sheets_from(
     with ThreadPoolExecutor() as executor:
         main_file_future = executor.submit(pd.ExcelFile, main_file, engine=PANDAS_EXCEL_ENGINE)
         children_excels = list(executor.map(lambda child: pd.ExcelFile(child, engine=PANDAS_EXCEL_ENGINE), children))
-        main_file = main_file_future.result()
-        main_sheets_future = executor.submit(main_file.parse, main_file.sheet_names)
+        main_excel = main_file_future.result()
+        main_sheets_future = executor.submit(main_excel.parse, main_excel.sheet_names)
         children_sheets = list(executor.map(lambda child: child.parse(child.sheet_names), children_excels))
-        main_sheets = main_sheets_future.result()
+        main_sheets: dict[str, pd.DataFrame] = main_sheets_future.result()
         for child_sheets in children_sheets:
             for child_sheet_name, child_sheet in child_sheets.items():
                 for main_sheet_name, main_sheet in main_sheets.items():

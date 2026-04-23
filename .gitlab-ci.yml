@@ -1,6 +1,6 @@
 # Define the order of pipeline stages.
 # Stages are executed sequentially from top to bottom.
-stages: [lint, test, docs, release]
+stages: [lint, mypy, test, docs, release]
 
 # -------------------------------
 # LINT STAGE
@@ -28,15 +28,33 @@ lint:
     # Install git, which is required by pre-commit to operate on the repository.
     - apt-get install -y git
 
-    # Upgrade pip and install pre-commit.
-    - pip install -U pip pre-commit
+    # Install uv and pre-commit.
+    - pip install uv pre-commit
 
   # Main commands of the job.
   script:
     # Run all configured pre-commit hooks on all files in the repository.
     # --show-diff-on-failure prints the diff for easier debugging in CI logs.
-    - pre-commit run --all-files --show-diff-on-failure
+    - pre-commit run ruff --all-files --show-diff-on-failure
+    - pre-commit run ruff-format --all-files --show-diff-on-failure
 
+# -----------------------
+# MYPY
+# -----------------------
+mypy:
+  stage: mypy
+  image: python:3.13-slim
+
+  variables:
+    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
+
+  before_script:
+    - apt-get update
+    - apt-get install -y git
+    - pip install uv pre-commit
+
+  script:
+    - pre-commit run mypy --all-files --show-diff-on-failure
 # -----------------------
 # TEST
 # -----------------------
