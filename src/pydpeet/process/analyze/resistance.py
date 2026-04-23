@@ -52,7 +52,9 @@ def add_resistance_internal(
     _guardrail_boolean(verbose, hard_fail_none=True, hard_fail_wrong_type=True)
 
     if config is None:
-        func_name = inspect.currentframe().f_code.co_name
+        frame = inspect.currentframe()
+        assert frame is not None
+        func_name = frame.f_code.co_name
         raise ValueError(f"config is None, please provide a valid config for {func_name}")
 
     min_current_diff = config.min_current_diff

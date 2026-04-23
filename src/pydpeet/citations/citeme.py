@@ -8,7 +8,6 @@ import pathlib
 
 from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.bwriter import BibTexWriter
-from six import iteritems
 
 from .html_writer import BibHtmlWriter
 
@@ -16,9 +15,10 @@ from .html_writer import BibHtmlWriter
 # Singleton!
 class CiteMe:
     # Class variable!
-    __instance = None
+    __instance: "CiteMe | None" = None
     __check_fields = True
     __pedantic = False
+    references: dict
 
     # Override new to make this a singleton class
     # taken from http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html#id5
@@ -42,7 +42,7 @@ class CiteMe:
 
     def print_references(self):
         for ref_type in self.references:
-            for _, citation in iteritems(self.references[ref_type]):
+            for _, citation in self.references[ref_type].items():
                 # print(ref_type, handle, citation.description)
                 print(citation.description)
 
@@ -50,7 +50,7 @@ class CiteMe:
         db = BibDatabase()
         db.entries = []
         for ref_type in self.references:
-            for handle, citation in iteritems(self.references[ref_type]):
+            for handle, citation in self.references[ref_type].items():
                 description = citation.description
                 description["ENTRYTYPE"] = citation.type
                 description["ID"] = handle
@@ -67,7 +67,7 @@ class CiteMe:
         db = BibDatabase()
         db.entries = []
         for ref_type in self.references:
-            for handle, citation in iteritems(self.references[ref_type]):
+            for handle, citation in self.references[ref_type].items():
                 description = citation.description
                 description["ENTRYTYPE"] = citation.type
                 description["ID"] = handle
@@ -198,8 +198,8 @@ class incollection(Citation):
 
 
 class inproceedings(Citation):
-    def __init__(self, handle, description):
-        super().__init__(handle, description, "inproceedings")
+    def __init__(self, handle, description, the_type="inproceedings"):
+        super().__init__(handle, description, the_type)
         self._required = ["author", "title", "booktitle", "year"]
         self._optional = [
             "editor",

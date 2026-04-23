@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Optional, TypeAlias  # Add this import
 
 import pandas as pd
 
@@ -12,15 +13,15 @@ from pydpeet.io.convert import (
 )
 from pydpeet.utils.guardrails import _guardrail_boolean
 
-ConfigLike = Config | str
-PathLike = str | Path
+ConfigLike: TypeAlias = Config | str
+PathLike: TypeAlias = str | Path
 
 
 def read(
     config: ConfigLike,
     input_path: object,
     keep_all_additional_data: bool = False,
-    custom_folder_path: str = None,
+    custom_folder_path: Optional[str] = None,
 ) -> pd.DataFrame | list[pd.DataFrame]:
     # Validate boolean parameter using guardrail
     _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)

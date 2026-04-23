@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import pandas as pd
 
@@ -97,7 +98,7 @@ SEGMENTS_CONFIG_STANDARD: dict[str, dict] = {
 }
 
 
-def _parse_segment_type(seg_type: str) -> tuple[str, str] | tuple[str, None]:
+def _parse_segment_type(seg_type: str) -> tuple[str, str | None]:
     """
     Parse a segment type string into its base and direction.
 
@@ -185,7 +186,7 @@ def _get_important_entries_per_segment(
 
 def generate_instructions(
     df_primitives: pd.DataFrame,
-    end_condition_map: dict = None,
+    end_condition_map: Optional[dict] = None,
     threshold_warnings: int = 5,
 ) -> list[str]:
     """

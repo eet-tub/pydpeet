@@ -28,7 +28,9 @@ class ExtPath(Path):
         Returns:
             bool: True if the path is valid; False otherwise.
         """
-        return bool(path) and Path(path).exists()
+        if path is None or path == "":
+            return False
+        return Path(path).exists()
 
     def is_excel_file(self) -> bool:
         return self.exists() and self.is_file() and self.suffix in (".xlsx", ".xls")

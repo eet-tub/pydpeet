@@ -1,6 +1,8 @@
 import logging
 import operator
+from collections.abc import Callable
 from functools import reduce
+from typing import Any
 
 import pandas as pd
 from pandas import DataFrame
@@ -17,7 +19,12 @@ def filter_df(
     combine_op: str = "xor",
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     # Map string to actual function
-    comb_funcs = {"and": operator.and_, "or": operator.or_, "xor": operator.xor, "not": operator.not_}
+    comb_funcs: dict[str, Callable[..., Any]] = {
+        "and": operator.and_,
+        "or": operator.or_,
+        "xor": operator.xor,
+        "not": operator.not_,
+    }
     if combine_op not in comb_funcs:
         raise ValueError(f"combine_op must be one of {list(comb_funcs)}")
 
@@ -26,7 +33,7 @@ def filter_df(
         df_filtered_IDs = df_segments_and_sequences["ID"].values
     else:
         # build list of boolean Series for each rule
-        masks = []
+        masks: list[pd.Series] = []
         for col in rules:
             if col not in df_segments_and_sequences:
                 raise KeyError(f"column {col!r} not in DataFrame")
@@ -198,6 +205,7 @@ def filter_and_split_df_by_blocks(
 
     blocks = return_or_print_blocks(df_filtered=df_filtered, filtered_IDs=df_filtered_IDs, print_blocks=print_blocks)
 
+    assert blocks is not None
     dfs_per_block = split_df_by_blocks(df_filtered=df_filtered, blocks=blocks)
 
     if also_return_filtered_df:
