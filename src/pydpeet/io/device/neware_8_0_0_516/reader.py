@@ -83,7 +83,7 @@ def _find_children(main_file_path) -> list[str]:
     list[str]: A list of paths to the child Excel files.
     """
     main_file_name, _ = os.path.splitext(os.path.basename(main_file_path))
-    child_file_pattern = rf"{main_file_name}{_BASE_CHILD_FILE_PATTERN}"
+    child_file_pattern = rf"{re.escape(main_file_name)}{_BASE_CHILD_FILE_PATTERN}"
     main_file_dir = os.path.dirname(main_file_path)
     child_file_paths = [
         child_file_path
