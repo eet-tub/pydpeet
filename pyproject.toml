@@ -36,7 +36,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["."]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pre-commit",
 ]
@@ -47,6 +47,7 @@ docs = [
   "nbsphinx",
   "sphinx-copybutton",
   "bibtexparser",
+  "pandoc>=2.4",
 ]
 test = [
     "pytest",

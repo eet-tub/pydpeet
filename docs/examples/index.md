@@ -9,5 +9,5 @@ You can find more advanced examples in publications. These include the code used
 :titlesonly:
 :glob:
 
-*
+notebooks/*
 ```
