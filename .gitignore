@@ -1,5 +1,5 @@
 __pycache__/
 /src/PyDPEET.egg-info/
 **/output/*.parquet
-/docs/build/
+/docs/_build/
 _autogen/

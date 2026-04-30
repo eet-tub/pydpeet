@@ -1,6 +1,6 @@
 # Define the order of pipeline stages.
 # Stages are executed sequentially from top to bottom.
-stages: [lint, mypy, test, docs, release]
+stages: [lint, mypy, docs, test, release]
 
 # -------------------------------
 # LINT STAGE
@@ -66,7 +66,7 @@ test:
     - apt-get update
     - apt-get install -y python3-tk
     - pip install uv
-    - uv sync --frozen --extra test # --extra specifies which optional dependency group to install from your pyproject.toml.
+    - uv sync --frozen --group test
 
   script:
     - uv run pytest -v test/api_accessible --junitxml=report.xml -n 10 --cov=src/pydpeet --cov-report=term --cov-report=html:coverage_html --cov-report=xml:coverage.xml --reruns 5 --only-rerun numpy._core._exceptions._ArrayMemoryError
@@ -95,11 +95,11 @@ docs_build:
   before_script:
     - apt-get update
     - apt-get install -y pandoc
-    - pip install -U pip
-    - pip install -e ".[docs]"
+    - pip install uv
+    - uv sync --frozen --group docs
 
   script:
-    - python docs/build_docs.py
+    - uv run docs/build_docs.py
 
   artifacts:
     when: always
