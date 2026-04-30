@@ -114,4 +114,3 @@ html_sidebars = {
 
 # autosummary Enables generation of separate pages for modules/functions via autosummary.
 autosummary_generate = True
-
