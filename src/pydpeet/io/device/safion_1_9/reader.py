@@ -22,7 +22,7 @@ def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
 
     # Temporary variables to store data for each segment
     current_segment = None
-    current_data = []
+    current_data: list[str] = []
 
     for line in lines:
         line = line.strip()  # Remove any leading/trailing whitespace

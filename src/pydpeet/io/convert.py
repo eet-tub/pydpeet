@@ -4,6 +4,7 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, TypeAlias
 
 import pandas as pd
 from pandas import Index
@@ -24,16 +25,16 @@ from pydpeet.io.utils.timing import measure_time
 from pydpeet.io.write import write
 from pydpeet.utils.guardrails import _guardrail_boolean
 
-ConfigLike = Config | str
-PathLike = str | Path
+ConfigLike: TypeAlias = Config | str
+PathLike: TypeAlias = str | Path
 
 
 def convert(
     config: ConfigLike,
     input_path: object,
-    output_path: str = None,
+    output_path: Optional[str] = None,
     keep_all_additional_data: bool = False,
-    custom_folder_path: str = None,
+    custom_folder_path: Optional[str] = None,
 ) -> pd.DataFrame | list[pd.DataFrame] | None:
     # Boolean guardrails
     _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)
@@ -75,9 +76,9 @@ def convert(
 def convert_file(
     config: ConfigLike,
     input_path: str,
-    output_path: str = None,
+    output_path: Optional[str] = None,
     keep_all_additional_data: bool = False,
-    custom_folder_path: str = None,
+    custom_folder_path: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Standardize a measurement file according to the given configuration and returns the standardized DataFrame.
@@ -126,9 +127,9 @@ def convert_file(
 def convert_files_in_directory(
     config: Config,
     input_path: str,
-    output_path: str = None,
+    output_path: Optional[str] = None,
     keep_all_additional_data: bool = False,
-    custom_folder_path: str = None,
+    custom_folder_path: Optional[str] = None,
 ) -> list[pd.DataFrame] | None:
     """
     Standardize a directory of files according to the given configuration and outputs them to an output_path.
@@ -207,7 +208,7 @@ def _process_file(
     config: Config,
     config_name: str,
     current_date: str,
-    custom_folder_path: str,
+    custom_folder_path: Optional[str],
     file_path: str,
     filename: str,
     keep_all_additional_data: bool,
@@ -252,7 +253,7 @@ def _process_file_and_export(
     config: Config,
     config_name: str,
     current_date: str,
-    custom_folder_path: str,
+    custom_folder_path: Optional[str],
     data_output_filetype: DataOutputFiletype,
     file_path: str,
     filename: str,
@@ -297,7 +298,7 @@ def _process_file_and_export(
 def _convert_file_to_pandas_data_frame(
     config: Config,
     input_path: str,
-    custom_folder: str = None,
+    custom_folder: Optional[str] = None,
 ) -> tuple[pd.DataFrame, str]:
     """
     Convert a file to a pandas DataFrame using the given configuration.
@@ -342,7 +343,7 @@ def _convert_file_to_pandas_data_frame(
 def _column_mapping(
     df: pd.DataFrame,
     config: Config,
-    custom_folder: str = None,
+    custom_folder: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Map the columns of a pandas DataFrame according to the given configuration.
@@ -512,7 +513,7 @@ def _rename_duplicate_extra_columns(columns: Index) -> Index:
     times that column name has appeared before.
     """
     result = columns.to_list()
-    duplicate_counts = {}
+    duplicate_counts: dict[str, int] = {}
 
     for idx, col_name in enumerate(result):
         if col_name not in STANDARD_COLUMNS:
@@ -532,7 +533,7 @@ def _rename_duplicate_extra_columns(columns: Index) -> Index:
 def _get_data_into_format(
     df: pd.DataFrame,
     config: Config,
-    custom_folder: str = None,
+    custom_folder: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Apply the appropriate data formatting function to a DataFrame based on the given configuration.

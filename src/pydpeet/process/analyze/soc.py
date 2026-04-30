@@ -1,6 +1,7 @@
 import gc
 import logging
 from enum import Enum
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -45,7 +46,7 @@ def _compute_soc_multi_methods_out(
     max_voltage: float,
     min_voltage: float,
     method_ints: list[int],
-    socs_out: list[int, float],
+    socs_out: np.ndarray,
     reset_buf: list[float],
 ) -> None:
     """
@@ -178,8 +179,8 @@ def add_soc(
     df: pd.DataFrame,
     df_primitives: pd.DataFrame,
     neware_bool: bool = True,
-    standard_method: SocMethod = None,
-    methods: list[SocMethod] = None,
+    standard_method: Optional[SocMethod] = None,
+    methods: Optional[list[SocMethod]] = None,
     config: BatteryConfig = None,
     lower_soc_for_voltage: float = 0,
     upper_soc_for_voltage: float = 1,

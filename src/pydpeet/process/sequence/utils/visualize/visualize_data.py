@@ -1,5 +1,6 @@
 import logging
 import tkinter as tk
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -28,17 +29,17 @@ def _visualize_phases(
     dataframe: pd.DataFrame,
     start_time: float = 0.0,
     end_time: float = 1e50,
-    segment_id_cols: list[str] = None,
-    segment_colors: (dict[str, str] | list[str]) = None,
+    segment_id_cols: Optional[list[str]] = None,
+    segment_colors: Optional[dict[str, str] | list[str]] = None,
     segment_alpha: float = 0.3,
-    columns_to_visualize: list[str] = None,
-    line_colors: dict[str, str] = None,
-    y_axis_ranges: dict[str, tuple[float, float]] = None,
+    columns_to_visualize: Optional[list[str]] = None,
+    line_colors: Optional[dict[str, str]] = None,
+    y_axis_ranges: Optional[dict[str, tuple[float, float]]] = None,
     use_lines_for_segments: bool = True,
     show_column_names: bool = True,
     show_time: bool = True,
     show_id: bool = True,
-    width_height_ratio: list[float, float] = None,
+    width_height_ratio: Optional[tuple[float, float] | list[float]] = None,
     show_runtime: bool = True,
     show_grid: bool = False,
 ) -> None:
@@ -88,7 +89,10 @@ def _visualize_phases(
 
     # 3) Map segment colors to `Variable` values
     with log_time("mapping segment colors", show_runtime):
-        segment_colors = {var: col for var, col in zip(segment_id_cols, segment_colors, strict=False)}
+        if segment_id_cols is None or segment_colors is None:
+            segment_colors = {}
+        else:
+            segment_colors = {var: col for var, col in zip(segment_id_cols, segment_colors, strict=False)}
 
     # 4) Set up figure
     with log_time("setting up figure", show_runtime):
@@ -200,16 +204,16 @@ def _visualize_phases(
 # TODO: Docstring
 def visualize_phases(
     dataframe: pd.DataFrame,
-    start_time: float = None,
-    end_time: float = None,
-    visualize_phases_config: list[tuple[str, str]] = None,
+    start_time: Optional[float] = None,
+    end_time: Optional[float] = None,
+    visualize_phases_config: Optional[list[tuple[str, str]]] = None,
     segment_alpha: float = 0.3,
-    line_visualization_config: list[tuple[str, str, tuple[float, float]]] = None,
+    line_visualization_config: Optional[list[tuple[str, str, tuple[float, float]]]] = None,
     use_lines_for_segments: bool = True,
     show_column_names: bool = True,
     show_time: bool = True,
     show_id: bool = True,
-    width_height_ratio: tuple[float, float] | list[float] = None,
+    width_height_ratio: Optional[tuple[float, float] | list[float]] = None,
     show_runtime: bool = True,
 ) -> None:
     # Guardrail checks for dataframe
@@ -249,7 +253,7 @@ def visualize_phases(
             # ("Power[W]", "green", (-40, 40)),
         ]
     if width_height_ratio is None:
-        width_height_ratio: float = [1.0, 0.3]
+        width_height_ratio = [1.0, 0.3]
 
     if start_time is None:
         logging.warning("start_time is None - setting it to 0.0")

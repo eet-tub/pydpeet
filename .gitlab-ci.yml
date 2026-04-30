@@ -1,6 +1,6 @@
 # Define the order of pipeline stages.
 # Stages are executed sequentially from top to bottom.
-stages: [lint, test, docs, release]
+stages: [lint, mypy, docs, test, release]
 
 # -------------------------------
 # LINT STAGE
@@ -28,15 +28,33 @@ lint:
     # Install git, which is required by pre-commit to operate on the repository.
     - apt-get install -y git
 
-    # Upgrade pip and install pre-commit.
-    - pip install -U pip pre-commit
+    # Install uv and pre-commit.
+    - pip install uv pre-commit
 
   # Main commands of the job.
   script:
     # Run all configured pre-commit hooks on all files in the repository.
     # --show-diff-on-failure prints the diff for easier debugging in CI logs.
-    - pre-commit run --all-files --show-diff-on-failure
+    - pre-commit run ruff --all-files --show-diff-on-failure
+    - pre-commit run ruff-format --all-files --show-diff-on-failure
 
+# -----------------------
+# MYPY
+# -----------------------
+mypy:
+  stage: mypy
+  image: python:3.13-slim
+
+  variables:
+    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
+
+  before_script:
+    - apt-get update
+    - apt-get install -y git
+    - pip install uv pre-commit
+
+  script:
+    - pre-commit run mypy --all-files --show-diff-on-failure
 # -----------------------
 # TEST
 # -----------------------
@@ -47,11 +65,11 @@ test:
   before_script:
     - apt-get update
     - apt-get install -y python3-tk
-    - pip install -U pip
-    - pip install -e ".[test]"
+    - pip install uv
+    - uv sync --frozen --group test
 
   script:
-    - pytest -v test/api_accessible --junitxml=report.xml -n 10 --cov=src/pydpeet --cov-report=term --cov-report=html:coverage_html --cov-report=xml:coverage.xml --reruns 5 --only-rerun numpy._core._exceptions._ArrayMemoryError
+    - uv run pytest -v test/api_accessible --junitxml=report.xml -n 10 --cov=src/pydpeet --cov-report=term --cov-report=html:coverage_html --cov-report=xml:coverage.xml --reruns 5 --only-rerun numpy._core._exceptions._ArrayMemoryError
 
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
@@ -77,11 +95,11 @@ docs_build:
   before_script:
     - apt-get update
     - apt-get install -y pandoc
-    - pip install -U pip
-    - pip install -e ".[docs]"
+    - pip install uv
+    - uv sync --frozen --group docs
 
   script:
-    - python docs/build_docs.py
+    - uv run docs/build_docs.py
 
   artifacts:
     when: always

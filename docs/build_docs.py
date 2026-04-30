@@ -8,6 +8,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 SRC = ROOT / "src" / "pydpeet"
 AUTOGEN = DOCS / "api" / "_autogen"
+EXAMPLES = DOCS / "examples"
+NOTEBOOKS = EXAMPLES / "notebooks"
+NOTEBOOK_INDEX = NOTEBOOKS / "index.rst"
 DOCTREES = DOCS / "build" / "doctrees"
 HTML = DOCS / "build" / "html"
 
@@ -29,6 +32,7 @@ def main():
             "-m",
             "sphinx.ext.apidoc",
             "-f",  # overwrite
+            "-e",  # output one file per module
             "-M",  # module-first
             "-o",
             str(AUTOGEN),

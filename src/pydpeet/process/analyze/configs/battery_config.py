@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class BatteryConfig:
     cell_name: str = "Default"
-    c_ref: float = None
+    c_ref: Optional[float] = None
     soc_start: float = 0
     max_voltage: float = 4.2
     min_voltage: float = 2.5

@@ -51,9 +51,6 @@ exclude_patterns = [
 # --- MyST (Markdown) --------------------------------------------------------
 myst_enable_extensions = ["colon_fence", "deflist"]
 
-# --- Autosummary / Autodoc --------------------------------------------------
-autosummary_generate = True
-
 autodoc_default_options = {
     "members": True,
     "undoc-members": False,
@@ -90,7 +87,7 @@ intersphinx_mapping = {
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "navbar_align": "content",
-    "show_nav_level": 2,
+    "show_nav_level": 4,
     "navigation_with_keys": True,
     "icon_links": [
         {
@@ -106,6 +103,14 @@ html_theme_options = {
     ],
 }
 
+# Controls the sidebar components. `sidebar-nav-bs.html` renders the project tree.
 html_sidebars = {
-    "**": ["sidebar-nav-bs.html", "sidebar-ethical-ads.html"],
+    "**": [
+        "sidebar-nav-bs.html",  # left navigation tree
+        "sidebar-ethical-ads.html",
+        "searchbox.html",
+    ],
 }
+
+# autosummary Enables generation of separate pages for modules/functions via autosummary.
+autosummary_generate = True

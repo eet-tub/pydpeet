@@ -61,10 +61,13 @@ def merge_into_series(
         sorted_dfs = [df for df, _ in input_pairs]
 
     time_offset = 0.0
+    numeric_cols: list[str]
+    datetime_cols: list[str]
+    object_cols: list[str]
     numeric_cols, datetime_cols, object_cols = [], [], []
     col_order = []
     numeric_storage = []
-    other_storage = {}
+    other_storage: dict[str, list] = {}
     valid_index = 0  # counts only valid DataFrames
 
     if verbose:
