@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 import pandas as pd
 
@@ -23,21 +24,22 @@ from pydpeet.process.sequence.utils.processing.supress_smaller_segments import (
     _keep_max_segment_id,
 )
 from pydpeet.process.sequence.utils.processing.widen_constant_segments import _widen_constant_segments
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 logger = logging.getLogger(__name__)
 
 
 def add_primitive_segments(
     df: pd.DataFrame,
-    STEP_ANALYZER_PRIMITIVES_CONFIG: dict = None,
-    SEGMENTS_TO_DETECT_CONFIG: list[tuple[str, float]] = None,
-    ADJUST_SEGMENTS_CONFIG: list[tuple[str, float]] = None,
-    THRESHOLDS_PRIMITIVE_ANNOTATION: dict[str, float] = None,
-    THRESHOLD_CV_SEGMENTS_0A_END: float = None,
-    THRESHOLD_CONSOLE_PRINTS_CV_CHECK: int = None,
-    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: int = None,
-    THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH: int = None,
-    THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK: int = None,
+    STEP_ANALYZER_PRIMITIVES_CONFIG: Optional[dict] = None,
+    SEGMENTS_TO_DETECT_CONFIG: Optional[list[tuple[str, float]]] = None,
+    ADJUST_SEGMENTS_CONFIG: Optional[list[tuple[str, float]]] = None,
+    THRESHOLDS_PRIMITIVE_ANNOTATION: Optional[dict[str, float]] = None,
+    THRESHOLD_CV_SEGMENTS_0A_END: Optional[float] = None,
+    THRESHOLD_CONSOLE_PRINTS_CV_CHECK: Optional[int] = None,
+    THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK: Optional[int] = None,
+    THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH: Optional[int] = None,
+    THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK: Optional[int] = None,
     SHOW_RUNTIME: bool = True,
     check_CV_0Aend_segments_bool: bool = True,
     check_zero_length_segments_bool: bool = True,
@@ -130,49 +132,46 @@ def add_primitive_segments(
             "Using EXAMPLE_STEP_ANALYZER_PRIMITIVES_CONFIG as fallback configuration. Manual Parameters will be kept."
         )
 
-    # TODO variable to choose if copy should be used?
-    df_step = df.copy()
-
+    # # TODO variable to choose if copy should be used?
     # --- Guardrails ---
-    if df is None or df.empty or not isinstance(df, pd.DataFrame):
-        raise ValueError("Input dataframe is None or empty")
-    if "Voltage[V]" not in df_step.columns:
-        raise ValueError("'Voltage[V]' column not found in input dataframe.")
-    if "Current[A]" not in df_step.columns:
-        raise ValueError("'Current[A]' column not found in input dataframe.")
-    if "Test_Time[s]" not in df_step.columns:
-        raise ValueError("'Test_Time[s]' column not found in input dataframe.")
-    if SEGMENTS_TO_DETECT_CONFIG is None or len(SEGMENTS_TO_DETECT_CONFIG) == 0:
-        raise ValueError("SEGMENTS_TO_DETECT_CONFIG is None or empty")
-    if ADJUST_SEGMENTS_CONFIG is None or len(ADJUST_SEGMENTS_CONFIG) == 0:
-        raise ValueError("ADJUST_SEGMENTS_CONFIG is None or empty")
-    if THRESHOLDS_PRIMITIVE_ANNOTATION is None or len(THRESHOLDS_PRIMITIVE_ANNOTATION) == 0:
-        raise ValueError("THRESHOLDS_PRIMITIVE_ANNOTATION is None or empty")
-    if THRESHOLD_CV_SEGMENTS_0A_END is None or not isinstance(THRESHOLD_CV_SEGMENTS_0A_END, float):
-        raise ValueError("THRESHOLD_CV_SEGMENTS_OA_END is None or not a float")
-    if THRESHOLD_CONSOLE_PRINTS_CV_CHECK is None or not isinstance(THRESHOLD_CONSOLE_PRINTS_CV_CHECK, int):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_CV_CHECK is None or not a int")
-    if THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is None or not isinstance(
-        THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK, int
-    ):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is None or not a int")
-    if THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is None or not isinstance(
-        THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH, int
-    ):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is None or not a int")
-    if THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is None or not isinstance(
-        THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK, int
-    ):
-        raise ValueError("THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is None or not a int")
+    required_column_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    required_columns = [col for col, _ in required_column_dtypes]
+    _guardrail_dataframe(
+        df,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
+    for boolean_param in [
+        SHOW_RUNTIME,
+        check_CV_0Aend_segments_bool,
+        check_zero_length_segments_bool,
+        check_Power_zero_W_segments_bool,
+        supress_IO_warnings,
+        PRECOMPILE,
+        FORCE_PRECOMPILATION,
+    ]:
+        _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
 
-    # --- Data cleanup ---
-    if not supress_IO_warnings:
-        logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
+    df_step = df.copy()
+    logger.warning("Dropping NaN values in 'Test_Time[s]', dropping duplicates and sorting 'Test_Time[s]' column.")
     df_step.dropna(subset=["Test_Time[s]"], inplace=True)
     df_step.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
     df_step.sort_values(by=["Test_Time[s]"], inplace=True)
 
     # --- Guardrails & IO Warnings ---
+
+    assert SEGMENTS_TO_DETECT_CONFIG is not None
+    assert ADJUST_SEGMENTS_CONFIG is not None
+    assert THRESHOLDS_PRIMITIVE_ANNOTATION is not None
+    assert THRESHOLD_CV_SEGMENTS_0A_END is not None
+    assert THRESHOLD_CONSOLE_PRINTS_CV_CHECK is not None
+    assert THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK is not None
+    assert THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH is not None
+    assert THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK is not None
+
     if not supress_IO_warnings:
         for column_name, threshold in SEGMENTS_TO_DETECT_CONFIG:
             if threshold < 0:
@@ -317,7 +316,7 @@ def add_primitive_segments(
 
 def extract_sequence_overview(
     df_primitives: pd.DataFrame,
-    SEGMENT_SEQUENCE_CONFIG: dict = None,
+    SEGMENT_SEQUENCE_CONFIG: Optional[dict] = None,
     SHOW_RUNTIME: bool = True,
 ) -> pd.DataFrame:
     """
@@ -353,27 +352,36 @@ def extract_sequence_overview(
     if SEGMENT_SEQUENCE_CONFIG is None or not isinstance(SEGMENT_SEQUENCE_CONFIG, dict):
         raise ValueError("SEGMENT_SEQUENCE_CONFIG is None or not a dict")
 
-    if df_primitives is None or not isinstance(df_primitives, pd.DataFrame):
-        raise ValueError("df_primitives is None or not a DataFrame")
+    # --- Guardrails ---
+    # Check boolean first (fast) before expensive dataframe checks (slow O(N))
+    _guardrail_boolean(SHOW_RUNTIME, hard_fail_none=True, hard_fail_wrong_type=True)
 
-    standard_columns = [
-        "Test_Time[s]",
-        "Voltage[V]",
-        "Current[A]",
-        "Power[W]",
-        "ID",
-        "Variable",
-        "Duration",
-        "Length",
-        "Min",
-        "Max",
-        "Avg",
-        "Type",
-        "Direction",
-        "Slope",
+    required_column_dtypes = [
+        ("Test_Time[s]", float),
+        ("Voltage[V]", float),
+        ("Current[A]", float),
+        ("Power[W]", float),
+        ("ID", int),
+        ("Variable", str),
+        ("Duration", float),
+        ("Length", float),
+        ("Min", float),
+        ("Max", float),
+        ("Avg", float),
+        ("Type", str),
+        ("Direction", str),
+        ("Slope", float),
     ]
-    if not set(standard_columns).issubset(set(df_primitives.columns)):
-        logger.warning("df_primitives doesn't have the standard columns.")
+    required_columns = [col for col, _ in required_column_dtypes]
+    _guardrail_dataframe(
+        df_primitives,
+        hard_fail_empty=True,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
 
     if SHOW_RUNTIME:
         logger.info("analyzing segments...")

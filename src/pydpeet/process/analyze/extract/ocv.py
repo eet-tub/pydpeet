@@ -2,7 +2,6 @@ import logging
 
 # plot import
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 
@@ -20,6 +19,7 @@ from pydpeet.process.sequence.step_analyzer import (
     extract_sequence_overview,
 )
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 
 def extract_ocv_iocv(
@@ -58,12 +58,35 @@ def extract_ocv_iocv(
 
     """
 
-    # Sanity Checks for Input
+    required_columns_dtypes_primitives = [
+        ("Test_Time[s]", float),
+        ("Type", str),
+        ("Duration", float),
+        ("ID", int),
+        ("Voltage[V]", float),
+    ]
+    required_columns_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    required_columns_primitives = [col for col, _ in required_columns_dtypes_primitives]
+    required_columns_df = [col for col, _ in required_columns_dtypes_df]
+
+    # Guardrail check for mutually exclusive df and df_primitives
     if df is not None and df_primitives is not None:
         raise ValueError("Please provide either df or df_primitives, not both!")
-        raise ValueError("Please provide either df or df_primitives, not both!")
 
+    # Guardrail checks for scalar parameters
+    _guardrail_boolean(visualize, hard_fail_none=True, hard_fail_wrong_type=True)
+
+    # Process based on which input is provided
     if df is not None:
+        _guardrail_dataframe(
+            df,
+            hard_fail_missing_required_columns=(True, required_columns_df),
+            hard_fail_wrong_column_dtypes=(True, required_columns_dtypes_df),
+            hard_fail_inf_values=(False, required_columns_df),
+            hard_fail_nan_values=(False, required_columns_df),
+            hard_fail_none_values=(False, required_columns_df),
+        )
+
         df.drop_duplicates(subset=["Test_Time[s]"], inplace=True)
         df.dropna(subset=["Test_Time[s]"], inplace=True)
         df = df.sort_values("Test_Time[s]")
@@ -71,39 +94,33 @@ def extract_ocv_iocv(
         df_primitives = add_primitive_segments(
             df=df,
             STEP_ANALYZER_PRIMITIVES_CONFIG=STEP_ANALYZER_PRIMITIVES_CONFIG,
-            # SHOW_RUNTIME=False,
-            # check_CV_0Aend_segments_bool=False,
-            # check_zero_length_segments_bool=False,
-            # supress_IO_warnings=True
+        )
+    elif df_primitives is not None:
+        _guardrail_dataframe(
+            df_primitives,
+            hard_fail_missing_required_columns=(True, required_columns_primitives),
+            hard_fail_wrong_column_dtypes=(True, required_columns_dtypes_primitives),
+            hard_fail_inf_values=(False, required_columns_primitives),
+            hard_fail_nan_values=(False, required_columns_primitives),
+            hard_fail_none_values=(False, required_columns_primitives),
+        )
+    else:
+        raise ValueError("Please provide either df or df_primitives!")
+
+    logging.info("Checking if SOC exists in dataframe...")
+
+    if "SOC" in df_primitives.columns:
+        logging.info("SOC already exists in df_primitives, skipping SOC calculation...")
+    else:
+        logging.info("SOC column does not exist in df_primitives, adding it...")
+        df_primitives = add_soc(
+            df=df_primitives,
+            df_primitives=df_primitives,
+            standard_method=SocMethod.WITH_RESET_WHEN_FULL,
+            config=config,
         )
 
-    if df_primitives is not None:
-        if df_primitives["Test_Time[s]"].duplicated().any():
-            raise ValueError("Duplicated 'Test_Time[s]' values found!")
-
-        if df_primitives["Test_Time[s]"].isna().any():
-            raise ValueError("NaN values found in 'Test_Time[s]'")
-
-        if not np.all(np.diff(df_primitives["Test_Time[s]"]) > 0):
-            raise ValueError("'Test_Time[s]' is not monotonically increasing!")
-
-        logging.info("Checking if SOC exists in dataframe...")
-
-        if "SOC" in df_primitives.columns:
-            logging.info("SOC already exists in df_primitives, skipping SOC calculation...")
-        else:
-            logging.info("SOC column does not exist in df_primitives, adding it...")
-            df_primitives = add_soc(
-                df=df_primitives,
-                df_primitives=df_primitives,
-                standard_method=SocMethod.WITH_RESET_WHEN_FULL,
-                config=config,
-            )
-
-        df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG)
-
-    else:
-        raise ValueError("No df_primitives found!")
+    df_segments_and_sequences = extract_sequence_overview(df_primitives, SEGMENT_SEQUENCE_CONFIG)
 
     # Applying Rules for iOCV Sequences
     _rules = ["Discharge_iOCV", "Charge_iOCV"]
@@ -127,6 +144,12 @@ def extract_ocv_iocv(
 
     # Filtering iOCV Points
     dfs_per_block = [df[df["Type"] == "Rest"] for df in dfs_per_block[0]]
+    # Drop rows with NaN in Test_Time[s] to avoid idxmax returning NaN indices
+    for df in dfs_per_block:
+        if df["Test_Time[s]"].isna().any():
+            logging.warning("NaN values found in Test_Time[s] of df in dfs_per_block, dropping them...")
+            df.dropna(subset=["Test_Time[s]"], inplace=True)
+    dfs_per_block = [df for df in dfs_per_block if not df.empty]
     dfs_per_block = [df.loc[df.groupby("ID")["Test_Time[s]"].idxmax()] for df in dfs_per_block]
     dfs_per_block = [df for df in dfs_per_block if df["ID"].nunique() >= min_loops]
     dfs_per_block = [df for df in dfs_per_block if df["Duration"].min() >= min_pause_lenght]

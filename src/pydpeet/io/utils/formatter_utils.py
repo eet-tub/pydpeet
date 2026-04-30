@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -150,7 +151,7 @@ def apply_convert_to_float_if_possible(
     return df
 
 
-def _convert_to_float_if_possible(x) -> float:
+def _convert_to_float_if_possible(x) -> float | Any:
     """
     Try to convert a value to a float if possible.
 
@@ -229,8 +230,24 @@ def testtime_hours_to_seconds_direct(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _convert_to_hours_to_seconds_direct_if_possible(x) -> float:
-    # TODO: Docstring
+def _convert_to_hours_to_seconds_direct_if_possible(x) -> float | Any:
+    """
+    Try to convert a value to a np.float64 in hours and multiply it by 3600 to get the value in seconds.
+
+    This function takes a value, and tries to convert it to a float. If the
+    conversion is successful, the function returns the value multiplied by 3600. If
+    not successful, the value is returned as is.
+
+    Parameters
+    ----------
+    x : any
+        Value to be converted to a float in hours if possible.
+
+    Returns
+    -------
+    float
+        np.float64 value multiplied by 3600 if possible, otherwise the original value.
+    """
     try:
         return np.float64(x) * 3600
     except (ValueError, TypeError):
@@ -349,7 +366,7 @@ def move_strings_from_column_to_metadata(
 
 def fix_time_format(
     df: pd.DataFrame,
-    input_format: str = None,
+    input_format: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Fix the format of the "Date_Time" column.

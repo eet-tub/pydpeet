@@ -341,7 +341,7 @@ def _merged_annotations(
     current_a = df["Current[A]"].to_numpy(np.float64)
 
     # Compute duration per row: count of rows per ID (original annotate_duration_length)
-    duration = np.zeros(n, dtype=np.int64)
+    duration = np.zeros(n, dtype=np.float64)
     valid_mask = ids != -1
     if np.any(valid_mask):
         ids_valid = ids[valid_mask]

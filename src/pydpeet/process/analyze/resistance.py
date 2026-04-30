@@ -7,8 +7,8 @@ import pandas as pd
 from pydpeet.process.analyze.configs.battery_config import BatteryConfig
 from pydpeet.process.analyze.utils import (
     StepTimer,
-    _check_columns,
 )
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 
 def add_resistance_internal(
@@ -37,13 +37,24 @@ def add_resistance_internal(
     ignore_negative_resistance_values (bool, optional): Whether to set calculated internal resistances with a value less than or equal to zero to NaN (should only appear for Neware cells)
 
     Returns:
-    pandas.DataFrame: DataFrame with added 'internal_resistance[ohm]', 'delta_t', 'delta_current', and 'delta_voltage' columns
+    pandas.DataFrame: DataFrame with added 'InternalResistance[ohm]' column
     """
-    required_cols = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
-    _check_columns(df, required_cols)
+    required_columns = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
+    required_column_dtypes = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    _guardrail_dataframe(
+        df,
+        hard_fail_missing_required_columns=(True, required_columns),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes),
+        hard_fail_inf_values=(False, required_columns),
+        hard_fail_nan_values=(False, required_columns),
+        hard_fail_none_values=(False, required_columns),
+    )
+    _guardrail_boolean(verbose, hard_fail_none=True, hard_fail_wrong_type=True)
 
     if config is None:
-        func_name = inspect.currentframe().f_code.co_name
+        frame = inspect.currentframe()
+        assert frame is not None
+        func_name = frame.f_code.co_name
         raise ValueError(f"config is None, please provide a valid config for {func_name}")
 
     min_current_diff = config.min_current_diff

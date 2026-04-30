@@ -9,17 +9,17 @@ from pydpeet.process.analyze.configs.battery_config import BatteryConfig
 from pydpeet.process.analyze.configs.step_analyzer_config import SEGMENT_SEQUENCE_CONFIG
 from pydpeet.process.analyze.utils import (
     StepTimer,
-    _check_columns,
 )
 from pydpeet.process.sequence.step_analyzer import extract_sequence_overview
 from pydpeet.process.sequence.utils.postprocessing.filter_df import filter_and_split_df_by_blocks
+from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 
 
 def add_capacity(
     df: pd.DataFrame,
     df_primitives: pd.DataFrame,
-    neware_bool: bool = True,
     config: BatteryConfig = None,
+    neware_bool: bool = True,
     verbose: bool = True,
 ) -> pd.DataFrame:
     """
@@ -34,19 +34,57 @@ def add_capacity(
 
     Parameters:
         df (pandas.DataFrame): Input DataFrame containing battery test data
+        df_primitives (pandas.DataFrame): Input DataFrame containing primitive segments
+        neware_bool (bool, optional): If True, use Neware-specific filtering rules. Defaults to True.
         config (BatteryConfig, optional): Configuration object containing battery test parameters
         verbose (bool, optional): If True, print debug messages. Defaults to False.
 
     Returns:
         pandas.DataFrame: DataFrame with added 'Capacity[Ah]' column
-        :param THRESHOLD_DICT: threshold dictionary for neware params
     """
-    # Check if the required columns are present
-    required_cols = ["Test_Time[s]", "Current[A]", "Voltage[V]"]
-    _check_columns(df, required_cols)
+    required_column_dtypes_df = [("Voltage[V]", float), ("Current[A]", float), ("Test_Time[s]", float)]
+    required_columns_df = [col for col, _ in required_column_dtypes_df]
+    required_column_dtypes_df_primitives = [
+        ("Test_Time[s]", float),
+        ("Voltage[V]", float),
+        ("Current[A]", float),
+        ("Power[W]", float),
+        ("ID", int),
+        ("Variable", str),
+        ("Duration", float),
+        ("Length", float),
+        ("Min", float),
+        ("Max", float),
+        ("Avg", float),
+        ("Type", str),
+        ("Direction", str),
+        ("Slope", float),
+    ]
+    required_columns_df_primitives = [col for col, _ in required_column_dtypes_df_primitives]
+    _guardrail_dataframe(
+        df,
+        hard_fail_missing_required_columns=(True, required_columns_df),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes_df),
+        hard_fail_inf_values=(False, required_columns_df),
+        hard_fail_nan_values=(False, required_columns_df),
+        hard_fail_none_values=(False, required_columns_df),
+    )
+
+    _guardrail_dataframe(
+        df_primitives,
+        hard_fail_missing_required_columns=(True, required_columns_df_primitives),
+        hard_fail_wrong_column_dtypes=(True, required_column_dtypes_df_primitives),
+        hard_fail_inf_values=(False, required_columns_df_primitives),
+        hard_fail_nan_values=(False, required_columns_df_primitives),
+        hard_fail_none_values=(False, required_columns_df_primitives),
+    )
+    for boolean_param in [neware_bool, verbose]:
+        _guardrail_boolean(boolean_param, hard_fail_none=True, hard_fail_wrong_type=True)
 
     if config is None:
-        func_name = inspect.currentframe().f_code.co_name
+        frame = inspect.currentframe()
+        assert frame is not None
+        func_name = frame.f_code.co_name
         raise ValueError(f"config is None, please provide a valid config for {func_name}!")
 
     minimal_current = config.minimal_current_for_capacity

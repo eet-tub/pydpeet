@@ -31,7 +31,9 @@ def add_cumulative_energy(
     logging.info("Calculating CumulativeEnergy[Wh]...")
 
     if config is None:
-        func_name = inspect.currentframe().f_code.co_name
+        frame = inspect.currentframe()
+        assert frame is not None
+        func_name = frame.f_code.co_name
         raise ValueError(f"config is None, please provide a valid config for {func_name}")
 
     df_mod = df.copy()

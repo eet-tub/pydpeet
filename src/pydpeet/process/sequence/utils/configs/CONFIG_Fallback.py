@@ -228,4 +228,10 @@ FALLBACK_CONFIG = {
     "THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH": THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH,
     "THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK": THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK,
     "THRESHOLD_CV_SEGMENTS_0A_END": THRESHOLD_CV_SEGMENTS_0A_END,
+    "check_CV_0Aend_segments_bool": True,
+    "check_zero_length_segments_bool": True,
+    "check_Power_zero_W_segments_bool": True,
+    "supress_IO_warnings": False,
+    "PRECOMPILE": True,
+    "FORCE_PRECOMPILATION": False,
 }

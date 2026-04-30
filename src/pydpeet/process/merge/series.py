@@ -7,6 +7,7 @@ from pydpeet.process.analyze.utils import (
     StepTimer,
     drop_duplicate_testtime,
 )
+from pydpeet.utils.guardrails import _guardrail_boolean
 
 
 def merge_into_series(
@@ -31,6 +32,10 @@ def merge_into_series(
     Returns:
     pandas.DataFrame: Merged DataFrame with a single test series.
     """
+    # Guardrail checks for boolean parameters
+    _guardrail_boolean(verbose, hard_fail_none=True, hard_fail_wrong_type=True)
+    _guardrail_boolean(sort_dfs, hard_fail_none=True, hard_fail_wrong_type=True)
+
     if not dfs:
         logging.info("No DataFrames provided.")
         return pd.DataFrame()
@@ -56,10 +61,13 @@ def merge_into_series(
         sorted_dfs = [df for df, _ in input_pairs]
 
     time_offset = 0.0
+    numeric_cols: list[str]
+    datetime_cols: list[str]
+    object_cols: list[str]
     numeric_cols, datetime_cols, object_cols = [], [], []
     col_order = []
     numeric_storage = []
-    other_storage = {}
+    other_storage: dict[str, list] = {}
     valid_index = 0  # counts only valid DataFrames
 
     if verbose:

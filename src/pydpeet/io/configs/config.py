@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from enum import Enum, auto
+from typing import Any
 
 from pandas import DataFrame
 
@@ -108,7 +109,7 @@ class Config(Enum):
             raise ValueError(f"Unknown config '{value}'. Known: {known}") from k
 
     @staticmethod
-    def exists(maybe_config: any) -> bool:
+    def exists(maybe_config: Any) -> bool:
         """
         Checks if a given configuration is a member of the Config enum.
 
@@ -124,7 +125,7 @@ class Config(Enum):
             return False
 
     @staticmethod
-    def not_exists(value: any) -> bool:
+    def not_exists(value: Any) -> bool:
         """
         Checks if a given configuration does not exist.
 
