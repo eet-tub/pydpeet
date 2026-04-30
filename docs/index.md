@@ -19,7 +19,7 @@ The documentation is organised around the most important ways people use PyDPEET
 - [Contribution Guide](contribution.md) explains how to contribute new code, examples, and research-driven functionality in a way that is useful for other users and citable in future work.
 - [Examples](examples/index.md) collects beginner-oriented walkthroughs and research-oriented reproductions of publications.
 - [Publications](index.md) Every publications, which used PyDPEET and the authors send us their code.  
-- [API Reference](api/index.md) documents the public functions that are intended to be imported and used directly.
+- [API Reference](api/index.rst) documents the public functions that are intended to be imported and used directly.
 
 
 

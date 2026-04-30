@@ -1,6 +1,6 @@
 # Define the order of pipeline stages.
 # Stages are executed sequentially from top to bottom.
-stages: [lint, mypy, test, docs, release]
+stages: [lint, mypy, docs, test, release]
 
 # -------------------------------
 # LINT STAGE
@@ -95,11 +95,11 @@ docs_build:
   before_script:
     - apt-get update
     - apt-get install -y pandoc
-    - pip install -U pip
-    - pip install -e ".[docs]"
+    - pip install uv
+    - uv sync --frozen --group docs
 
   script:
-    - python docs/build_docs.py
+    - uv run docs/build_docs.py
 
   artifacts:
     when: always
