@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -21,7 +22,7 @@ def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     elif suffix == ".csv":
         separator = ","
     else:
-        raise ValueError("needs to be a .txt or .csv")
+        raise ValueError("File type must be TXT or CSV.")
 
     metadata = []
 
@@ -29,16 +30,16 @@ def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     with open(input_path, encoding="us-ascii") as file:
         # Read metadata until the header line is found
         line = file.readline()
-        while line and "Segment" not in line:
+        while line and (("Potential" not in line) or ("Zre" not in line) or ("|Z|" not in line)):
             metadata.append(line.strip())
             line = file.readline()
 
         if not line:
-            raise ValueError("Header 'Segment' not found in file.")
+            raise ValueError("Header was not found or is not valid.")
 
         # Extract headers and remaining data
-        headers = [h.strip() for h in line.strip().split(separator)]
-        data_lines = [row.strip().split(separator) for row in file if row.strip()]
+        headers = [h.strip() for h in line.split(separator)]
+        data_lines = [[v.strip() for v in row.split(separator)] for row in file if row.strip()]
 
     # Join metadata into a single string
     metadata_str = "\n".join(metadata)
@@ -47,6 +48,7 @@ def to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     df = pd.DataFrame(data_lines, columns=headers)
 
     if "Point" not in df.columns:
-        df.insert(0, "Point", range(1, len(df) + 1))
+        df.insert(0, "Point", 1)
+        logging.warning("Column 'Point' (maps to 'Step_Count') was missing. Set all values to 1.")
 
     return df, metadata_str
