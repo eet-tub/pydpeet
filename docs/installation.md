@@ -1,6 +1,13 @@
 # Installation
 
-PyDPEET requires **Python 3.12 or newer**.
+
+:::{card} If you already have a Python environment set up, you can {ref}`skip directly to the PyDPEET installation <install-pydpeet>`.
+:::
+
+
+```{note}
+PyDPEET requires Python 3.12 or newer.
+```
 
 You can use the editor or IDE of your choice. We recommend VS Code, but PyDPEET also works with other editors, notebooks, and Python environments.
 
@@ -112,6 +119,7 @@ conda activate pydpeet
 
 ::::
 
+(install-pydpeet)=
 ## 4. Install PyDPEET
 
 ::::{tab-set}
