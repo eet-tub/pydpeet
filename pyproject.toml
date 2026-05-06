@@ -47,6 +47,7 @@ docs = [
   "nbsphinx",
   "sphinx-copybutton",
   "bibtexparser",
+  "sphinx-design>=0.7.0",
 ]
 test = [
     "pytest",
