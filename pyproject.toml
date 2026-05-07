@@ -24,6 +24,7 @@ dependencies = [
     "scipy==1.17.1",
     "bibtexparser==1.4.4",
     "scikit-learn==1.8.0",
+    "ipykernel>=7.2.0",
 ]
 requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
