@@ -11,6 +11,7 @@ from pydpeet.io.convert import (
     convert_file,
     convert_files_in_directory,
 )
+from pydpeet.utils.guardrails import _guardrail_boolean
 
 ConfigLike: TypeAlias = Config | str
 PathLike: TypeAlias = str | Path
@@ -150,6 +151,9 @@ def read(
     # References
     # ----------
     # """
+
+    # Validate boolean parameter using guardrail
+    _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)
 
     if isinstance(input_path, str):
         if os.path.isfile(input_path):
