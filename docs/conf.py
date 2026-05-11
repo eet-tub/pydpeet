@@ -51,24 +51,33 @@ myst_enable_extensions = [
     "deflist",  # Enables definition lists (term : definition style in Markdown)
 ]
 
+
 autodoc_default_options = {
-    "members": True,  # Include all class/module members
-    "undoc-members": False,  # Do not include undocumented members
-    "show-inheritance": True,  # Show class inheritance hierarchy
-    "member-order": "bysource",  # Preserve order as in source code
+    "members": True,  # Include documented public members of modules/classes
+    "undoc-members": False,  # Exclude members without docstrings
+    "show-inheritance": False,  # Do not show inheritance hierarchy for classes
+    "member-order": "bysource",  # Preserve the order from the source code
+    "imported-members": False,  # Do not document imported helper objects
 }
 
-autodoc_typehints = "description"  # Show type hints in description instead of signature
+
+autodoc_typehints = "description"  # Show type hints in parameter descriptions
+autodoc_typehints_format = "short"  # Use shortened type names instead of full module paths
+
+python_use_unqualified_type_names = True  # Prefer list[str] over typing.List[str]
+
 autodoc_type_aliases = {
     "DataFrame": "pandas.DataFrame",  # Replace short alias with full reference
     "ConfigLike": "pydpeet.settings.ConfigLike",  # Custom alias for internal type
 }
 
 # --- Napoleon (NumPy/Google docstrings) -------------------------------------
-napoleon_numpy_docstring = True  # Enable NumPy-style docstrings
-napoleon_google_docstring = True  # Enable Google-style docstrings
-napoleon_use_param = True  # Render parameters using :param: format
-napoleon_use_rtype = True  # Render return types using :rtype:
+napoleon_numpy_docstring = True  # Enable NumPy-style docstring parsing
+napoleon_google_docstring = False  # Disable Google-style docstrings
+
+napoleon_use_admonition_for_examples = True  # Render Examples sections as admonition blocks
+napoleon_use_param = True  # Convert Parameters section to :param: fields
+napoleon_use_rtype = True  # Convert return types to :rtype: fields
 
 # --- nbsphinx ---------------------------------------------------------------
 nbsphinx_execute = "never"  # Do not execute notebooks during build
@@ -86,7 +95,7 @@ intersphinx_mapping = {
 # --- HTML theme -------------------------------------------------------------
 html_theme = "pydata_sphinx_theme"
 
-html_static_path = ["_static"]
+html_static_path = ["_static"]  # Path for custom static files (e.g., CSS, images)
 
 html_css_files = [
     "custom.css",
@@ -96,9 +105,10 @@ html_theme_options = {
     "navbar_align": "content",  # Align navbar with content area
     "show_nav_level": 4,  # Depth of navigation tree shown
     "show_toc_level": 2,
+    "collapse_navigation": False,  # Keep navigation tree expanded by default
     "navigation_with_keys": True,  # Enable keyboard navigation
-    "navbar_start": ["navbar-logo"],
-    "navbar_center": ["navbar-nav"],
+    "navbar_start": ["navbar-logo"],  # Show logo at the start of the navbar
+    "navbar_center": ["navbar-nav"],  # Show main navigation links in the center
     "navbar_end": [
         "theme-switcher",
         # "version-switcher", # saved for later when wie have multiple versions
@@ -128,7 +138,7 @@ html_theme_options = {
 html_sidebars = {
     "**": [
         "sidebar-nav-bs.html",  # Main navigation tree in sidebar
-        # "searchbox.html",  # Search bar in sidebar
+        "searchbox.html",  # Search bar in sidebar
     ],
 }
 

@@ -3,3 +3,4 @@ __pycache__/
 **/output/*.parquet
 /docs/_build/
 _autogen/
+*_autosummary/
