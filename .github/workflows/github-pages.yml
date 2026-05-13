@@ -20,33 +20,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pip"
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
 
-      - name: Install pandoc
-        run: sudo apt-get update && sudo apt-get install -y pandoc
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
 
-      - name: Install documentation dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[docs]"
+    - name: Install pandoc
+      run: sudo apt-get update && sudo apt-get install -y pandoc
 
-      - name: Build documentation
-        run: python docs/build_docs.py
+    - name: Install dependencies
+      run: uv sync --group docs
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+    - name: Build documentation
+      run: uv run python docs/build_docs.py
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/build/html
+    - name: Configure GitHub Pages
+      uses: actions/configure-pages@v5
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs/build/html
 
   deploy:
     needs: build

@@ -1,0 +1,33 @@
+/* Autosummary tables */
+table.autosummary {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
+
+table.autosummary tr {
+    background: var(--pst-color-surface);
+    border-radius: 0.5rem;
+}
+
+table.autosummary td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--pst-color-border);
+    border-bottom: 1px solid var(--pst-color-border);
+}
+
+table.autosummary td:first-child {
+    border-left: 1px solid var(--pst-color-border);
+    border-radius: 0.5rem 0 0 0.5rem;
+    font-weight: 600;
+}
+
+table.autosummary td:last-child {
+    border-right: 1px solid var(--pst-color-border);
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+table.autosummary tr:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.125rem 0.4rem rgba(0, 0, 0, 0.08);
+}

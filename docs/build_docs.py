@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from generate_api import generate_api
+
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 SRC = ROOT / "src" / "pydpeet"
@@ -11,8 +13,8 @@ AUTOGEN = DOCS / "api" / "_autogen"
 EXAMPLES = DOCS / "examples"
 NOTEBOOKS = EXAMPLES / "notebooks"
 NOTEBOOK_INDEX = NOTEBOOKS / "index.rst"
-DOCTREES = DOCS / "build" / "doctrees"
-HTML = DOCS / "build" / "html"
+DOCTREES = DOCS / "_build" / "doctrees"
+HTML = DOCS / "_build" / "html"
 
 
 def run(cmd: list[str]):
@@ -20,27 +22,13 @@ def run(cmd: list[str]):
     subprocess.check_call(cmd)
 
 
-def main():
+def main() -> None:
+    generate_api()
+
     AUTOGEN.mkdir(parents=True, exist_ok=True)
     DOCTREES.mkdir(parents=True, exist_ok=True)
     HTML.mkdir(parents=True, exist_ok=True)
 
-    # 1) Generate API stubs
-    run(
-        [
-            sys.executable,
-            "-m",
-            "sphinx.ext.apidoc",
-            "-f",  # overwrite
-            "-e",  # output one file per module
-            "-M",  # module-first
-            "-o",
-            str(AUTOGEN),
-            str(SRC),
-        ]
-    )
-
-    # 2) Build docs
     run(
         [
             sys.executable,
