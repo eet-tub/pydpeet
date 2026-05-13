@@ -92,7 +92,7 @@ def autosummary_block(names: list[str], title: str) -> str:
     return (
         "```{eval-rst}\n"
         ".. autosummary::\n"
-        # "   :toctree: ../_autosummary\n"
+        "   :toctree: ../_autosummary\n"
         "   :nosignatures:\n\n"
         f"   :caption: {title}\n"
         f"{items}\n"
@@ -134,8 +134,8 @@ def generate_api() -> None:
         content += f"{group['description']}\n\n"
         content += autosummary_block(items, title)
         content += "\n"
-        content += toctree_block(items, title)
-        content += "\n"
+        # content += toctree_block(items, title)
+        # content += "\n"
 
     out.write_text(content, encoding="utf-8")
     print(f"Generated API reference at {out}")
