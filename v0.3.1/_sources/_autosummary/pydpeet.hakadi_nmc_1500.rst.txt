@@ -1,0 +1,6 @@
+﻿pydpeet.hakadi\_nmc\_1500
+=========================
+
+.. currentmodule:: pydpeet
+
+.. autodata:: hakadi_nmc_1500

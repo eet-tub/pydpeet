@@ -1,0 +1,6 @@
+﻿pydpeet.battery\_config\_default
+================================
+
+.. currentmodule:: pydpeet
+
+.. autodata:: battery_config_default

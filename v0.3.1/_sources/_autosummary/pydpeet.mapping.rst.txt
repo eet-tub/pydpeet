@@ -1,0 +1,6 @@
+﻿pydpeet.mapping
+===============
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: mapping
