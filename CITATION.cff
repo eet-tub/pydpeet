@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use PyDPEET, please cite it using the metadata from this file."
+title: "PyDPEET: Fast and Easy Battery Data Unification, Processing, and Analysis"
+version: "0.3.1"
+type: software
+license: BSD-3-Clause
+repository-code: "https://github.com/eet-tub/pydpeet"
+url: "https://eet-tub.github.io/pydpeet/"
+abstract: "Python package to read, unify, and convert battery measurement data from arbitrary battery cyclers to Parquet files. This package also provides functions to process, evaluate, and visualise the standardised data."
+authors:
+  - family-names: "Schlösser"
+    given-names: "Anton"
+  - family-names: "Otto"
+    given-names: "Martin"
+  - family-names: "Hinrichsen"
+    given-names: "Alexander Günter"
+  - family-names: "Kalisch"
+    given-names: "Jan"
+  - family-names: "Schröder"
+    given-names: "Daniel"
+  - family-names: "De Simone"
+    given-names: "Cataldo"
+contact:
+  - name: "PyDPEET Team"
+    email: "pydpeet@eet.tu-berlin.de"
