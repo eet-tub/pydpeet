@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -107,10 +108,7 @@ html_theme_options = {
     "navbar_center": ["navbar-nav"],  # Show main navigation links in the center
     "navbar_end": [
         "theme-switcher",
-        #
-        # --- Version switcher deactivated until we have our own website
-        #
-        # "version-switcher",
+        "version-switcher",
         "navbar-icon-links",
         "searchbox.html",
     ],
@@ -121,23 +119,15 @@ html_theme_options = {
     },
     "icon_links": [
         {
-            "name": "GitLab",
-            "url": "https://git.tu-berlin.de/eet_public/pydpeet/",
-            "icon": "fa-brands fa-gitlab",
-        },
-        {
             "name": "GitHub",
             "url": "https://github.com/eet-tub/pydpeet",
             "icon": "fa-brands fa-github",
         },
     ],
-    #
-    # --- Version switcher deactivated until we have our own website
-    #
-    # "switcher": {
-    #     "json_url": "https://eet-tub.github.io/pydpeet/_static/switcher.json",
-    #     "version_match": os.environ.get("VERSION"),
-    # },
+    "switcher": {
+        "json_url": "https://eet-tub.github.io/pydpeet/_static/switcher.json",
+        "version_match": os.environ.get("PYDPEET_DOC_VERSION", "latest"),
+    },
 }
 
 # Controls the sidebar components. `sidebar-nav-bs.html` renders the project tree.

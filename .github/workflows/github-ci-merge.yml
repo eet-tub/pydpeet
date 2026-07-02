@@ -6,9 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: github-pages
@@ -55,26 +53,54 @@ jobs:
           <meta http-equiv="refresh" content="0; url=latest/">
           <a href="latest/">Go to latest documentation</a>
           EOF
-      - name: pages_configure
-        uses: actions/configure-pages@v5
-      - name: pages_artifact
-        uses: actions/upload-pages-artifact@v5
+      - name: upload_docs
+        uses: actions/upload-artifact@v4
         with:
           name: docs-latest
-          path: docs/_public/latest/
+          path: docs/_public/
           retention-days: 14
+
   #--------------#
   #--- DEPLOY ---#
   #--------------#
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment_latest.outputs.page_url }}
     steps:
-      - name: pages_deploy_latest
-        id: deployment_latest
-        uses: actions/deploy-pages@v4
+      - name: checkout_gh_pages
+        uses: actions/checkout@v6
         with:
-          artifact_name: docs-latest
+          ref: gh-pages
+          path: gh-pages
+
+      - name: download_docs
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-latest
+          path: docs-latest
+
+      - name: update_latest
+        run: |
+          rm -rf gh-pages/latest
+          mkdir -p gh-pages/latest
+          cp -r docs-latest/latest/* gh-pages/latest/
+
+          cp docs-latest/index.html gh-pages/index.html
+
+          touch gh-pages/.nojekyll
+
+      - name: commit_and_push
+        run: |
+          cd gh-pages
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add latest index.html .nojekyll
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update latest documentation"
+            git push origin gh-pages
+          fi

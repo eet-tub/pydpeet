@@ -1,0 +1,175 @@
+name: CI_Release_Docs
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Git tag to build (e.g. v0.3.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  #-------------#
+  #--- BUILD ---#
+  #-------------#
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.tag || github.event.release.tag_name }}
+      PYDPEET_DOC_VERSION: ${{ inputs.tag || github.event.release.tag_name }}
+    steps:
+      - name: init
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag || github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
+      - name: tk
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk
+
+      - name: uv_sync
+        run: uv sync --frozen --group docs
+
+      - name: docs
+        run: uv run docs/build_docs.py
+
+      - name: prepare_pages
+        run: |
+          mkdir -p docs/_public/$VERSION
+          cp -r docs/_build/html/* docs/_public/$VERSION/
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+              mkdir -p docs/_public/stable
+              cp -r docs/_build/html/* docs/_public/stable/
+          fi
+
+      - name: create_switcher
+        run: |
+          mkdir -p docs/_public/_static
+
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          base_url = "https://eet-tub.github.io/pydpeet"
+
+          tags = subprocess.check_output(
+              ["git", "tag", "--list", "v*", "--sort=-v:refname"],
+              text=True,
+          ).splitlines()
+
+          switcher = [
+              {
+                  "name": "latest",
+                  "version": "latest",
+                  "url": f"{base_url}/latest/",
+              },
+              {
+                  "name": "stable",
+                  "version": "stable",
+                  "url": f"{base_url}/stable/",
+                  "preferred": True,
+              },
+          ]
+
+          for tag in tags:
+              switcher.append(
+                  {
+                      "name": tag,
+                      "version": tag,
+                      "url": f"{base_url}/{tag}/",
+                  }
+              )
+
+          Path("docs/_public/_static/switcher.json").write_text(
+              json.dumps(switcher, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: upload_docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-version
+          path: docs/_public/
+          retention-days: 14
+
+  #--------------#
+  #--- DEPLOY ---#
+  #--------------#
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.tag || github.event.release.tag_name }}
+    steps:
+      - name: checkout_gh_pages
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: download_docs
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-version
+          path: docs-version
+
+      - name: update_version
+        run: |
+          rm -rf gh-pages/$VERSION
+          mkdir -p gh-pages/$VERSION
+          cp -r docs-version/$VERSION/* gh-pages/$VERSION/
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+              rm -rf gh-pages/stable
+              mkdir -p gh-pages/stable
+              cp -r docs-version/stable/* gh-pages/stable/
+          fi
+
+          mkdir -p gh-pages/_static
+          cp docs-version/_static/switcher.json gh-pages/_static/switcher.json
+
+          touch gh-pages/.nojekyll
+
+      - name: commit_and_push
+        run: |
+          cd gh-pages
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add . 
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update documentation for $VERSION"
+            git push origin gh-pages
+          fi
