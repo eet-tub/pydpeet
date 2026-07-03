@@ -1,0 +1,6 @@
+﻿pydpeet.filter\_df
+==================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: filter_df

@@ -1,0 +1,6 @@
+﻿pydpeet.sequence\_overview\_config\_wrapper
+===========================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: sequence_overview_config_wrapper

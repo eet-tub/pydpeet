@@ -1,0 +1,24 @@
+﻿pydpeet.DataOutputFiletype
+==========================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: DataOutputFiletype
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DataOutputFiletype.parquet
+      ~DataOutputFiletype.csv
+      ~DataOutputFiletype.xlsx
+   
+   

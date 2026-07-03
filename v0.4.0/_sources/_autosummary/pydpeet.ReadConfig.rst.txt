@@ -1,0 +1,35 @@
+﻿pydpeet.ReadConfig
+==================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: ReadConfig
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ReadConfig.Zahner_1
+      ~ReadConfig.Zahner_2
+      ~ReadConfig.Zahner_new_1
+      ~ReadConfig.Zahner_new_2
+      ~ReadConfig.Zahner_new_3
+      ~ReadConfig.Safion_1_9
+      ~ReadConfig.Parstat_2_63_3
+      ~ReadConfig.Neware_8_0_0_516
+      ~ReadConfig.Digatron_4_20_6_236
+      ~ReadConfig.Digatron_EIS_4_20_6_236
+      ~ReadConfig.BaSyTec_6_3_1_0
+      ~ReadConfig.Arbin_8_00_PV221201
+      ~ReadConfig.Arbin_4_23_PV090331
+      ~ReadConfig.Custom
+   
+   
