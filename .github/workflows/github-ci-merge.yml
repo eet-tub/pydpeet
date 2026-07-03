@@ -59,7 +59,6 @@ jobs:
           name: docs-latest
           path: docs/_public/
           retention-days: 14
-
   #--------------#
   #--- DEPLOY ---#
   #--------------#
