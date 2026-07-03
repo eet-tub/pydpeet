@@ -72,13 +72,11 @@ jobs:
         with:
           ref: gh-pages
           path: gh-pages
-
       - name: download_docs
         uses: actions/download-artifact@v4
         with:
           name: docs-latest
           path: docs-latest
-
       - name: update_latest
         run: |
           rm -rf gh-pages/latest
@@ -88,7 +86,6 @@ jobs:
           cp docs-latest/index.html gh-pages/index.html
 
           touch gh-pages/.nojekyll
-
       - name: commit_and_push
         run: |
           cd gh-pages
