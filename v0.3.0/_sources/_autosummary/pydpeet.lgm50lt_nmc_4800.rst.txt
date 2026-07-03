@@ -1,0 +1,6 @@
+﻿pydpeet.lgm50lt\_nmc\_4800
+==========================
+
+.. currentmodule:: pydpeet
+
+.. autodata:: lgm50lt_nmc_4800

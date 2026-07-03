@@ -1,0 +1,40 @@
+﻿pydpeet.BatteryConfig
+=====================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: BatteryConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BatteryConfig.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BatteryConfig.c_ref
+      ~BatteryConfig.cell_name
+      ~BatteryConfig.ignore_negative_resistance_values
+      ~BatteryConfig.max_time_diff
+      ~BatteryConfig.max_voltage
+      ~BatteryConfig.maximal_current_for_capacity
+      ~BatteryConfig.min_current_diff
+      ~BatteryConfig.min_voltage
+      ~BatteryConfig.min_voltage_diff
+      ~BatteryConfig.minimal_current_for_capacity
+      ~BatteryConfig.soc_start
+      ~BatteryConfig.threshold_current
+      ~BatteryConfig.voltage_intervall
+   
+   

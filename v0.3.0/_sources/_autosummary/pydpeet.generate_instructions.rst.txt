@@ -1,0 +1,6 @@
+﻿pydpeet.generate\_instructions
+==============================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: generate_instructions
