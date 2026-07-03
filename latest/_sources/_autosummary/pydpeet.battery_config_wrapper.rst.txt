@@ -1,0 +1,6 @@
+﻿pydpeet.battery\_config\_wrapper
+================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: battery_config_wrapper

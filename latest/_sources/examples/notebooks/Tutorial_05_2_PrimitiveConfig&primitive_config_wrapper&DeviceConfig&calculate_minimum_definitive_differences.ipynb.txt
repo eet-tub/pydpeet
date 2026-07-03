@@ -1,0 +1,383 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "4425dc136692f9fb",
+   "metadata": {},
+   "source": "# Tutorial 05.2 - PrimitiveConfig, primitive_config_wrapper, DeviceConfig, calculate_minimum_definitive_differences"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "68e98c7b5ff7c850",
+   "metadata": {},
+   "source": "## Step 0: Setup the project and prepare the data"
+  },
+  {
+   "cell_type": "code",
+   "id": "initial_id",
+   "metadata": {
+    "collapsed": true,
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:49:56.384791800Z",
+     "start_time": "2026-06-13T20:49:55.916654Z"
+    }
+   },
+   "source": [
+    "from pathlib import Path\n",
+    "\n",
+    "import pydpeet as eet"
+   ],
+   "outputs": [],
+   "execution_count": 1
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5407f87f86b5e69a",
+   "metadata": {},
+   "source": "We will use \"ERROR\" as the logging style for better readability of the notebook"
+  },
+  {
+   "cell_type": "code",
+   "id": "e96eb1e656553513",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:49:56.398655500Z",
+     "start_time": "2026-06-13T20:49:56.391492800Z"
+    }
+   },
+   "source": [
+    "eet.set_logging_style(\"ERROR\")"
+   ],
+   "outputs": [],
+   "execution_count": 2
+  },
+  {
+   "cell_type": "code",
+   "id": "c3d9484288e6c4df",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.788580700Z",
+     "start_time": "2026-06-13T20:49:56.398655500Z"
+    }
+   },
+   "source": [
+    "standardized_data = eet.read(\n",
+    "    input_path=str(Path.cwd().parent.parent / \"res\" / \"raw_data_from_cyclers\" / \"Cal_Ageing_Checkup1.xlsx\"),\n",
+    "    config=eet.ReadConfig.Neware_8_0_0_516,\n",
+    ")"
+   ],
+   "outputs": [],
+   "execution_count": 3
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f3ce51596ea02f78",
+   "metadata": {},
+   "source": "## Step 1: Creating a custom PrimitiveConfig"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cf3955cb09a48f87",
+   "metadata": {},
+   "source": "A PrimitiveConfig contains the following parameters used by add_primitive_segments:"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "293a5ec2f09f5fa5",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-info\">\n",
+    "<b>Hint:</b> You can type in \"eet.PrimitiveConfig.\" to see all other availiable PrimitiveConfig in most IDEs\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "6036c882fdd1aee",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.802304700Z",
+     "start_time": "2026-06-13T20:50:00.797189700Z"
+    }
+   },
+   "source": [
+    "default_config = eet.PrimitiveConfig.DEFAULT"
+   ],
+   "outputs": [],
+   "execution_count": 4
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e970b9c5b08902a8",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-info\">\n",
+    "<b>Hint:</b> Use primitive_config_wrapper to create your own custom PrimitiveConfig that overwrites the standard values\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "3c41548bbc3d9528",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.809046Z",
+     "start_time": "2026-06-13T20:50:00.802304700Z"
+    }
+   },
+   "source": [
+    "primitive_config = eet.primitive_config_wrapper(\n",
+    "    segments_to_detect_config=[(\"Voltage[V]\", 0.01), (\"Current[A]\", 0.01), (\"Power[W]\", 0.01)]\n",
+    ")"
+   ],
+   "outputs": [],
+   "execution_count": 5
+  },
+  {
+   "cell_type": "code",
+   "id": "cd5398bf6da4bd58",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.817427300Z",
+     "start_time": "2026-06-13T20:50:00.809583700Z"
+    }
+   },
+   "source": [
+    "default_config.segments_to_detect_config"
+   ],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('Voltage[V]', 0.0025), ('Current[A]', 0.0015), ('Power[W]', 0.004)]"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 6
+  },
+  {
+   "cell_type": "code",
+   "id": "de2f32392abcf287",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.824328200Z",
+     "start_time": "2026-06-13T20:50:00.817973600Z"
+    }
+   },
+   "source": [
+    "primitive_config.segments_to_detect_config"
+   ],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('Voltage[V]', 0.01), ('Current[A]', 0.01), ('Power[W]', 0.01)]"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 7
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5938a488a92ed69c",
+   "metadata": {},
+   "source": "## Step 2: Using a device config to create a custom PrimitiveConfig"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "105fd7f8fa3f8452",
+   "metadata": {},
+   "source": "Instead of setting the segments_to_detect_config directly you're also able to use a device config with the following parameters:"
+  },
+  {
+   "cell_type": "code",
+   "id": "9ff39ab18f3d1cff",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.830880800Z",
+     "start_time": "2026-06-13T20:50:00.825385400Z"
+    }
+   },
+   "source": [
+    "# BASYTEC_CTS (list[float])\n",
+    "#    0.002,  # ACCURACY_VOLTAGE_SIGNAL\n",
+    "#    0.003,  # ACCURACY_CURRENT_SIGNAL\n",
+    "#    0.002,  # ACCURACY_VOLTAGE_MEASUREMENT\n",
+    "#    0.003,  # ACCURACY_CURRENT_MEASUREMENT\n",
+    "#    6,  # FS_VOLTAGE\n",
+    "#    5,  # FS_CURRENT"
+   ],
+   "outputs": [],
+   "execution_count": 8
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2a50152bbf8223cf",
+   "metadata": {},
+   "source": "You can use calculate_minimum_definitive_differences to get the values calculated internally per standard"
+  },
+  {
+   "cell_type": "code",
+   "id": "8c47e2bcab2961c",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.839258300Z",
+     "start_time": "2026-06-13T20:50:00.831405400Z"
+    }
+   },
+   "source": [
+    "eet.calculate_minimum_definitive_differences(*eet.DeviceConfig.BASYTEC_CTS)"
+   ],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(0.024, 0.03)"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 9
+  },
+  {
+   "cell_type": "markdown",
+   "id": "287d05e5e47fa424",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-info\">\n",
+    "<b>Hint:</b> You can type in \"eet.DeviceConfig.\" to see all other availiable DeviceConfig in most IDEs\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "8c16f5d197205951",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.845416600Z",
+     "start_time": "2026-06-13T20:50:00.839258300Z"
+    }
+   },
+   "source": [
+    "primitive_config = eet.primitive_config_wrapper(\n",
+    "    threshold_dict=eet.DeviceConfig.BASYTEC_CTS,\n",
+    "    segments_to_detect_config=None,\n",
+    "    adjust_segments_config=None,\n",
+    "    thresholds_primitive_annotation=None,\n",
+    ")"
+   ],
+   "outputs": [],
+   "execution_count": 10
+  },
+  {
+   "cell_type": "code",
+   "id": "6822590cf7580523",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.863106Z",
+     "start_time": "2026-06-13T20:50:00.847034900Z"
+    }
+   },
+   "source": [
+    "primitive_config.segments_to_detect_config  # uses per standard half the calculate_minimum_definitive_differences to increase the sensitivity"
+   ],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('Voltage[V]', 0.012), ('Current[A]', 0.015), ('Power[W]', 0.027)]"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 11
+  },
+  {
+   "cell_type": "code",
+   "id": "ba8e32b9b0b47dfe",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.869871800Z",
+     "start_time": "2026-06-13T20:50:00.863716200Z"
+    }
+   },
+   "source": [
+    "primitive_config.adjust_segments_config"
+   ],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('Voltage[V]', 0.024), ('Current[A]', 0.03), ('Power[W]', 0.054)]"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 12
+  },
+  {
+   "cell_type": "code",
+   "id": "4e926b28db79ec55",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-06-13T20:50:00.875917900Z",
+     "start_time": "2026-06-13T20:50:00.870384Z"
+    }
+   },
+   "source": [
+    "primitive_config.thresholds_primitive_annotation"
+   ],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'V': 0.024, 'I': 0.03, 'P': 0.054}"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 13
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

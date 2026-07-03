@@ -1,0 +1,13 @@
+[
+  {
+    "name": "latest",
+    "version": "latest",
+    "url": "https://eet-tub.github.io/pydpeet/latest/"
+  },
+  {
+    "name": "stable",
+    "version": "stable",
+    "url": "https://eet-tub.github.io/pydpeet/stable/",
+    "preferred": true
+  }
+]

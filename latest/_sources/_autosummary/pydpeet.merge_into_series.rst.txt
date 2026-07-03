@@ -1,0 +1,6 @@
+﻿pydpeet.merge\_into\_series
+===========================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: merge_into_series
