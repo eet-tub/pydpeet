@@ -441,13 +441,14 @@
   <h1>Source code for pydpeet.io.read</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeAlias</span>  <span class="c1"># Add this import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeAlias</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.io.configs.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReadConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.io.configs.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EXTENSION_GROUPS</span><span class="p">,</span> <span class="n">ReadConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.io.convert</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_convert_file</span><span class="p">,</span>
     <span class="n">_convert_files_in_directory</span><span class="p">,</span>
@@ -458,16 +459,17 @@
 <span class="n">PathLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span>
 
 
-<div class="viewcode-block" id="read">
-<a class="viewcode-back" href="../../../_autosummary/pydpeet.read.html#pydpeet.read">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
-    <span class="n">config</span><span class="p">:</span> <span class="n">ConfigLike</span><span class="p">,</span>
-    <span class="n">input_path</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<div class="viewcode-block" id="convert">
+<a class="viewcode-back" href="../../../_autosummary/pydpeet.convert.html#pydpeet.convert">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfigLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">input_path</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep_all_additional_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">custom_folder_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Read and convert battery test data into the unified PyDPEET format.</span>
+<span class="sd">    Convert battery test data into the unified PyDPEET format.</span>
 
 <span class="sd">    This is the main high-level import function of PyDPEET. The function</span>
 <span class="sd">    automatically detects whether the provided input path points to a file,</span>
@@ -481,7 +483,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    config : ConfigLike</span>
+<span class="sd">    config : ConfigLike, optional</span>
 <span class="sd">        Device configuration used for parsing and mapping the raw battery</span>
 <span class="sd">        test data into the unified PyDPEET format.</span>
 
@@ -491,6 +493,8 @@
 <span class="sd">        - a custom configuration object</span>
 <span class="sd">        - a configuration dictionary</span>
 
+<span class="sd">        If ``None`` (default), the filetype is auto-detected from the file</span>
+<span class="sd">        extension and each matching configuration is tried until one succeeds.</span>
 <span class="sd">    input_path : str | list[str]</span>
 <span class="sd">        Path to the input data.</span>
 
@@ -499,6 +503,10 @@
 <span class="sd">        - path to a single raw data file</span>
 <span class="sd">        - path to a directory containing raw data files</span>
 <span class="sd">        - list of file and/or directory paths</span>
+
+<span class="sd">    output_path : str, optional</span>
+<span class="sd">        If provided, the converted data is written to this directory.</span>
+<span class="sd">        When ``None`` (default), the converted DataFrames are returned.</span>
 
 <span class="sd">    keep_all_additional_data : bool, default=False</span>
 <span class="sd">        If ``True``, all additional columns that are not part of the unified</span>
@@ -512,11 +520,12 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    pandas.DataFrame | list[pandas.DataFrame]</span>
+<span class="sd">    pandas.DataFrame | list[pandas.DataFrame] | None</span>
 <span class="sd">        Converted dataframe(s) in the unified PyDPEET format.</span>
 
-<span class="sd">        - If a single file or directory is provided, a single dataframe is returned.</span>
-<span class="sd">        - If a list of paths is provided, a list of dataframes is returned.</span>
+<span class="sd">        - If a single file is provided, a single dataframe is returned.</span>
+<span class="sd">        - If a directory or list of paths is provided, a list of dataframes is returned.</span>
+<span class="sd">        - If ``output_path`` is provided, ``None`` is returned after writing.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -595,35 +604,103 @@
     <span class="c1"># ----------</span>
     <span class="c1"># &quot;&quot;&quot;</span>
 
-    <span class="c1"># Validate boolean parameter using guardrail</span>
     <span class="n">_guardrail_boolean</span><span class="p">(</span><span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">hard_fail_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hard_fail_wrong_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">_convert_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">_convert_files_in_directory</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">_from_string</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="c1"># ---- explicit config: use existing helpers (preserves per-config logic like _find_main_files) ----</span>
+    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_convert_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_convert_files_in_directory</span><span class="p">(</span>
+                    <span class="n">config</span><span class="p">,</span> <span class="n">input_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span>
+                <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path is invalid!&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">input_item</span> <span class="ow">in</span> <span class="n">input_path</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_item</span><span class="p">):</span>
-                    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_convert_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_item</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_item</span><span class="p">):</span>
-                    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">input_path</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path item is of invalid type!&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">_convert_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">_convert_files_in_directory</span><span class="p">(</span>
-                            <span class="n">config</span><span class="p">,</span> <span class="n">input_item</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span>
+                            <span class="n">config</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path item is invalid!&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path item is of invalid type!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dfs</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path is of invalid type!&quot;</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">results</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path is of invalid type!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ---- auto-detection: flatten everything to files, try configs per file ----</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No config specified — using automatic config detection&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path is of invalid type!&quot;</span><span class="p">)</span>
+
+    <span class="n">all_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">input_was_str</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="p">[</span><span class="n">input_path</span><span class="p">]</span> <span class="k">if</span> <span class="n">input_was_str</span> <span class="k">else</span> <span class="n">input_path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path item is of invalid type!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+            <span class="n">all_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+            <span class="n">dir_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">f</span><span class="p">))]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_files</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory &#39;</span><span class="si">{</span><span class="n">raw</span><span class="si">}</span><span class="s2">&#39; is empty or contains no files&quot;</span><span class="p">)</span>
+            <span class="n">all_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dir_files</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input path is invalid!&quot;</span><span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">all_files</span><span class="p">:</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">_EXTENSION_GROUPS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not detect filetype for &#39;</span><span class="si">%s</span><span class="s2">&#39;, skipping&quot;</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;trying config </span><span class="si">%s</span><span class="s2"> for file </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">_convert_file</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;config </span><span class="si">%s</span><span class="s2"> succeeded for file </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;config </span><span class="si">%s</span><span class="s2"> failed for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No config could successfully process any file&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No files could be processed!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span> <span class="k">else</span> <span class="n">results</span></div>
+
+
+
+<div class="viewcode-block" id="read">
+<a class="viewcode-back" href="../../../_autosummary/pydpeet.read.html#pydpeet.read">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfigLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">input_path</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep_all_additional_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">custom_folder_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read and convert battery test data into the unified PyDPEET format.</span>
+
+<span class="sd">    Convenience wrapper around :func:`convert` that always returns DataFrames</span>
+<span class="sd">    (no ``output_path`` for saving files).</span>
+
+<span class="sd">    See :func:`convert` for full documentation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">convert</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">custom_folder_path</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span></div>
 
 </pre></div>
 

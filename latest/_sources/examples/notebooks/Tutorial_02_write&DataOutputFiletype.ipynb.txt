@@ -17,8 +17,8 @@
    "id": "11d51365408f1b27",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-06-13T20:48:08.517449700Z",
-     "start_time": "2026-06-13T20:48:08.020122Z"
+     "end_time": "2026-07-06T09:00:56.922704300Z",
+     "start_time": "2026-07-06T09:00:55.708987700Z"
     }
    },
    "source": [
@@ -40,8 +40,8 @@
    "id": "6fa372bfa51a5522",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-06-13T20:48:08.529102900Z",
-     "start_time": "2026-06-13T20:48:08.517953900Z"
+     "end_time": "2026-07-06T09:00:56.936857200Z",
+     "start_time": "2026-07-06T09:00:56.923799300Z"
     }
    },
    "source": [
@@ -51,24 +51,71 @@
    "execution_count": 2
   },
   {
-   "cell_type": "markdown",
-   "id": "8d4309c28edecd4f",
-   "metadata": {},
-   "source": "Load or generate the (standardized) Data:"
-  },
-  {
    "cell_type": "code",
    "id": "d3162fd399a1daa4",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-06-13T20:48:12.393548500Z",
-     "start_time": "2026-06-13T20:48:08.530161100Z"
+     "end_time": "2026-07-06T09:00:56.947680400Z",
+     "start_time": "2026-07-06T09:00:56.938371200Z"
     }
    },
    "source": [
-    "data_path = Path.cwd().parent.parent / \"res\" / \"raw_data_from_cyclers\" / \"Cal_Ageing_Checkup1.xlsx\"\n",
-    "config = eet.ReadConfig.Neware_8_0_0_516\n",
-    "standardized_data = eet.read(input_path=str(data_path), config=config)\n",
+    "data_path = Path.cwd().parent.parent / \"res\" / \"raw_data_from_cyclers\" / \"Cal_Ageing_Checkup1.xlsx\""
+   ],
+   "outputs": [],
+   "execution_count": 3
+  },
+  {
+   "cell_type": "markdown",
+   "id": "210c4b6c8f766fc6",
+   "metadata": {},
+   "source": "## Step 1: Write the data into a file"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6929bff952bf4d21",
+   "metadata": {},
+   "source": "You can create output files already during the reading by using convert:"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa15268ea94f40ec",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-warning\">\n",
+    "<b>Warning:</b> You can't set the filename or the output filetype when using convert. It defaults to output_file_name as {original_filename}_{config_name}_{current_date} and data_output_filetype as DataOutputFiletype.parquet\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "f4f8cd9629e8afc1",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-07-06T09:01:00.800775800Z",
+     "start_time": "2026-07-06T09:00:56.948798100Z"
+    }
+   },
+   "source": [
+    "standardized_data = eet.convert(\n",
+    "    config=eet.ReadConfig.Neware_8_0_0_516,\n",
+    "    input_path=str(data_path),\n",
+    "    output_path=str(data_path.parent.parent / \"standardized_data\"),\n",
+    ")"
+   ],
+   "outputs": [],
+   "execution_count": 4
+  },
+  {
+   "cell_type": "code",
+   "id": "a6ea33df5f9393ab",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-07-06T09:01:00.818756400Z",
+     "start_time": "2026-07-06T09:01:00.800775800Z"
+    }
+   },
+   "source": [
     "standardized_data.head(6)"
    ],
    "outputs": [
@@ -77,11 +124,11 @@
       "text/plain": [
        "                                             Meta_Data  Step_Count  \\\n",
        "0.0  20240201100904-CheckUp-3-7-AM23NMC00009.xlsx U...           0   \n",
-       "1.0                                               None           0   \n",
-       "2.0                                               None           0   \n",
-       "3.0                                               None           0   \n",
-       "4.0                                               None           0   \n",
-       "5.0                                               None           0   \n",
+       "1.0                                                NaN           0   \n",
+       "2.0                                                NaN           0   \n",
+       "3.0                                                NaN           0   \n",
+       "4.0                                                NaN           0   \n",
+       "5.0                                                NaN           0   \n",
        "\n",
        "     Voltage[V]  Current[A]  Temperature[°C]  Test_Time[s]  \\\n",
        "0.0      3.5269      1.4378             27.8           0.0   \n",
@@ -148,7 +195,7 @@
        "    </tr>\n",
        "    <tr>\n",
        "      <th>1.0</th>\n",
-       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
        "      <td>0</td>\n",
        "      <td>3.5287</td>\n",
        "      <td>1.4398</td>\n",
@@ -162,7 +209,7 @@
        "    </tr>\n",
        "    <tr>\n",
        "      <th>2.0</th>\n",
-       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
        "      <td>0</td>\n",
        "      <td>3.5298</td>\n",
        "      <td>1.4400</td>\n",
@@ -176,7 +223,7 @@
        "    </tr>\n",
        "    <tr>\n",
        "      <th>3.0</th>\n",
-       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
        "      <td>0</td>\n",
        "      <td>3.5307</td>\n",
        "      <td>1.4400</td>\n",
@@ -190,7 +237,7 @@
        "    </tr>\n",
        "    <tr>\n",
        "      <th>4.0</th>\n",
-       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
        "      <td>0</td>\n",
        "      <td>3.5315</td>\n",
        "      <td>1.4401</td>\n",
@@ -204,7 +251,7 @@
        "    </tr>\n",
        "    <tr>\n",
        "      <th>5.0</th>\n",
-       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
        "      <td>0</td>\n",
        "      <td>3.5323</td>\n",
        "      <td>1.4401</td>\n",
@@ -221,32 +268,26 @@
        "</div>"
       ]
      },
-     "execution_count": 3,
+     "execution_count": 5,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
-   "execution_count": 3
+   "execution_count": 5
   },
   {
    "cell_type": "markdown",
-   "id": "210c4b6c8f766fc6",
-   "metadata": {},
-   "source": "## Step 1: Write the data into a file"
-  },
-  {
-   "cell_type": "markdown",
-   "id": "988f62bef4ec5772",
+   "id": "5cc543a14f830448",
    "metadata": {},
    "source": "Save the data to the file \"Tutorial_01_Data.parquet\":"
   },
   {
    "cell_type": "code",
-   "id": "ef11de9f838bb9a",
+   "id": "b9d1068398e21b68",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-06-13T20:48:12.474834Z",
-     "start_time": "2026-06-13T20:48:12.403262900Z"
+     "end_time": "2026-07-06T09:01:00.870692200Z",
+     "start_time": "2026-07-06T09:01:00.819323900Z"
     }
    },
    "source": [
@@ -255,11 +296,11 @@
     ")"
    ],
    "outputs": [],
-   "execution_count": 4
+   "execution_count": 6
   },
   {
    "cell_type": "markdown",
-   "id": "b67a82a4f2d9aebd",
+   "id": "57a4aae52b73d9a9",
    "metadata": {},
    "source": [
     "<div class=\"alert alert-block alert-info\">\n",
@@ -269,11 +310,11 @@
   },
   {
    "cell_type": "code",
-   "id": "81c0df0f6dbcf62a",
+   "id": "4aa33f543ba28c48",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-06-13T20:48:12.948615200Z",
-     "start_time": "2026-06-13T20:48:12.475347400Z"
+     "end_time": "2026-07-06T09:01:01.234479100Z",
+     "start_time": "2026-07-06T09:01:00.871209400Z"
     }
    },
    "source": [
@@ -285,7 +326,7 @@
     ")"
    ],
    "outputs": [],
-   "execution_count": 5
+   "execution_count": 7
   }
  ],
  "metadata": {

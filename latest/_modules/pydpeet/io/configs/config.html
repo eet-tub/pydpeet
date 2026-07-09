@@ -439,8 +439,8 @@
                 <article class="bd-article">
                   
   <h1>Source code for pydpeet.io.configs.config</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span><span class="p">,</span> <span class="n">nonmember</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
@@ -506,6 +506,19 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.zahner_new.reader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">zahner_new_reader</span>
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">_FiletypeIterable</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metaclass that makes a filetype group iterable over its _ALL set.&quot;&quot;&quot;</span>
+
+    <span class="c1"># type annotation to _FiletypeIterable metaclass (forward reference via string) so mypy knows the attribute exists</span>
+    <span class="n">_ALL</span><span class="p">:</span> <span class="s2">&quot;tuple[ReadConfig, ...]&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_ALL</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_ALL</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="ReadConfig">
 <a class="viewcode-back" href="../../../../_autosummary/pydpeet.ReadConfig.html#pydpeet.ReadConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ReadConfig</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -513,20 +526,41 @@
 <span class="sd">    Links device specific reader, formatter and mapper via enums.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">Zahner_1</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Zahner_2</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Zahner_new_1</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Zahner_new_2</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Zahner_new_3</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Safion_1_9</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Parstat_2_63_3</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Neware_8_0_0_516</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Digatron_4_20_6_236</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Digatron_EIS_4_20_6_236</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">BaSyTec_6_3_1_0</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Arbin_8_00_PV221201</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">Arbin_4_23_PV090331</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">Zahner_1</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt / .csv</span>
+    <span class="n">Zahner_2</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt / .csv</span>
+    <span class="n">Zahner_new_1</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt / .csv</span>
+    <span class="n">Zahner_new_2</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt / .csv</span>
+    <span class="n">Zahner_new_3</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt / .csv</span>
+    <span class="n">Safion_1_9</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt</span>
+    <span class="n">Parstat_2_63_3</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt / .csv</span>
+    <span class="n">Neware_8_0_0_516</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .xls / .xlsx</span>
+    <span class="n">Digatron_4_20_6_236</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .csv</span>
+    <span class="n">Digatron_EIS_4_20_6_236</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .csv</span>
+    <span class="n">BaSyTec_6_3_1_0</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt</span>
+    <span class="n">Arbin_8_00_PV221201</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .xls / .xlsx</span>
+    <span class="n">Arbin_4_23_PV090331</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .xls / .xlsx</span>
     <span class="n">Custom</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ReadConfig.Excel">
+<a class="viewcode-back" href="../../../../_autosummary/pydpeet.ReadConfig.html#pydpeet.ReadConfig.Excel">[docs]</a>
+    <span class="nd">@nonmember</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Excel</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_FiletypeIterable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ReadConfigs for Excel files (.xls/.xlsx).&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ReadConfig.Csv">
+<a class="viewcode-back" href="../../../../_autosummary/pydpeet.ReadConfig.html#pydpeet.ReadConfig.Csv">[docs]</a>
+    <span class="nd">@nonmember</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Csv</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_FiletypeIterable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ReadConfigs for CSV files.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ReadConfig.Text">
+<a class="viewcode-back" href="../../../../_autosummary/pydpeet.ReadConfig.html#pydpeet.ReadConfig.Text">[docs]</a>
+    <span class="nd">@nonmember</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Text</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_FiletypeIterable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ReadConfigs for text files.&quot;&quot;&quot;</span></div>
+
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ReadConfig&quot;</span><span class="p">:</span>
@@ -586,6 +620,36 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">_exists</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
+
+
+<span class="c1"># filetype groupings for automatic selection</span>
+<span class="n">_EXTENSION_GROUPS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ReadConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;.xls&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Excel</span><span class="p">,</span>
+    <span class="s2">&quot;.xlsx&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Excel</span><span class="p">,</span>
+    <span class="s2">&quot;.csv&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Csv</span><span class="p">,</span>
+    <span class="s2">&quot;.txt&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Text</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># order changes Priority, we choose Alphabetical order</span>
+<span class="n">ReadConfig</span><span class="o">.</span><span class="n">Excel</span><span class="o">.</span><span class="n">_ALL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_4_23_PV090331</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_8_00_PV221201</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Neware_8_0_0_516</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ReadConfig</span><span class="o">.</span><span class="n">Csv</span><span class="o">.</span><span class="n">_ALL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_4_20_6_236</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_EIS_4_20_6_236</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ReadConfig</span><span class="o">.</span><span class="n">Text</span><span class="o">.</span><span class="n">_ALL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BaSyTec_6_3_1_0</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Parstat_2_63_3</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Safion_1_9</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Zahner_1</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Zahner_2</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Zahner_new_1</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Zahner_new_2</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Zahner_new_3</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">_STANDARD_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>

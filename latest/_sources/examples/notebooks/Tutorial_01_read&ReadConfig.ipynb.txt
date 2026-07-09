@@ -17,8 +17,8 @@
    "id": "58397ba8ff808582",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:07.442886400Z",
-     "start_time": "2026-07-03T09:05:00.214609700Z"
+     "end_time": "2026-07-09T11:05:36.128823300Z",
+     "start_time": "2026-07-09T11:05:30.026815600Z"
     }
    },
    "source": [
@@ -38,8 +38,8 @@
    "id": "7af553025c97dd2d",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:07.492038100Z",
-     "start_time": "2026-07-03T09:05:07.457147200Z"
+     "end_time": "2026-07-09T11:05:36.141812400Z",
+     "start_time": "2026-07-09T11:05:36.130854700Z"
     }
    },
    "source": [
@@ -61,8 +61,8 @@
    "id": "8751e097bcfc3f4e",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:11.893014Z",
-     "start_time": "2026-07-03T09:05:07.497043800Z"
+     "end_time": "2026-07-09T11:05:39.220628200Z",
+     "start_time": "2026-07-09T11:05:36.143890100Z"
     }
    },
    "source": [
@@ -79,8 +79,8 @@
    "id": "d8235c6947babeb",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:11.982786800Z",
-     "start_time": "2026-07-03T09:05:11.894039200Z"
+     "end_time": "2026-07-09T11:05:39.310421100Z",
+     "start_time": "2026-07-09T11:05:39.223259300Z"
     }
    },
    "source": [
@@ -429,8 +429,8 @@
    "id": "c3fcfe2cc5eee2be",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:11.994126800Z",
-     "start_time": "2026-07-03T09:05:11.988824800Z"
+     "end_time": "2026-07-09T11:05:39.318889900Z",
+     "start_time": "2026-07-09T11:05:39.312929200Z"
     }
    },
    "source": [
@@ -460,11 +460,13 @@
    "id": "7d2cb8e21fc032cb",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:12.000716500Z",
-     "start_time": "2026-07-03T09:05:11.995671900Z"
+     "end_time": "2026-07-09T11:05:39.326497Z",
+     "start_time": "2026-07-09T11:05:39.320517600Z"
     }
    },
-   "source": "config = eet.ReadConfig.Neware_8_0_0_516",
+   "source": [
+    "config = eet.ReadConfig.Neware_8_0_0_516"
+   ],
    "outputs": [],
    "execution_count": 6
   },
@@ -473,11 +475,13 @@
    "id": "74b5b34d581001c3",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:16.015996700Z",
-     "start_time": "2026-07-03T09:05:12.001219900Z"
+     "end_time": "2026-07-09T11:05:43.548796400Z",
+     "start_time": "2026-07-09T11:05:39.326497Z"
     }
    },
-   "source": "standardized_data = eet.read(input_path=str(data_folder_path / \"Cal_Ageing_Checkup1.xlsx\"), config=config)",
+   "source": [
+    "standardized_data = eet.read(input_path=str(data_folder_path / \"Cal_Ageing_Checkup1.xlsx\"), config=config)"
+   ],
    "outputs": [],
    "execution_count": 7
   },
@@ -492,8 +496,8 @@
    "id": "500fd3975f9a6209",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:16.031992500Z",
-     "start_time": "2026-07-03T09:05:16.017615200Z"
+     "end_time": "2026-07-09T11:05:43.573941100Z",
+     "start_time": "2026-07-09T11:05:43.550033700Z"
     }
    },
    "source": [
@@ -657,25 +661,27 @@
    "execution_count": 8
   },
   {
-   "metadata": {},
    "cell_type": "markdown",
+   "id": "3e4e7bdf5cd78c3a",
+   "metadata": {},
    "source": [
     "<div class=\"alert alert-block alert-warning\">\n",
     "<b>Warning:</b> Columns that contain only empty values are assigned the \"object\" dtype. After saving and reloading the file, pandas may silently infer a different dtype for these columns unless the dtype is explicitly defined during import. That's why we opted to directly initalize them with \"object\" dtype.\n",
     "</div>"
-   ],
-   "id": "3e4e7bdf5cd78c3a"
+   ]
   },
   {
+   "cell_type": "code",
+   "id": "8c19f08c98507d51",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:16.066780100Z",
-     "start_time": "2026-07-03T09:05:16.039124700Z"
+     "end_time": "2026-07-09T11:05:43.590450200Z",
+     "start_time": "2026-07-09T11:05:43.574945900Z"
     }
    },
-   "cell_type": "code",
-   "source": "print(standardized_data.dtypes)",
-   "id": "8c19f08c98507d51",
+   "source": [
+    "print(standardized_data.dtypes)"
+   ],
    "outputs": [
     {
      "name": "stdout",
@@ -703,8 +709,8 @@
    "id": "6361b67caf0829b2",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:16.711411300Z",
-     "start_time": "2026-07-03T09:05:16.068288Z"
+     "end_time": "2026-07-09T11:05:44.268676200Z",
+     "start_time": "2026-07-09T11:05:43.592453500Z"
     }
    },
    "source": [
@@ -766,8 +772,8 @@
    "id": "a196a9a1a9320710",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:21.129649900Z",
-     "start_time": "2026-07-03T09:05:16.712989100Z"
+     "end_time": "2026-07-09T11:05:49.159203900Z",
+     "start_time": "2026-07-09T11:05:44.268676200Z"
     }
    },
    "source": [
@@ -783,8 +789,8 @@
    "id": "531a43c30f0a5e05",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:21.158338Z",
-     "start_time": "2026-07-03T09:05:21.130649200Z"
+     "end_time": "2026-07-09T11:05:49.190072700Z",
+     "start_time": "2026-07-09T11:05:49.159837900Z"
     }
    },
    "source": [
@@ -1059,11 +1065,13 @@
    "id": "1179ce54edabd085",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:38.556867600Z",
-     "start_time": "2026-07-03T09:05:21.159902700Z"
+     "end_time": "2026-07-09T11:06:07.552584100Z",
+     "start_time": "2026-07-09T11:05:49.194585400Z"
     }
    },
-   "source": "standardized_data_list = eet.read(input_path=str(data_folder_path), config=config)",
+   "source": [
+    "standardized_data_list = eet.read(input_path=str(data_folder_path), config=config)"
+   ],
    "outputs": [],
    "execution_count": 13
   },
@@ -1072,8 +1080,8 @@
    "id": "94cb7c4e90c8b034",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2026-07-03T09:05:39.127645900Z",
-     "start_time": "2026-07-03T09:05:38.558370800Z"
+     "end_time": "2026-07-09T11:06:08.129751Z",
+     "start_time": "2026-07-09T11:06:07.552584100Z"
     }
    },
    "source": [
@@ -1119,6 +1127,206 @@
     }
    ],
    "execution_count": 14
+  },
+  {
+   "cell_type": "markdown",
+   "id": "960316ca41586f14",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-info\">\n",
+    "<b>Hint:</b> It is also possible to call read without a config. It will then go alphabetically through all configs and returns the first non failing one.\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "adb777f59d603141",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-warning\">\n",
+    "<b>Warning:</b> Using no config is prone to Errors, so always doublecheck if the correct configs where used.\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "bbd76104cb5a42c2",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-07-09T11:07:06.005552600Z",
+     "start_time": "2026-07-09T11:06:08.129751Z"
+    }
+   },
+   "source": "data_with_automatically_selected_config = eet.read(input_path=str(data_folder_path))",
+   "outputs": [],
+   "execution_count": 15
+  },
+  {
+   "cell_type": "code",
+   "id": "6b7db31c33465838",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-07-09T11:08:41.231618400Z",
+     "start_time": "2026-07-09T11:08:41.199315200Z"
+    }
+   },
+   "source": "data_with_automatically_selected_config[0].head(6)",
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "                                             Meta_Data  Step_Count  \\\n",
+       "0.0  20240201100904-CheckUp-3-7-AM23NMC00009.xlsx U...           0   \n",
+       "1.0                                                NaN           0   \n",
+       "2.0                                                NaN           0   \n",
+       "3.0                                                NaN           0   \n",
+       "4.0                                                NaN           0   \n",
+       "5.0                                                NaN           0   \n",
+       "\n",
+       "     Voltage[V]  Current[A]  Temperature[°C]  Test_Time[s]  \\\n",
+       "0.0      3.5269      1.4378             27.8           0.0   \n",
+       "1.0      3.5287      1.4398             27.8           1.0   \n",
+       "2.0      3.5298      1.4400             27.8           2.0   \n",
+       "3.0      3.5307      1.4400             27.8           3.0   \n",
+       "4.0      3.5315      1.4401             27.8           4.0   \n",
+       "5.0      3.5323      1.4401             27.8           5.0   \n",
+       "\n",
+       "              Date_Time EIS_f[Hz] EIS_Z_Real[Ohm] EIS_Z_Imag[Ohm] EIS_DC[A]  \n",
+       "0.0 2024-02-01 10:09:04      None            None            None      None  \n",
+       "1.0 2024-02-01 10:09:05      None            None            None      None  \n",
+       "2.0 2024-02-01 10:09:06      None            None            None      None  \n",
+       "3.0 2024-02-01 10:09:07      None            None            None      None  \n",
+       "4.0 2024-02-01 10:09:08      None            None            None      None  \n",
+       "5.0 2024-02-01 10:09:09      None            None            None      None  "
+      ],
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Meta_Data</th>\n",
+       "      <th>Step_Count</th>\n",
+       "      <th>Voltage[V]</th>\n",
+       "      <th>Current[A]</th>\n",
+       "      <th>Temperature[°C]</th>\n",
+       "      <th>Test_Time[s]</th>\n",
+       "      <th>Date_Time</th>\n",
+       "      <th>EIS_f[Hz]</th>\n",
+       "      <th>EIS_Z_Real[Ohm]</th>\n",
+       "      <th>EIS_Z_Imag[Ohm]</th>\n",
+       "      <th>EIS_DC[A]</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0.0</th>\n",
+       "      <td>20240201100904-CheckUp-3-7-AM23NMC00009.xlsx U...</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5269</td>\n",
+       "      <td>1.4378</td>\n",
+       "      <td>27.8</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>2024-02-01 10:09:04</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1.0</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5287</td>\n",
+       "      <td>1.4398</td>\n",
+       "      <td>27.8</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2024-02-01 10:09:05</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2.0</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5298</td>\n",
+       "      <td>1.4400</td>\n",
+       "      <td>27.8</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>2024-02-01 10:09:06</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3.0</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5307</td>\n",
+       "      <td>1.4400</td>\n",
+       "      <td>27.8</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>2024-02-01 10:09:07</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4.0</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5315</td>\n",
+       "      <td>1.4401</td>\n",
+       "      <td>27.8</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>2024-02-01 10:09:08</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5.0</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5323</td>\n",
+       "      <td>1.4401</td>\n",
+       "      <td>27.8</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>2024-02-01 10:09:09</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 19
   }
  ],
  "metadata": {

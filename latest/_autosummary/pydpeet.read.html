@@ -508,129 +508,24 @@
 <h1>pydpeet.read<a class="headerlink" href="#pydpeet-read" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pydpeet.read">
-<span class="sig-prename descclassname"><span class="pre">pydpeet.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_all_additional_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_folder_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydpeet/io/read.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydpeet.read" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pydpeet.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_all_additional_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_folder_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydpeet/io/read.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydpeet.read" title="Link to this definition">#</a></dt>
 <dd><p>Read and convert battery test data into the unified PyDPEET format.</p>
-<p>This is the main high-level import function of PyDPEET. The function
-automatically detects whether the provided input path points to a file,
-a directory, or a list of files/directories and converts the contained
-battery test data into the unified PyDPEET dataframe format.</p>
-<p>Depending on the provided input, the function either returns a single
-dataframe or a list of dataframes.</p>
-<p>The conversion itself is performed using the selected device configuration.</p>
+<p>Convenience wrapper around <a class="reference internal" href="pydpeet.convert.html#pydpeet.convert" title="pydpeet.convert"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert()</span></code></a> that always returns DataFrames
+(no <code class="docutils literal notranslate"><span class="pre">output_path</span></code> for saving files).</p>
+<p>See <a class="reference internal" href="pydpeet.convert.html#pydpeet.convert" title="pydpeet.convert"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert()</span></code></a> for full documentation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>config</strong> (<em>ConfigLike</em>) – <p>Device configuration used for parsing and mapping the raw battery
-test data into the unified PyDPEET format.</p>
-<p>This can either be:</p>
-<ul>
-<li><p>a predefined PyDPEET configuration</p></li>
-<li><p>a custom configuration object</p></li>
-<li><p>a configuration dictionary</p></li>
-</ul>
-</p></li>
-<li><p><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – <p>Path to the input data.</p>
-<p>Supported inputs are:</p>
-<ul>
-<li><p>path to a single raw data file</p></li>
-<li><p>path to a directory containing raw data files</p></li>
-<li><p>list of file and/or directory paths</p></li>
-</ul>
-</p></li>
-<li><p><strong>keep_all_additional_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, all additional columns that are not part of the unified
-PyDPEET format are preserved in the returned dataframe.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only standardized PyDPEET columns are kept.</p>
-</p></li>
-<li><p><strong>custom_folder_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em><em>, </em><em>default=None</em>) – Optional custom folder path used by specific device configurations
-that require additional external metadata or lookup files.</p></li>
+<li><p><strong>config</strong> (<em>TypeAliasForwardRef</em><em>(</em><em>'pydpeet.settings.ConfigLike'</em><em>) </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>)</p></li>
+<li><p><strong>keep_all_additional_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>custom_folder_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>Converted dataframe(s) in the unified PyDPEET format.</p>
-<ul class="simple">
-<li><p>If a single file or directory is provided, a single dataframe is returned.</p></li>
-<li><p>If a list of paths is provided, a list of dataframes is returned.</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.4)"><em>DataFrame</em></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>[<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.4)"><em>DataFrame</em></a>]</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – Raised if:
-    
-    - the provided input path does not exist
-    - an input path has an invalid type
-    - a list contains unsupported entries</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.4)"><em>DataFrame</em></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>[<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.4)"><em>DataFrame</em></a>]</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The returned dataframe follows the standardized PyDPEET format
-contains following columns, when available in the raw data and depending on the selected device configuration:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Date_Time</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Test_Time[s]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Voltage[V]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Current[A]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Step_Count</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Temperature[°C]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EIS_f[Hz]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EIS_Z_Real[Ohm]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EIS_Z_Imag[Ohm]</span></code></p></li>
-</ul>
-<p>depending on the available raw data and the selected device configuration.</p>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<dl class="simple">
-<dt>More Usage Examples can be found in following tutorial notebooks:</dt><dd><p><span class="xref std std-doc">Tutorial 01: Convert and Import</span></p>
-</dd>
-</dl>
-<p>Read a single file:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eet</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">eet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="s2">&quot;neware_8_0_0_516&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">input_path</span><span class="o">=</span><span class="s2">&quot;measurement.csv&quot;</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Read all files in a directory:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">eet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="s2">&quot;neware_8_0_0_516&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">input_path</span><span class="o">=</span><span class="s2">&quot;data/&quot;</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Read multiple files and directories:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dfs</span> <span class="o">=</span> <span class="n">eet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="s2">&quot;neware_8_0_0_516&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">input_path</span><span class="o">=</span><span class="p">[</span>
-<span class="gp">... </span>        <span class="s2">&quot;measurement_01.csv&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="s2">&quot;measurement_02.csv&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="s2">&quot;folder_with_measurements/&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="p">],</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Keep additional raw columns:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">eet</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="s2">&quot;neware_8_0_0_516&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">input_path</span><span class="o">=</span><span class="s2">&quot;measurement.csv&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">keep_all_additional_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="pydpeet.convert.html#pydpeet.convert" title="pydpeet.convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert</span></code></a></dt><dd><p>Lower-level conversion interface.</p>
-</dd>
-<dt><a class="reference internal" href="pydpeet.write.html#pydpeet.write" title="pydpeet.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a></dt><dd><p>Export unified PyDPEET dataframes.</p>
-</dd>
-<dt><a class="reference internal" href="pydpeet.merge_into_series.html#pydpeet.merge_into_series" title="pydpeet.merge_into_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_into_series</span></code></a></dt><dd><p>Merge multiple datasets into a continuous series.</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 </section>

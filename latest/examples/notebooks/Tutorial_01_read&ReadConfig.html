@@ -1277,6 +1277,149 @@ standardized_data_list[3].plot(x=&quot;Date_Time&quot;, y=&quot;Current[A]&quot;
 <img alt="../../_images/examples_notebooks_Tutorial_01_read%26ReadConfig_24_2.png" src="../../_images/examples_notebooks_Tutorial_01_read%26ReadConfig_24_2.png" />
 </div>
 </div>
+<div class="alert alert-block alert-info"><p>Hint: It is also possible to call read without a config. It will then go alphabetically through all configs and returns the first non failing one.</p>
+</div><div class="alert alert-block alert-warning"><p>Warning: Using no config is prone to Errors, so always doublecheck if the correct configs where used.</p>
+</div><div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span>data_with_automatically_selected_config = eet.read(input_path=str(data_folder_path))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span>data_with_automatically_selected_config[0].head(6)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Meta_Data</th>
+      <th>Step_Count</th>
+      <th>Voltage[V]</th>
+      <th>Current[A]</th>
+      <th>Temperature[°C]</th>
+      <th>Test_Time[s]</th>
+      <th>Date_Time</th>
+      <th>EIS_f[Hz]</th>
+      <th>EIS_Z_Real[Ohm]</th>
+      <th>EIS_Z_Imag[Ohm]</th>
+      <th>EIS_DC[A]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0.0</th>
+      <td>20240201100904-CheckUp-3-7-AM23NMC00009.xlsx U...</td>
+      <td>0</td>
+      <td>3.5269</td>
+      <td>1.4378</td>
+      <td>27.8</td>
+      <td>0.0</td>
+      <td>2024-02-01 10:09:04</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1.0</th>
+      <td>NaN</td>
+      <td>0</td>
+      <td>3.5287</td>
+      <td>1.4398</td>
+      <td>27.8</td>
+      <td>1.0</td>
+      <td>2024-02-01 10:09:05</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2.0</th>
+      <td>NaN</td>
+      <td>0</td>
+      <td>3.5298</td>
+      <td>1.4400</td>
+      <td>27.8</td>
+      <td>2.0</td>
+      <td>2024-02-01 10:09:06</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3.0</th>
+      <td>NaN</td>
+      <td>0</td>
+      <td>3.5307</td>
+      <td>1.4400</td>
+      <td>27.8</td>
+      <td>3.0</td>
+      <td>2024-02-01 10:09:07</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4.0</th>
+      <td>NaN</td>
+      <td>0</td>
+      <td>3.5315</td>
+      <td>1.4401</td>
+      <td>27.8</td>
+      <td>4.0</td>
+      <td>2024-02-01 10:09:08</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>5.0</th>
+      <td>NaN</td>
+      <td>0</td>
+      <td>3.5323</td>
+      <td>1.4401</td>
+      <td>27.8</td>
+      <td>5.0</td>
+      <td>2024-02-01 10:09:09</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
 </section>
 </section>
 
