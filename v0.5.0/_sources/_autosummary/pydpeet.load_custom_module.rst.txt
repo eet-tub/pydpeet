@@ -1,0 +1,12 @@
+﻿pydpeet.load\_custom\_module
+============================
+
+.. automodule:: pydpeet.load_custom_module
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      load_custom_module
+   

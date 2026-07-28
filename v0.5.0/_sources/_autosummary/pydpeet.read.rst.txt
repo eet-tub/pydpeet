@@ -1,0 +1,6 @@
+﻿pydpeet.read
+============
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: read

@@ -1,0 +1,6 @@
+﻿pydpeet.merge\_into\_campaign
+=============================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: merge_into_campaign

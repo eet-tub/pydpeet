@@ -1,0 +1,6 @@
+﻿pydpeet.add\_equivalent\_full\_cycles
+=====================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_equivalent_full_cycles

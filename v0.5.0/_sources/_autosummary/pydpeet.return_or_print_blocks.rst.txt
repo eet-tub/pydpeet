@@ -1,0 +1,6 @@
+﻿pydpeet.return\_or\_print\_blocks
+=================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: return_or_print_blocks
