@@ -1,3 +1,16 @@
+# 0.4.1
+
+Contributions from:
+- Daniel Schröder (daniel_shr)
+
+Bugfixes:
+- updated API to use correct function name extract_instructions
+- loosened up dependencies too major version (e.g. 3.X.Y) if dependency is over version 1.0 to increase compatibility
+
+Tasks:
+- updated CI to check if project is installable on python 3.12-3.14
+- updated CI to check test coverage (now fails on missing tests for a variable, duplicates, deprecations)
+
 # 0.4.0
 
 Contributions from:
