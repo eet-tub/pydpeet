@@ -440,7 +440,6 @@
                   
   <h1>Source code for pydpeet.process.sequence.utils.visualize.visualize_data</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tk</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -450,20 +449,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.utils.guardrails</span><span class="w"> </span><span class="kn">import</span> <span class="n">_guardrail_boolean</span><span class="p">,</span> <span class="n">_guardrail_dataframe</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.utils.log_time</span><span class="w"> </span><span class="kn">import</span> <span class="n">_log_time</span>
 
-<span class="c1"># -------------------------------------------------------------------</span>
-<span class="c1"># Compute screen dimensions once</span>
-<span class="c1"># -------------------------------------------------------------------</span>
 <span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tk</span>
+
     <span class="n">_root</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="p">()</span>
     <span class="n">_root</span><span class="o">.</span><span class="n">withdraw</span><span class="p">()</span>
     <span class="n">_root</span><span class="o">.</span><span class="n">update_idletasks</span><span class="p">()</span>
     <span class="n">_SCREEN_DIMS</span> <span class="o">=</span> <span class="p">(</span><span class="n">_root</span><span class="o">.</span><span class="n">winfo_screenwidth</span><span class="p">(),</span> <span class="n">_root</span><span class="o">.</span><span class="n">winfo_screenheight</span><span class="p">())</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">_root</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
-    <span class="k">except</span> <span class="n">tk</span><span class="o">.</span><span class="n">TclError</span><span class="p">:</span>
-        <span class="k">pass</span>
-<span class="k">except</span> <span class="n">tk</span><span class="o">.</span><span class="n">TclError</span><span class="p">:</span>
+    <span class="n">_root</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
     <span class="c1"># Fallback for headless environments (CI, Docker, etc.)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to get screen dimensions, using fallback values.&quot;</span><span class="p">)</span>
     <span class="n">_SCREEN_DIMS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>
 
 
