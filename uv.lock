@@ -1709,16 +1709,16 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bibtexparser", specifier = "~=1.4" },
-    { name = "ipykernel", specifier = "~=7.2" },
-    { name = "matplotlib", specifier = "~=3.10" },
-    { name = "numba", specifier = "~=0.64" },
-    { name = "numpy", specifier = "~=2.3" },
+    { name = "bibtexparser", specifier = "~=1.0" },
+    { name = "ipykernel", specifier = "~=7.0" },
+    { name = "matplotlib", specifier = "~=3.0" },
+    { name = "numba", specifier = "~=0.64.0" },
+    { name = "numpy", specifier = "~=2.0" },
     { name = "pandas", specifier = "~=3.0" },
     { name = "pyarrow", specifier = "~=25.0" },
-    { name = "python-calamine", specifier = "~=0.3" },
-    { name = "scikit-learn", specifier = "~=1.8" },
-    { name = "scipy", specifier = "~=1.17" },
+    { name = "python-calamine", specifier = "~=0.3.0" },
+    { name = "scikit-learn", specifier = "~=1.0" },
+    { name = "scipy", specifier = "~=1.0" },
 ]
 
 [package.metadata.requires-dev]
