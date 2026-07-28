@@ -54,12 +54,38 @@ jobs:
       - name: mypy
         run: uv run pre-commit run mypy --all-files --show-diff-on-failure
 
+  #------------------------#
+  #--- PYTHON-VERSIONS INSTALL-CHECK --#
+  #------------------------#
+  install-check:
+    runs-on: ubuntu-latest
+    needs: mypy
+    strategy:
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.13"
+          - "3.14"
+    steps:
+      - name: init
+        uses: actions/checkout@v6
+      - name: python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: install
+        run: uv sync --frozen
+
   #------------#
   #--- TEST ---#
   #------------#
   test:
     runs-on: ubuntu-latest
-    needs: mypy
+    needs: install-check
     steps:
       - name: init
         uses: actions/checkout@v6
@@ -68,7 +94,7 @@ jobs:
       - name: python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: uv
         uses: astral-sh/setup-uv@v7
         with:
