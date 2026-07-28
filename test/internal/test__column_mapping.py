@@ -2,13 +2,6 @@
 # Fill in real tests and remove or adjust placeholders
 
 
-class Test__column_mapping_data_frame:
-    """Placeholder failing test for variable 'data_frame' of '_column_mapping'."""
-
-    def test_placeholder(self):
-        raise AssertionError("Test not implemented for variable: data_frame of _column_mapping")
-
-
 class Test__column_mapping_config:
     """Placeholder failing test for variable 'config' of '_column_mapping'."""
 

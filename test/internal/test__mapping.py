@@ -23,7 +23,7 @@ def base_args():
     }
 
 
-class Test_mapping_data_frame:
+class Test__mapping_data_frame:
     def test_valid(self, base_args):
         original_df = base_args["data_frame"].copy()
         result = _mapping(**base_args)
@@ -81,17 +81,15 @@ class Test_mapping_data_frame:
         assert all(col in result.columns for col in Mocks.Mock_mapping.add_columns)
 
 
-class Test_mapping_column_map:
-    """Placeholder failing test for variable 'column_map' of 'mapping'."""
+class Test__mapping_column_map:
+    """Placeholder failing test for variable 'column_map' of '_mapping'."""
 
-    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: column_map of mapping")
+        raise NotImplementedError("Test not implemented for variable: column_map of _mapping")
 
 
-class Test_mapping_missing_columns:
-    """Placeholder failing test for variable 'missing_columns' of 'mapping'."""
+class Test__mapping_missing_columns:
+    """Placeholder failing test for variable 'missing_columns' of '_mapping'."""
 
-    @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: missing_columns of mapping")
+        raise NotImplementedError("Test not implemented for variable: missing_columns of _mapping")

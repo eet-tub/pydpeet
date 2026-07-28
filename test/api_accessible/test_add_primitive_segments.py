@@ -84,328 +84,226 @@ class Test_add_primitive_segments_df:
         )
 
 
-class Test_add_primitive_segments_STEP_ANALYZER_PRIMITIVES_CONFIG:
-    """Placeholder failing test for variable 'STEP_ANALYZER_PRIMITIVES_CONFIG' of 'add_primitive_segments'."""
+class Test_add_primitive_segments_config:
+    def test_valid(self, base_args):
+        original_df = base_args["df"].copy()
+        result = add_primitive_segments(**base_args)
+        assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
+        assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
+        expected = Mocks.Mock_add_primitive_segments.df_expected
+        assert pd.DataFrame.equals(result, expected)
 
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: STEP_ANALYZER_PRIMITIVES_CONFIG of add_primitive_segments"
-        )
+    def test_none(self, base_args):
+        base_args["config"] = None
+        _assert_raises_and_print(AttributeError, add_primitive_segments, **base_args)
 
+    def test_wrong_type(self, base_args):
+        base_args["config"] = "wrong type"
+        assert not isinstance(base_args["config"], dict)
+        _assert_raises_and_print(AttributeError, add_primitive_segments, **base_args)
 
-class Test_add_primitive_segments_SEGMENTS_TO_DETECT_CONFIG:
-    """Placeholder failing test for variable 'SEGMENTS_TO_DETECT_CONFIG' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: SEGMENTS_TO_DETECT_CONFIG of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_ADJUST_SEGMENTS_CONFIG:
-    """Placeholder failing test for variable 'ADJUST_SEGMENTS_CONFIG' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: ADJUST_SEGMENTS_CONFIG of add_primitive_segments")
-
-
-class Test_add_primitive_segments_THRESHOLDS_PRIMITIVE_ANNOTATION:
-    """Placeholder failing test for variable 'THRESHOLDS_PRIMITIVE_ANNOTATION' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: THRESHOLDS_PRIMITIVE_ANNOTATION of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_THRESHOLD_CV_SEGMENTS_0A_END:
-    """Placeholder failing test for variable 'THRESHOLD_CV_SEGMENTS_0A_END' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: THRESHOLD_CV_SEGMENTS_0A_END of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_CV_CHECK:
-    """Placeholder failing test for variable 'THRESHOLD_CONSOLE_PRINTS_CV_CHECK' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_CV_CHECK of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK:
-    """Placeholder failing test for variable 'THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_ZERO_LENGTH_CHECK of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH:
-    """Placeholder failing test for variable 'THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_FINETUNING_WIDTH of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK:
-    """Placeholder failing test for variable 'THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK' of 'add_primitive_segments'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: THRESHOLD_CONSOLE_PRINTS_POWER_ZERO_WATT_CHECK of add_primitive_segments"
-        )
-
-
-class Test_add_primitive_segments_SHOW_RUNTIME:
-    def test_true(self, base_args):
+    def test_show_runtime_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].show_runtime = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_false(self, base_args):
+    def test_show_runtime_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].show_runtime = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_none(self, base_args):
+    def test_show_runtime_none(self, base_args):
         base_args["config"].show_runtime = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_wrong_type(self, base_args):
+    def test_show_runtime_wrong_type(self, base_args):
         base_args["config"].show_runtime = "wrong type"
         assert not isinstance(base_args["config"].show_runtime, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
-
-class Test_add_primitive_segments_check_CV_0Aend_segments_bool:
-    def test_true(self, base_args):
+    def test_check_cv_0aend_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].check_cv_0aend_segments_bool = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_false(self, base_args):
+    def test_check_cv_0aend_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].check_cv_0aend_segments_bool = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_none(self, base_args):
+    def test_check_cv_0aend_none(self, base_args):
         base_args["config"].check_cv_0aend_segments_bool = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_wrong_type(self, base_args):
+    def test_check_cv_0aend_wrong_type(self, base_args):
         base_args["config"].check_cv_0aend_segments_bool = "wrong type"
         assert not isinstance(base_args["config"].check_cv_0aend_segments_bool, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
-
-class Test_add_primitive_segments_check_zero_length_segments_bool:
-    def test_true(self, base_args):
+    def test_check_zero_length_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].check_zero_length_segments_bool = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_false(self, base_args):
+    def test_check_zero_length_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].check_zero_length_segments_bool = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_none(self, base_args):
+    def test_check_zero_length_none(self, base_args):
         base_args["config"].check_zero_length_segments_bool = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_wrong_type(self, base_args):
+    def test_check_zero_length_wrong_type(self, base_args):
         base_args["config"].check_zero_length_segments_bool = "wrong type"
         assert not isinstance(base_args["config"].check_zero_length_segments_bool, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
-
-class Test_add_primitive_segments_check_Power_zero_W_segments_bool:
-    def test_true(self, base_args):
+    def test_check_power_zero_w_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].check_power_zero_w_segments_bool = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_false(self, base_args):
+    def test_check_power_zero_w_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].check_power_zero_w_segments_bool = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_none(self, base_args):
+    def test_check_power_zero_w_none(self, base_args):
         base_args["config"].check_power_zero_w_segments_bool = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
 
-    def test_wrong_type(self, base_args):
+    def test_check_power_zero_w_wrong_type(self, base_args):
         base_args["config"].check_power_zero_w_segments_bool = "wrong type"
         assert not isinstance(base_args["config"].check_power_zero_w_segments_bool, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
-
-class Test_add_primitive_segments_supress_IO_warnings:
-    def test_true(self, base_args):
+    def test_supress_io_warnings_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].supress_io_warnings = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_false(self, base_args):
+    def test_supress_io_warnings_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].supress_io_warnings = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_none(self, base_args):
+    def test_supress_io_warnings_none(self, base_args):
         base_args["config"].supress_io_warnings = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_wrong_type(self, base_args):
+    def test_supress_io_warnings_wrong_type(self, base_args):
         base_args["config"].supress_io_warnings = "wrong type"
         assert not isinstance(base_args["config"].supress_io_warnings, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
-
-class Test_add_primitive_segments_PRECOMPILE:
-    def test_true(self, base_args):
+    def test_precompile_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].precompile = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_false(self, base_args):
+    def test_precompile_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].precompile = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_none(self, base_args):
+    def test_precompile_none(self, base_args):
         base_args["config"].precompile = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_wrong_type(self, base_args):
+    def test_precompile_wrong_type(self, base_args):
         base_args["config"].precompile = "wrong type"
         assert not isinstance(base_args["config"].precompile, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)
 
-
-class Test_add_primitive_segments_FORCE_PRECOMPILATION:
-    def test_true(self, base_args):
+    def test_force_precompilation_true(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].force_precompilation = True
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_false(self, base_args):
+    def test_force_precompilation_false(self, base_args):
         original_df = base_args["df"].copy()
         base_args["config"].force_precompilation = False
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_none(self, base_args):
+    def test_force_precompilation_none(self, base_args):
         base_args["config"].force_precompilation = None
-        # assume replaced with true
         original_df = base_args["df"].copy()
         result = add_primitive_segments(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_add_primitive_segments.add_columns)
         assert pd.DataFrame.equals(result.drop(Mocks.Mock_add_primitive_segments.add_columns, axis=1), original_df)
-        # Compare with expected result
         expected = Mocks.Mock_add_primitive_segments.df_expected
         assert pd.DataFrame.equals(result, expected)
 
-    def test_wrong_type(self, base_args):
+    def test_force_precompilation_wrong_type(self, base_args):
         base_args["config"].force_precompilation = "wrong type"
         assert not isinstance(base_args["config"].force_precompilation, bool)
         _assert_raises_and_print(ValueError, add_primitive_segments, **base_args)

@@ -19,12 +19,11 @@ def base_args():
     }
 
 
-class Test_generate_instructions_df_primitives:
+class Test_extract_instructions_df_primitives:
     def test_valid(self, base_args):
         result = extract_instructions(**base_args)
         assert isinstance(result, list)
         assert all(isinstance(item, str) for item in result)
-        # Compare with expected result
         expected = Mocks.Mock_generate_instructions.expected
         assert result == expected
 
@@ -69,8 +68,6 @@ class Test_generate_instructions_df_primitives:
         assert isinstance(result, list)
 
     def test_none_values(self, base_args, caplog):
-        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
-        # would be converted to NaN or throw the test_wrong_column_dtypes failure
         assert True
 
     def test_inf_values(self, base_args, caplog):
@@ -86,17 +83,17 @@ class Test_generate_instructions_df_primitives:
         assert isinstance(result, list)
 
 
-class Test_generate_instructions_end_condition_map:
-    """Placeholder failing test for variable 'end_condition_map' of 'generate_instructions'."""
+class Test_extract_instructions_end_condition_map:
+    """Placeholder failing test for variable 'end_condition_map' of 'extract_instructions'."""
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: end_condition_map of generate_instructions")
+        raise NotImplementedError("Test not implemented for variable: end_condition_map of extract_instructions")
 
 
-class Test_generate_instructions_threshold_warnings:
-    """Placeholder failing test for variable 'threshold_warnings' of 'generate_instructions'."""
+class Test_extract_instructions_threshold_warnings:
+    """Placeholder failing test for variable 'threshold_warnings' of 'extract_instructions'."""
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: threshold_warnings of generate_instructions")
+        raise NotImplementedError("Test not implemented for variable: threshold_warnings of extract_instructions")

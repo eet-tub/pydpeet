@@ -1,3 +1,22 @@
+# 0.5.0
+
+Contributions from:
+- Anton Schlösser (schlanto)
+- Daniel Schröder (daniel_shr)
+
+Features:
+- automatic reader selection - if no config is given in read() or convert() it'll go through all available ReadConfigs till the first works without errors [[#32](https://github.com/eet-tub/pydpeet/issues/32)]
+- added file creation capability to convert() if an output_path is given [[#33](https://github.com/eet-tub/pydpeet/issues/33)]
+
+Bugfixes:
+- updated API to use correct function name extract_instructions
+- loosened up dependencies too major version (e.g. 3.X.Y) if dependency is over version 1.0 to increase compatibility [[#34](https://github.com/eet-tub/pydpeet/issues/34)]
+
+Tasks:
+- Added Contributor Covenant Code of Conduct
+- updated CI to check if project is installable on python 3.12-3.14
+- updated CI to check test coverage (now fails on missing tests for a variable, duplicates, deprecations)
+
 # 0.4.0
 
 Contributions from:

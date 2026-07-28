@@ -87,38 +87,41 @@ class Test_extract_sequence_overview_df_primitives:
         assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
 
 
-class Test_extract_sequence_overview_SEGMENT_SEQUENCE_CONFIG:
-    """Placeholder failing test for variable 'SEGMENT_SEQUENCE_CONFIG' of 'extract_sequence_overview'."""
-
-    @pytest.mark.skip
-    def test_placeholder(self):
-        raise NotImplementedError(
-            "Test not implemented for variable: SEGMENT_SEQUENCE_CONFIG of extract_sequence_overview"
-        )
-
-
-class Test_extract_sequence_overview_SHOW_RUNTIME:
-    def test_true(self, base_args):
-        base_args["config"].show_runtime = True
+class Test_extract_sequence_overview_config:
+    def test_valid(self, base_args):
         result = extract_sequence_overview(**base_args)
         assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
-        # Compare with expected result
-        expected = Mocks.Mock_extract_sequence_overview.df_expected
-        assert pd.DataFrame.equals(result, expected)
-
-    def test_false(self, base_args):
-        base_args["config"].show_runtime = False
-        result = extract_sequence_overview(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
-        # Compare with expected result
         expected = Mocks.Mock_extract_sequence_overview.df_expected
         assert pd.DataFrame.equals(result, expected)
 
     def test_none(self, base_args):
+        base_args["config"] = None
+        _assert_raises_and_print(AttributeError, extract_sequence_overview, **base_args)
+
+    def test_wrong_type(self, base_args):
+        base_args["config"] = "wrong type"
+        assert not isinstance(base_args["config"], dict)
+        _assert_raises_and_print(AttributeError, extract_sequence_overview, **base_args)
+
+    def test_show_runtime_true(self, base_args):
+        base_args["config"].show_runtime = True
+        result = extract_sequence_overview(**base_args)
+        assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
+        expected = Mocks.Mock_extract_sequence_overview.df_expected
+        assert pd.DataFrame.equals(result, expected)
+
+    def test_show_runtime_false(self, base_args):
+        base_args["config"].show_runtime = False
+        result = extract_sequence_overview(**base_args)
+        assert all(col in result.columns for col in Mocks.Mock_extract_sequence_overview.add_columns)
+        expected = Mocks.Mock_extract_sequence_overview.df_expected
+        assert pd.DataFrame.equals(result, expected)
+
+    def test_show_runtime_none(self, base_args):
         base_args["config"].show_runtime = None
         _assert_raises_and_print(ValueError, extract_sequence_overview, **base_args)
 
-    def test_wrong_type(self, base_args):
+    def test_show_runtime_wrong_type(self, base_args):
         base_args["config"].show_runtime = "wrong type"
         assert not isinstance(base_args["config"].show_runtime, bool)
         _assert_raises_and_print(ValueError, extract_sequence_overview, **base_args)

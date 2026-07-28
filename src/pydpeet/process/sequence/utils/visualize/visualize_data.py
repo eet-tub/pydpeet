@@ -1,5 +1,4 @@
 import logging
-import tkinter as tk
 from typing import Optional
 
 import matplotlib.pyplot as plt
@@ -9,20 +8,17 @@ from pydpeet.process.sequence.configs.config import _VisualizationConfigClass
 from pydpeet.utils.guardrails import _guardrail_boolean, _guardrail_dataframe
 from pydpeet.utils.log_time import _log_time
 
-# -------------------------------------------------------------------
-# Compute screen dimensions once
-# -------------------------------------------------------------------
 try:
+    import tkinter as tk
+
     _root = tk.Tk()
     _root.withdraw()
     _root.update_idletasks()
     _SCREEN_DIMS = (_root.winfo_screenwidth(), _root.winfo_screenheight())
-    try:
-        _root.destroy()
-    except tk.TclError:
-        pass
-except tk.TclError:
+    _root.destroy()
+except Exception:
     # Fallback for headless environments (CI, Docker, etc.)
+    logging.warning("Failed to get screen dimensions, using fallback values.")
     _SCREEN_DIMS = (1920, 1080)
 
 

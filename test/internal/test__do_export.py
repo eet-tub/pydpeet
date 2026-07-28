@@ -2,13 +2,6 @@
 # Fill in real tests and remove or adjust placeholders
 
 
-class Test__do_export_data_frame:
-    """Placeholder failing test for variable 'data_frame' of '_do_export'."""
-
-    def test_placeholder(self):
-        raise AssertionError("Test not implemented for variable: data_frame of _do_export")
-
-
 class Test__do_export_output_path:
     """Placeholder failing test for variable 'output_path' of '_do_export'."""
 

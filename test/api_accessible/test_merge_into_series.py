@@ -17,12 +17,12 @@ def base_args():
     }
 
 
-class Test_merge_into_series_df_list:
-    """Placeholder failing test for variable 'df_list' of 'merge_into_series'."""
+class Test_merge_into_series_dfs:
+    """Placeholder failing test for variable 'dfs' of 'merge_into_series'."""
 
     @pytest.mark.skip(reason="Placeholder test")
     def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: df_list of merge_into_series")
+        raise NotImplementedError("Test not implemented for variable: dfs of merge_into_series")
 
 
 class Test_merge_into_series_time_between_tests_seconds:
@@ -89,11 +89,3 @@ class Test_merge_into_series_sort_dfs:
         base_args["sort_dfs"] = "wrong type"
         assert not isinstance(base_args["sort_dfs"], bool)
         _assert_raises_and_print(ValueError, merge_into_series, **base_args)
-
-
-class Test_merge_into_series_dfs:
-    """Placeholder failing test for variable 'dfs' of 'merge_into_series'."""
-
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: dfs of merge_into_series")

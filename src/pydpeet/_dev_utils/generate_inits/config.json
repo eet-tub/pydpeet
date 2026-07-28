@@ -35,7 +35,7 @@
   },
   "src/pydpeet/process/sequence/utils/postprocessing/generate_instructions.py": {
     "depth": 3,
-    "exports": ["generate_instructions"]
+    "exports": ["extract_instructions"]
   },
   "src/pydpeet/process/sequence/utils/visualize/visualize_data.py": {
     "depth": 3,
