@@ -488,7 +488,7 @@ def _print_report(
                 )
 
     if phase == "all":
-        print(f"\n{'='*47}")
+        print(f"\n{'=' * 47}")
         if counts["overall_covered"] < counts["overall_total"]:
             raise ValueError("Test coverage check failed")
 
