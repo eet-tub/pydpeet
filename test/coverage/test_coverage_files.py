@@ -19,7 +19,7 @@ class TestCoverage:
             config=config_path,
             tests_dir=(api_tests, private_tests),
             src_dir=src_dir,
-            exclude_dirs=["_dev_utils", "res"],
+            exclude_dirs=["_dev_utils", "res", "vebtan"],
             test_prefix="test_",
             test_ext=".py",
             case_sensitive=True,

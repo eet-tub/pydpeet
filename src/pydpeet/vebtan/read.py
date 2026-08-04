@@ -1,3 +1,13 @@
+"""
+Readers for the VEBTAN battery database, which is internal to the PyDPEET maintainers.
+
+These helpers are only useful together with JSON exports from that database and are
+deliberately kept out of the public ``pydpeet`` API, so import them from this module
+directly::
+
+    from pydpeet.vebtan.read import read_db_config
+"""
+
 from __future__ import annotations
 
 import json
@@ -7,7 +17,7 @@ from pathlib import Path
 import pandas as pd
 
 from pydpeet.io.utils.ext_path import _ExtPath
-from pydpeet.process.analyze.configs.db_battery_config import (
+from pydpeet.vebtan.config import (
     DbBatteryCell,
     DbBatteryConfigEntry,
     DbBatteryType,

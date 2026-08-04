@@ -1,3 +1,11 @@
+"""
+Raw record types for the VEBTAN battery database, and their mapping onto BatteryConfig.
+
+The ``Db`` prefix distinguishes these raw database records from the analysis-side
+BatteryConfig they are translated into by :func:`db_config_into_battery_config`.
+See :mod:`pydpeet.vebtan.read` for how these are populated.
+"""
+
 from dataclasses import dataclass
 from typing import TypeAlias
 
