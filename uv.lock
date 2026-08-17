@@ -1666,7 +1666,7 @@ wheels = [
 
 [[package]]
 name = "pydpeet"
-version = "0.4.0"
+version = "0.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "bibtexparser" },
@@ -1715,7 +1715,7 @@ requires-dist = [
     { name = "numba", specifier = "~=0.64.0" },
     { name = "numpy", specifier = "~=2.0" },
     { name = "pandas", specifier = "~=3.0" },
-    { name = "pyarrow", specifier = "~=25.0" },
+    { name = "pyarrow", specifier = "~=25.0.0" },
     { name = "python-calamine", specifier = "~=0.3.0" },
     { name = "scikit-learn", specifier = "~=1.0" },
     { name = "scipy", specifier = "~=1.0" },

@@ -132,7 +132,7 @@ def extract_instructions(
 
         if base_type == "UNKNOWN":
             instructions.append(
-                f"\033[91mUnknown segment type '{raw_seg_type}' " f"for {row['End_Value_Length']}s encountered\033[0m"
+                f"\033[91mUnknown segment type '{raw_seg_type}' for {row['End_Value_Length']}s encountered\033[0m"
             )
             unknown_seen = True
             continue
@@ -202,6 +202,6 @@ def extract_instructions(
     if too_many_warnings > threshold_warnings:
         logging.warning("...")
     if unknown_seen:
-        logging.warning("Unknown segment types encountered. " "Instructions may be incomplete!")
+        logging.warning("Unknown segment types encountered. Instructions may be incomplete!")
 
     return instructions

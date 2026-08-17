@@ -23,9 +23,9 @@ python = sys.executable
 
 for name in SCRIPTS:
     script_path = SCRIPTS_DIR / f"{name}.py"
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Running: {name}...")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     result = subprocess.run([python, str(script_path)], capture_output=True, text=True)
     if result.stdout:
         print(result.stdout)

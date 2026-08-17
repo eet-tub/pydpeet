@@ -5,26 +5,25 @@ import pydpeet
 GROUPS = {
     "Read and write": {
         "description": (
-            "Functions for reading, converting, and exporting battery test data " "in the unified PyDPEET format."
+            "Functions for reading, converting, and exporting battery test data in the unified PyDPEET format."
         ),
         "items": [],
     },
     "Sequence and primitive processing": {
         "description": (
-            "Functions for detecting, correcting, filtering, and visualizing " "test sequences and primitive segments."
+            "Functions for detecting, correcting, filtering, and visualizing test sequences and primitive segments."
         ),
         "items": [],
     },
     "Add derived quantities": {
         "description": (
-            "Functions that add derived quantities such as SOC, capacity, " "or resistance to existing datasets."
+            "Functions that add derived quantities such as SOC, capacity, or resistance to existing datasets."
         ),
         "items": [],
     },
     "Extract data": {
         "description": (
-            "Functions for extracting OCV points, sequence summaries, "
-            "and other reduced representations from datasets."
+            "Functions for extracting OCV points, sequence summaries, and other reduced representations from datasets."
         ),
         "items": [],
     },
@@ -102,7 +101,7 @@ def autosummary_block(names: list[str], title: str) -> str:
 
 def toctree_block(names: list[str], title: str) -> str:
     items = "\n".join(f"../_autosummary/pydpeet.{name}" for name in sorted(names))
-    return "```{toctree}\n" ":maxdepth: 2\n" f":caption: {title}\n" ":hidden:\n\n" f"{items}\n" "```\n"
+    return f"```{{toctree}}\n:maxdepth: 2\n:caption: {title}\n:hidden:\n\n{items}\n```\n"
 
 
 def generate_api() -> None:
