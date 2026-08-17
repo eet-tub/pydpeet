@@ -575,7 +575,7 @@
 
         <span class="k">if</span> <span class="n">base_type</span> <span class="o">==</span> <span class="s2">&quot;UNKNOWN&quot;</span><span class="p">:</span>
             <span class="n">instructions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91mUnknown segment type &#39;</span><span class="si">{</span><span class="n">raw_seg_type</span><span class="si">}</span><span class="s2">&#39; &quot;</span> <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;End_Value_Length&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">s encountered</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91mUnknown segment type &#39;</span><span class="si">{</span><span class="n">raw_seg_type</span><span class="si">}</span><span class="s2">&#39; for </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;End_Value_Length&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">s encountered</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
             <span class="p">)</span>
             <span class="n">unknown_seen</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">continue</span>
@@ -645,7 +645,7 @@
     <span class="k">if</span> <span class="n">too_many_warnings</span> <span class="o">&gt;</span> <span class="n">threshold_warnings</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">unknown_seen</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unknown segment types encountered. &quot;</span> <span class="s2">&quot;Instructions may be incomplete!&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unknown segment types encountered. Instructions may be incomplete!&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">instructions</span></div>
 
