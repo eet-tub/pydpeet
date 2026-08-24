@@ -22,6 +22,11 @@ import pydpeet.io.device.basytec_6_3_1_0.formatter as basytec_6_3_1_0_formatter
 import pydpeet.io.device.basytec_6_3_1_0.mapper as basytec_6_3_1_0_mapper
 import pydpeet.io.device.basytec_6_3_1_0.reader as basytec_6_3_1_0_reader
 
+# Battery Data Format
+import pydpeet.io.device.bdf.formatter as bdf_formatter
+import pydpeet.io.device.bdf.mapper as bdf_mapper
+import pydpeet.io.device.bdf.reader as bdf_reader
+
 # Digatron Battery Manager and Battery Manager Workstation
 # v4.20.6.236 (2018-09-28)
 import pydpeet.io.device.digatron_4_20_6_236.formatter as digatron_4_20_6_236_formatter
@@ -94,6 +99,7 @@ class ReadConfig(Enum):
     Digatron_4_20_6_236 = auto()  # .csv
     Digatron_EIS_4_20_6_236 = auto()  # .csv
     BaSyTec_6_3_1_0 = auto()  # .txt
+    BDF = auto()  # .bdf / .bdf.csv / .bdf.parquet / .bdf.gz
     Arbin_8_00_PV221201 = auto()  # .xls / .xlsx
     Arbin_4_23_PV090331 = auto()  # .xls / .xlsx
     Custom = auto()
@@ -121,6 +127,7 @@ class ReadConfig(Enum):
             "arbin_4_23_pv090331": cls.Arbin_4_23_PV090331,
             "arbin_8_00_pv221201": cls.Arbin_8_00_PV221201,
             "basytec_6_3_1_0": cls.BaSyTec_6_3_1_0,
+            "bdf": cls.BDF,
             "digatron_4_20_6_236": cls.Digatron_4_20_6_236,
             "digatron_eis_4_20_6_236": cls.Digatron_EIS_4_20_6_236,
             "neware_8_0_0_516": cls.Neware_8_0_0_516,
@@ -171,6 +178,9 @@ class ReadConfig(Enum):
 
 # filetype groupings for automatic selection
 _EXTENSION_GROUPS: dict[str, Iterable[ReadConfig]] = {
+    ".bdf": (ReadConfig.BDF,),
+    ".gz": (ReadConfig.BDF,),
+    ".parquet": (ReadConfig.BDF,),
     ".xls": ReadConfig.Excel,
     ".xlsx": ReadConfig.Excel,
     ".csv": ReadConfig.Csv,
@@ -184,6 +194,7 @@ ReadConfig.Excel._ALL = (
     ReadConfig.Neware_8_0_0_516,
 )
 ReadConfig.Csv._ALL = (
+    ReadConfig.BDF,
     ReadConfig.Digatron_4_20_6_236,
     ReadConfig.Digatron_EIS_4_20_6_236,
 )
@@ -228,6 +239,7 @@ _READER_CONFIGS: dict[ReadConfig, Callable[[str], DataFrame]] = {
     ReadConfig.Digatron_4_20_6_236: digatron_4_20_6_236_reader._to_dataframe,
     ReadConfig.Digatron_EIS_4_20_6_236: digatron_eis_4_20_6_236_reader._to_dataframe,
     ReadConfig.BaSyTec_6_3_1_0: basytec_6_3_1_0_reader._to_dataframe,
+    ReadConfig.BDF: bdf_reader._to_dataframe,
     ReadConfig.Arbin_8_00_PV221201: arbin_8_00_PV221201_reader._to_dataframe,
     ReadConfig.Arbin_4_23_PV090331: arbin_4_23_PV090331_reader._to_dataframe,
 }
@@ -256,6 +268,7 @@ _MAPPER_CONFIGS: dict[ReadConfig, tuple[dict[str, str], list[str]]] = {
         digatron_eis_4_20_6_236_mapper._MISSING_REQUIRED_COLUMNS,
     ),
     ReadConfig.BaSyTec_6_3_1_0: (basytec_6_3_1_0_mapper._COLUMN_MAP, basytec_6_3_1_0_mapper._MISSING_REQUIRED_COLUMNS),
+    ReadConfig.BDF: (bdf_mapper._COLUMN_MAP, bdf_mapper._MISSING_REQUIRED_COLUMNS),
     ReadConfig.Arbin_8_00_PV221201: (
         arbin_8_00_PV221201_mapper._COLUMN_MAP,
         arbin_8_00_PV221201_mapper._MISSING_REQUIRED_COLUMNS,
@@ -281,6 +294,7 @@ _FORMATTER_CONFIGS: dict[ReadConfig, Callable[[DataFrame], DataFrame]] = {
     ReadConfig.Digatron_4_20_6_236: digatron_4_20_6_236_formatter._get_data_into_format,
     ReadConfig.Digatron_EIS_4_20_6_236: digatron_eis_4_20_6_236_formatter._get_data_into_format,
     ReadConfig.BaSyTec_6_3_1_0: basytec_6_3_1_0_formatter._get_data_into_format,
+    ReadConfig.BDF: bdf_formatter._get_data_into_format,
     ReadConfig.Arbin_8_00_PV221201: arbin_8_00_PV221201_formatter._get_data_into_format,
     ReadConfig.Arbin_4_23_PV090331: arbin_4_23_PV090331_formatter._get_data_into_format,
 }
