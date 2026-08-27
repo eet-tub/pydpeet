@@ -21,61 +21,91 @@ def base_args():
 
 class Test_visualize_phases_dataframe:
     # Only first test
-    def test_valid(self, base_args, caplog):
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        # visualize_phases returns None (it's a visualization function)
-        assert result is None
+    def test_valid(self, base_args, caplog, benchmark):
+        def _run():
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            # visualize_phases returns None (it's a visualization function)
+            assert result is None
 
-    def test_none(self, base_args):
-        base_args["df"] = None
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_wrong_type(self, base_args):
-        base_args["df"] = "wrong type"
-        assert not isinstance(base_args["df"], pd.DataFrame)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["df"] = None
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
-    def test_empty(self, base_args):
-        base_args["df"] = pd.DataFrame()
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_missing_required_columns(self, base_args):
-        base_args["df"] = base_args["df"].drop(Mocks.Mock_visualize_phases.required_columns, axis=1)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["df"] = "wrong type"
+            assert not isinstance(base_args["df"], pd.DataFrame)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
-    def test_wrong_column_dtypes(self, base_args):
-        for col, _dtype in Mocks.Mock_visualize_phases.required_columns_dtypes:
-            base_args["df"][col] = base_args["df"][col].astype(str)
-        expected_dtypes = pd.Series({col: dtype for col, dtype in Mocks.Mock_visualize_phases.required_columns_dtypes})
-        actual_dtypes = base_args["df"][Mocks.Mock_visualize_phases.required_columns].dtypes
-        assert not actual_dtypes.equals(expected_dtypes)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_nan_values(self, base_args, caplog):
-        base_args["df"].loc[:9, Mocks.Mock_visualize_phases.required_columns[0]] = np.nan
-        with caplog.at_level(logging.WARNING):
-            visualize_phases(**base_args)
-        print(f"\nCaptured Warning: {caplog.records[0].message}")
-        assert any(
-            f"Column '{Mocks.Mock_visualize_phases.required_columns[0]}' contains NaN values." in record.message
-            for record in caplog.records
-        )
+    def test_empty(self, base_args, benchmark):
+        def _run():
+            base_args["df"] = pd.DataFrame()
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
 
-    def test_none_values(self, base_args, caplog):
-        # assert True due to dtype == float (in all required columns) is it impossible to check None since it
-        # would be converted to NaN or throw the test_wrong_column_dtypes failure
-        assert True
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_inf_values(self, base_args, caplog):
-        base_args["df"].loc[:9, Mocks.Mock_visualize_phases.required_columns[0]] = np.inf
-        with caplog.at_level(logging.WARNING):
-            visualize_phases(**base_args)
-        print(f"\nCaptured Warning: {caplog.records[0].message}")
-        assert any(
-            f"Column '{Mocks.Mock_visualize_phases.required_columns[0]}' contains infinite values." in record.message
-            for record in caplog.records
-        )
+    def test_missing_required_columns(self, base_args, benchmark):
+        def _run():
+            base_args["df"] = base_args["df"].drop(Mocks.Mock_visualize_phases.required_columns, axis=1)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_column_dtypes(self, base_args, benchmark):
+        def _run():
+            for col, _dtype in Mocks.Mock_visualize_phases.required_columns_dtypes:
+                base_args["df"][col] = base_args["df"][col].astype(str)
+            expected_dtypes = pd.Series(
+                {col: dtype for col, dtype in Mocks.Mock_visualize_phases.required_columns_dtypes}
+            )
+            actual_dtypes = base_args["df"][Mocks.Mock_visualize_phases.required_columns].dtypes
+            assert not actual_dtypes.equals(expected_dtypes)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_nan_values(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["df"].loc[:9, Mocks.Mock_visualize_phases.required_columns[0]] = np.nan
+            with caplog.at_level(logging.WARNING):
+                visualize_phases(**base_args)
+            print(f"\nCaptured Warning: {caplog.records[0].message}")
+            assert any(
+                f"Column '{Mocks.Mock_visualize_phases.required_columns[0]}' contains NaN values." in record.message
+                for record in caplog.records
+            )
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none_values(self, base_args, caplog, benchmark):
+        def _run():
+            # assert True due to dtype == float (in all required columns) is it impossible to check None since it
+            # would be converted to NaN or throw the test_wrong_column_dtypes failure
+            assert True
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_inf_values(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["df"].loc[:9, Mocks.Mock_visualize_phases.required_columns[0]] = np.inf
+            with caplog.at_level(logging.WARNING):
+                visualize_phases(**base_args)
+            print(f"\nCaptured Warning: {caplog.records[0].message}")
+            assert any(
+                f"Column '{Mocks.Mock_visualize_phases.required_columns[0]}' contains infinite values."
+                in record.message
+                for record in caplog.records
+            )
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_visualize_phases_start_time:
@@ -119,95 +149,143 @@ class Test_visualize_phases_line_visualization_config:
 
 
 class Test_visualize_phases_use_lines_for_segments:
-    def test_true(self, base_args, caplog):
-        base_args["config"].use_lines_for_segments = True
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+    def test_true(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].use_lines_for_segments = True
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_false(self, base_args, caplog):
-        base_args["config"].use_lines_for_segments = False
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["config"].use_lines_for_segments = None
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_false(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].use_lines_for_segments = False
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_wrong_type(self, base_args):
-        base_args["config"].use_lines_for_segments = "wrong type"
-        assert not isinstance(base_args["config"].use_lines_for_segments, bool)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["config"].use_lines_for_segments = None
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["config"].use_lines_for_segments = "wrong type"
+            assert not isinstance(base_args["config"].use_lines_for_segments, bool)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_visualize_phases_show_column_names:
-    def test_true(self, base_args, caplog):
-        base_args["config"].show_column_names = True
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+    def test_true(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_column_names = True
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_false(self, base_args, caplog):
-        base_args["config"].show_column_names = False
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["config"].show_column_names = None
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_false(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_column_names = False
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_wrong_type(self, base_args):
-        base_args["config"].show_column_names = "wrong type"
-        assert not isinstance(base_args["config"].show_column_names, bool)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_column_names = None
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_column_names = "wrong type"
+            assert not isinstance(base_args["config"].show_column_names, bool)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_visualize_phases_show_time:
-    def test_true(self, base_args, caplog):
-        base_args["config"].show_time = True
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+    def test_true(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_time = True
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_false(self, base_args, caplog):
-        base_args["config"].show_time = False
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["config"].show_time = None
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_false(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_time = False
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_wrong_type(self, base_args):
-        base_args["config"].show_time = "wrong type"
-        assert not isinstance(base_args["config"].show_time, bool)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_time = None
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_time = "wrong type"
+            assert not isinstance(base_args["config"].show_time, bool)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_visualize_phases_show_id:
-    def test_true(self, base_args, caplog):
-        base_args["config"].show_id = True
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+    def test_true(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_id = True
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_false(self, base_args, caplog):
-        base_args["config"].show_id = False
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["config"].show_id = None
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_false(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_id = False
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_wrong_type(self, base_args):
-        base_args["config"].show_id = "wrong type"
-        assert not isinstance(base_args["config"].show_id, bool)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_id = None
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_id = "wrong type"
+            assert not isinstance(base_args["config"].show_id, bool)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_visualize_phases_width_height_ratio:
@@ -219,23 +297,35 @@ class Test_visualize_phases_width_height_ratio:
 
 
 class Test_visualize_phases_show_runtime:
-    def test_true(self, base_args, caplog):
-        base_args["config"].show_runtime = True
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+    def test_true(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_runtime = True
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_false(self, base_args, caplog):
-        base_args["config"].show_runtime = False
-        with caplog.at_level(logging.INFO):
-            result = visualize_phases(**base_args)
-        assert result is None
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["config"].show_runtime = None
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+    def test_false(self, base_args, caplog, benchmark):
+        def _run():
+            base_args["config"].show_runtime = False
+            with caplog.at_level(logging.INFO):
+                result = visualize_phases(**base_args)
+            assert result is None
 
-    def test_wrong_type(self, base_args):
-        base_args["config"].show_runtime = "wrong type"
-        assert not isinstance(base_args["config"].show_runtime, bool)
-        _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_runtime = None
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["config"].show_runtime = "wrong type"
+            assert not isinstance(base_args["config"].show_runtime, bool)
+            _assert_raises_and_print(ValueError, visualize_phases, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)

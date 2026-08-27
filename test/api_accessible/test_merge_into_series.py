@@ -34,61 +34,85 @@ class Test_merge_into_series_time_between_tests_seconds:
 
 
 class Test_merge_into_series_verbose:
-    def test_true(self, base_args):
-        base_args["verbose"] = True
-        result = merge_into_series(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
-        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
-        expected = Mocks.Mock_merge_into_series.df_expected
-        pd.testing.assert_frame_equal(result, expected)
+    def test_true(self, base_args, benchmark):
+        def _run():
+            base_args["verbose"] = True
+            result = merge_into_series(**base_args)
+            assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
+            # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+            # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+            expected = Mocks.Mock_merge_into_series.df_expected
+            pd.testing.assert_frame_equal(result, expected)
 
-    def test_false(self, base_args):
-        base_args["verbose"] = False
-        result = merge_into_series(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
-        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
-        expected = Mocks.Mock_merge_into_series.df_expected
-        pd.testing.assert_frame_equal(result, expected)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["verbose"] = None
-        _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+    def test_false(self, base_args, benchmark):
+        def _run():
+            base_args["verbose"] = False
+            result = merge_into_series(**base_args)
+            assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
+            # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+            # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+            expected = Mocks.Mock_merge_into_series.df_expected
+            pd.testing.assert_frame_equal(result, expected)
 
-    def test_wrong_type(self, base_args):
-        base_args["verbose"] = "wrong type"
-        assert not isinstance(base_args["verbose"], bool)
-        _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["verbose"] = None
+            _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["verbose"] = "wrong type"
+            assert not isinstance(base_args["verbose"], bool)
+            _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_merge_into_series_sort_dfs:
-    def test_true(self, base_args):
-        base_args["sort_dfs"] = True
-        result = merge_into_series(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
-        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
-        expected = Mocks.Mock_merge_into_series.df_expected
-        pd.testing.assert_frame_equal(result, expected)
+    def test_true(self, base_args, benchmark):
+        def _run():
+            base_args["sort_dfs"] = True
+            result = merge_into_series(**base_args)
+            assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
+            # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+            # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+            expected = Mocks.Mock_merge_into_series.df_expected
+            pd.testing.assert_frame_equal(result, expected)
 
-    def test_false(self, base_args):
-        base_args["sort_dfs"] = False
-        result = merge_into_series(**base_args)
-        assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
-        # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
-        # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
-        expected = Mocks.Mock_merge_into_series.df_expected
-        pd.testing.assert_frame_equal(result, expected)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["sort_dfs"] = None
-        _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+    def test_false(self, base_args, benchmark):
+        def _run():
+            base_args["sort_dfs"] = False
+            result = merge_into_series(**base_args)
+            assert all(col in result.columns for col in Mocks.Mock_merge_into_series.add_columns)
+            # Compare with expected result using assert_frame_equal (not pd.DataFrame.equals)
+            # because assert_frame_equal treats NaN == NaN, which is needed for proper DataFrame comparison
+            expected = Mocks.Mock_merge_into_series.df_expected
+            pd.testing.assert_frame_equal(result, expected)
 
-    def test_wrong_type(self, base_args):
-        base_args["sort_dfs"] = "wrong type"
-        assert not isinstance(base_args["sort_dfs"], bool)
-        _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["sort_dfs"] = None
+            _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["sort_dfs"] = "wrong type"
+            assert not isinstance(base_args["sort_dfs"], bool)
+            _assert_raises_and_print(ValueError, merge_into_series, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_merge_into_series_dfs:
