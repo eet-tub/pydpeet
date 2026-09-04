@@ -5,3 +5,7 @@ Experimental battery research generates large amounts of measurement data from a
 At the same time, battery characterization increasingly relies on combinations of different experiments and analysis methods. Measurements from individual tests often need to be combined into test series or larger measurement campaigns, while subsequent analyses require a consistent representation of quantities such as voltage, current, time, capacity, energy, state of charge, or test steps. Reimplementing these processing steps for individual projects increases development effort and can reduce reproducibility and comparability between studies.
 
 There is therefore a need for a reusable and measurement-system-independent processing framework that transforms heterogeneous raw battery measurement data into a consistent and structured representation for subsequent analysis. Such a framework should reduce experiment-specific preprocessing, facilitate the reuse of analysis methods across datasets, and improve reproducibility and comparability between studies. PyDPEET was developed to address this need
+
+<!-- Quellen -->
+<!-- letzte Satz -->
+<!-- Dopplungen -->

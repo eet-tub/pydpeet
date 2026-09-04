@@ -1,10 +1,5 @@
 # State of the Field
 
-<!-- - Es gibt viele verschiedene software(teile), die sich mit der Auswertung und verarbeiten von Batteriemessdaten auseinadersetzen. Häufig sind sie spezialisert auf bestimmte dinge. Zum Beispiel 
-- EIS/DRT [@murbach_impedancepy_2020; @wan_influence_2015; @huang_joint-domain_2026]
-- Degradation mode Analysis [@rehm_how_2026; @dubarry_synthesize_2012]
-- Zeitreihen (@holland_pyprobe_2025, @wind_cellpy_2024)
-- other (@herring_beep_2020) -->
 
 Open-source software for battery data processing and analysis spans a wide range of applications and levels of specialization. Several tools focus on individual characterization or diagnostic methods. For example, dedicated tools exist for electrochemical impedance spectroscopy and distribution of relaxation times analysis [@murbach_impedancepy_2020; @wan_influence_2015; @huang_joint-domain_2026], degradation mode analysis [@dubarry_synthesize_2012; @rehm_how_2026], and the extraction of model-relevant parameters from techniques such as incremental capacity analysis or galvanostatic intermittent titration [@randall_ampworks_2025].
 
@@ -28,3 +23,9 @@ Consequently, existing frameworks cover substantial parts of the battery data-pr
 The comparison distinguishes the frameworks according to their support for data import and harmonization, representation of experimental procedures, automatic reconstruction of operating steps, and aggregation across tests or cells. Most frameworks support the first aspect, whereas the representation and reconstruction of higher-level experimental sequences differ substantially. Cellpy and PyProBE provide structured data models for cycling measurements, while DATTES additionally derives operating phases from the data. In most cases, however, higher-level sequences must be defined by the user or inferred from existing cycler information. Support for combining multiple tests or cells is also available in several frameworks, but is not generally linked to automatic procedure reconstruction.
 
 PyDPEET integrates these functions in a common processing workflow. Data from different measurement systems are converted into a unified representation, elementary operating steps are identified from the measurements, and these steps are combined into higher-level experimental sequences. Individual tests can subsequently be grouped into test series and measurements from multiple cells into campaigns while preserving the reconstructed structure. Thus, PyDPEET enables the analysis of heterogeneous datasets even when the original test schedule is unavailable. This enables experimental information to be reconstructed even when the original test schedule or an explicit description of the measurement procedure is unavailable.
+
+
+<!-- Quellen toolkit -->
+<!-- Dattes ist Matlab -->
+<!-- Dopplungen -->
+<!-- Tabellen ref und überschrift -->
