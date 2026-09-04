@@ -15,7 +15,7 @@ repos:
     hooks:
       - id: test-coverage
         name: test-coverage
-        entry: python -m pytest test/coverage/test_coverage_files.py -v
+        entry: uv run --group test python -m pytest test/coverage/test_coverage_files.py -v
         language: system
         pass_filenames: false
         always_run: true
