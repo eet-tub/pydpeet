@@ -4,8 +4,8 @@ from pathlib import Path
 files = [
     "metadata.md",
     "summary.md",
-    "state_of_the_field.md",
     "statement_of_need.md",
+    "state_of_the_field.md",
     "software_design.md",
     "research_impact_statement.md",
     "ai_usage_disclosure.md",

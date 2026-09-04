@@ -1,4 +1,4 @@
-# Research impect Statement
+# Research Impact Statement
 
 <!-- 
 Durch viele Abschlussarbeiten (Bachelor und Master) genutzt und zum Teil weiterentwickelt

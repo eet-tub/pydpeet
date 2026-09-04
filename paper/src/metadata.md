@@ -1,12 +1,12 @@
 ---
-title: "PyDPEET: A Python Package for automating Data Processing of Eelectrical Energy Storages"
+title: "PyDPEET: A Python Package for Automated Processing of Battery Measurement Data"
 tags:
   - Python
   - Battery
-  - Data-Processing
+  - Data Processing
   - Automatisation
-  - Energy-Storages
-  - processing
+  - Energy Storages
+  - Processing
   - Big Data
 authors:
   - name: Martin Otto
@@ -23,23 +23,18 @@ authors:
     affiliation: 1
   - name: Jan Kalisch
     affiliation: 1
-  - name: Alexander Günter
+  - name: Alexander Hinrichsen
     affiliation: 1
-  # - name: Giada Vaccarello
-  #   affiliation: 1
-  - name: Cataldo Pasquale Hermann De Simone
+  - name: Cataldo De Simone
     affiliation: 1
-  # - name: Domink Droese
-  #   orcid: 0009-0002-2065-4119
-  #   affiliation: 1
   - name: Julia Kowal
     orcid: 0000-0002-8802-6365
     corresponding: true
     affiliation: 1
 affiliations:
-  - name: Electrical Energy Storage Technology (EET), Institute of Energy and Automation, Technische Universität Berlin, Einsteinufer 11, D-10587 Berlin, Germany
+  - name: TU Berlin, Institute of Energy and Automation, Electrical Energy Storage Technology (EET), Einsteinufer 11, D-10587 Berlin, Germany
     index: 1
     ror: 03v4gjf40
-date: 25.06.2026
+date: 04.09.2026
 bibliography: paper.bib
 ---

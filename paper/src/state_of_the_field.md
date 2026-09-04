@@ -1,4 +1,4 @@
-# State of the field
+# State of the Field
 
 <!-- - Es gibt viele verschiedene software(teile), die sich mit der Auswertung und verarbeiten von Batteriemessdaten auseinadersetzen. Häufig sind sie spezialisert auf bestimmte dinge. Zum Beispiel 
 - EIS/DRT [@murbach_impedancepy_2020; @wan_influence_2015; @huang_joint-domain_2026]
