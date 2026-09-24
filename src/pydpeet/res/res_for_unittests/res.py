@@ -24,6 +24,10 @@ df_segments_and_sequences_path = (
     BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg-converted-segments-and-sequences.parquet"
 )
 df_neware_path = BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3.parquet"
+# Battery Data Format (BDF) test resources
+bdf_input_path = BASE_DIR / "UCam__A0001__20241031_001.bdf"
+df_bdf_converted_path = BASE_DIR / "UCam__A0001__20241031_001-converted.parquet"
+df_bdf_converted_with_additional_path = BASE_DIR / "UCam__A0001__20241031_001-converted-with-additional.parquet"
 df_neware_expected_ocv_iocv_block_0_path = (
     BASE_DIR / "neware_8_0_0_516-Cal_Ageing_Checkup3_extract_ocv_iocv_block_0.parquet"
 )
@@ -61,6 +65,9 @@ DF_PRIMITIVES_CORRECTION_EXPECTED = pd.read_parquet(df_primitives_correction_exp
 
 # Read neware data files
 DF_NEWARE = pd.read_parquet(df_neware_path)
+# Read BDF data files
+DF_BDF_CONVERTED = pd.read_parquet(df_bdf_converted_path)
+DF_BDF_CONVERTED_WITH_ADDITIONAL = pd.read_parquet(df_bdf_converted_with_additional_path)
 DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_0 = pd.read_parquet(df_neware_expected_ocv_iocv_block_0_path)
 DF_NEWARE_EXPECTED_OCV_IOCV_BLOCK_1 = pd.read_parquet(df_neware_expected_ocv_iocv_block_1_path)
 DF_NEWARE_PRIMITIVES = pd.read_parquet(df_neware_primitives_path)
@@ -420,6 +427,14 @@ class Mocks:
         custom_folder_path = None
         df_expected_without_additional_data = DF.copy()
         df_expected_with_additional_data = DF_WITH_ADDITIONAL.copy()
+
+    class Mock_read_bdf:
+        config = "bdf"
+        input_path = str(bdf_input_path)
+        keep_all_additional_data = False
+        custom_folder_path = None
+        df_expected_without_additional_data = DF_BDF_CONVERTED.copy()
+        df_expected_with_additional_data = DF_BDF_CONVERTED_WITH_ADDITIONAL.copy()
 
     class Mock_set_logging_style:
         level = "WARNING"
