@@ -28,6 +28,7 @@
       ~ReadConfig.Digatron_4_20_6_236
       ~ReadConfig.Digatron_EIS_4_20_6_236
       ~ReadConfig.BaSyTec_6_3_1_0
+      ~ReadConfig.BDF
       ~ReadConfig.Arbin_8_00_PV221201
       ~ReadConfig.Arbin_4_23_PV090331
       ~ReadConfig.Custom

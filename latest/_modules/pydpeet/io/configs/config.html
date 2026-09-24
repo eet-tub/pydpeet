@@ -463,6 +463,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.basytec_6_3_1_0.mapper</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">basytec_6_3_1_0_mapper</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.basytec_6_3_1_0.reader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">basytec_6_3_1_0_reader</span>
 
+<span class="c1"># Battery Data Format</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.bdf.formatter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bdf_formatter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.bdf.mapper</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bdf_mapper</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.bdf.reader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bdf_reader</span>
+
 <span class="c1"># Digatron Battery Manager and Battery Manager Workstation</span>
 <span class="c1"># v4.20.6.236 (2018-09-28)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pydpeet.io.device.digatron_4_20_6_236.formatter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">digatron_4_20_6_236_formatter</span>
@@ -537,6 +542,7 @@
     <span class="n">Digatron_4_20_6_236</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .csv</span>
     <span class="n">Digatron_EIS_4_20_6_236</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .csv</span>
     <span class="n">BaSyTec_6_3_1_0</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .txt</span>
+    <span class="n">BDF</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .bdf / .bdf.csv / .bdf.parquet / .bdf.gz</span>
     <span class="n">Arbin_8_00_PV221201</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .xls / .xlsx</span>
     <span class="n">Arbin_4_23_PV090331</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># .xls / .xlsx</span>
     <span class="n">Custom</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -546,6 +552,13 @@
     <span class="nd">@nonmember</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Excel</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_FiletypeIterable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;ReadConfigs for Excel files (.xls/.xlsx).&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ReadConfig.BdfFile">
+<a class="viewcode-back" href="../../../../_autosummary/pydpeet.ReadConfig.html#pydpeet.ReadConfig.BdfFile">[docs]</a>
+    <span class="nd">@nonmember</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">BdfFile</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_FiletypeIterable</span><span class="p">):</span>  <span class="c1"># not just BDF to fix naming collision</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ReadConfigs for BDF files (.bdf/.parquet).&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="ReadConfig.Csv">
@@ -573,6 +586,7 @@
             <span class="s2">&quot;arbin_4_23_pv090331&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Arbin_4_23_PV090331</span><span class="p">,</span>
             <span class="s2">&quot;arbin_8_00_pv221201&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Arbin_8_00_PV221201</span><span class="p">,</span>
             <span class="s2">&quot;basytec_6_3_1_0&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">BaSyTec_6_3_1_0</span><span class="p">,</span>
+            <span class="s2">&quot;bdf&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">BDF</span><span class="p">,</span>
             <span class="s2">&quot;digatron_4_20_6_236&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Digatron_4_20_6_236</span><span class="p">,</span>
             <span class="s2">&quot;digatron_eis_4_20_6_236&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Digatron_EIS_4_20_6_236</span><span class="p">,</span>
             <span class="s2">&quot;neware_8_0_0_516&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Neware_8_0_0_516</span><span class="p">,</span>
@@ -624,6 +638,8 @@
 
 <span class="c1"># filetype groupings for automatic selection</span>
 <span class="n">_EXTENSION_GROUPS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ReadConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;.bdf&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BdfFile</span><span class="p">,</span>
+    <span class="s2">&quot;.parquet&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BdfFile</span><span class="p">,</span>
     <span class="s2">&quot;.xls&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Excel</span><span class="p">,</span>
     <span class="s2">&quot;.xlsx&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Excel</span><span class="p">,</span>
     <span class="s2">&quot;.csv&quot;</span><span class="p">:</span> <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Csv</span><span class="p">,</span>
@@ -636,6 +652,7 @@
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_8_00_PV221201</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Neware_8_0_0_516</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="n">ReadConfig</span><span class="o">.</span><span class="n">BdfFile</span><span class="o">.</span><span class="n">_ALL</span> <span class="o">=</span> <span class="p">(</span><span class="n">ReadConfig</span><span class="o">.</span><span class="n">BDF</span><span class="p">,)</span>
 <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Csv</span><span class="o">.</span><span class="n">_ALL</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_4_20_6_236</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_EIS_4_20_6_236</span><span class="p">,</span>
@@ -681,6 +698,7 @@
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_4_20_6_236</span><span class="p">:</span> <span class="n">digatron_4_20_6_236_reader</span><span class="o">.</span><span class="n">_to_dataframe</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_EIS_4_20_6_236</span><span class="p">:</span> <span class="n">digatron_eis_4_20_6_236_reader</span><span class="o">.</span><span class="n">_to_dataframe</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BaSyTec_6_3_1_0</span><span class="p">:</span> <span class="n">basytec_6_3_1_0_reader</span><span class="o">.</span><span class="n">_to_dataframe</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BDF</span><span class="p">:</span> <span class="n">bdf_reader</span><span class="o">.</span><span class="n">_to_dataframe</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_8_00_PV221201</span><span class="p">:</span> <span class="n">arbin_8_00_PV221201_reader</span><span class="o">.</span><span class="n">_to_dataframe</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_4_23_PV090331</span><span class="p">:</span> <span class="n">arbin_4_23_PV090331_reader</span><span class="o">.</span><span class="n">_to_dataframe</span><span class="p">,</span>
 <span class="p">}</span>
@@ -709,6 +727,7 @@
         <span class="n">digatron_eis_4_20_6_236_mapper</span><span class="o">.</span><span class="n">_MISSING_REQUIRED_COLUMNS</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BaSyTec_6_3_1_0</span><span class="p">:</span> <span class="p">(</span><span class="n">basytec_6_3_1_0_mapper</span><span class="o">.</span><span class="n">_COLUMN_MAP</span><span class="p">,</span> <span class="n">basytec_6_3_1_0_mapper</span><span class="o">.</span><span class="n">_MISSING_REQUIRED_COLUMNS</span><span class="p">),</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BDF</span><span class="p">:</span> <span class="p">(</span><span class="n">bdf_mapper</span><span class="o">.</span><span class="n">_COLUMN_MAP</span><span class="p">,</span> <span class="n">bdf_mapper</span><span class="o">.</span><span class="n">_MISSING_REQUIRED_COLUMNS</span><span class="p">),</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_8_00_PV221201</span><span class="p">:</span> <span class="p">(</span>
         <span class="n">arbin_8_00_PV221201_mapper</span><span class="o">.</span><span class="n">_COLUMN_MAP</span><span class="p">,</span>
         <span class="n">arbin_8_00_PV221201_mapper</span><span class="o">.</span><span class="n">_MISSING_REQUIRED_COLUMNS</span><span class="p">,</span>
@@ -734,6 +753,7 @@
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_4_20_6_236</span><span class="p">:</span> <span class="n">digatron_4_20_6_236_formatter</span><span class="o">.</span><span class="n">_get_data_into_format</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Digatron_EIS_4_20_6_236</span><span class="p">:</span> <span class="n">digatron_eis_4_20_6_236_formatter</span><span class="o">.</span><span class="n">_get_data_into_format</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BaSyTec_6_3_1_0</span><span class="p">:</span> <span class="n">basytec_6_3_1_0_formatter</span><span class="o">.</span><span class="n">_get_data_into_format</span><span class="p">,</span>
+    <span class="n">ReadConfig</span><span class="o">.</span><span class="n">BDF</span><span class="p">:</span> <span class="n">bdf_formatter</span><span class="o">.</span><span class="n">_get_data_into_format</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_8_00_PV221201</span><span class="p">:</span> <span class="n">arbin_8_00_PV221201_formatter</span><span class="o">.</span><span class="n">_get_data_into_format</span><span class="p">,</span>
     <span class="n">ReadConfig</span><span class="o">.</span><span class="n">Arbin_4_23_PV090331</span><span class="p">:</span> <span class="n">arbin_4_23_PV090331_formatter</span><span class="o">.</span><span class="n">_get_data_into_format</span><span class="p">,</span>
 <span class="p">}</span>
