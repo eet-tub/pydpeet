@@ -43,28 +43,40 @@ class Test_convert_output_path:
 
 
 class Test_convert_keep_all_additional_data:
-    def test_true(self, base_args):
-        base_args["keep_all_additional_data"] = True
-        result = convert(**base_args)
-        expected_df = Mocks.Mock_convert.df_expected_with_additional_data
-        assert isinstance(result, pd.DataFrame)
-        assert pd.DataFrame.equals(result, expected_df)
+    def test_true(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = True
+            result = convert(**base_args)
+            expected_df = Mocks.Mock_convert.df_expected_with_additional_data
+            assert isinstance(result, pd.DataFrame)
+            assert pd.DataFrame.equals(result, expected_df)
 
-    def test_false(self, base_args):
-        base_args["keep_all_additional_data"] = False
-        result = convert(**base_args)
-        expected_df = Mocks.Mock_convert.df_expected_without_additional_data
-        assert isinstance(result, pd.DataFrame)
-        assert pd.DataFrame.equals(result, expected_df)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["keep_all_additional_data"] = None
-        _assert_raises_and_print(ValueError, convert, **base_args)
+    def test_false(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = False
+            result = convert(**base_args)
+            expected_df = Mocks.Mock_convert.df_expected_without_additional_data
+            assert isinstance(result, pd.DataFrame)
+            assert pd.DataFrame.equals(result, expected_df)
 
-    def test_wrong_type(self, base_args):
-        base_args["keep_all_additional_data"] = "wrong type"
-        assert not isinstance(base_args["keep_all_additional_data"], bool)
-        _assert_raises_and_print(ValueError, convert, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = None
+            _assert_raises_and_print(ValueError, convert, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = "wrong type"
+            assert not isinstance(base_args["keep_all_additional_data"], bool)
+            _assert_raises_and_print(ValueError, convert, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_convert_custom_folder_path:

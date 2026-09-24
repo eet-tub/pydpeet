@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - src/**
+      - test/**
 env:
   PRE_COMMIT_HOME: .cache/pre-commit
 
@@ -110,6 +113,8 @@ jobs:
           uv run pytest -v test/api_accessible \
             -n 2 \
             --junitxml=report.xml \
+            --benchmark-json=benchmark.json \
+            --benchmark-quiet \
             --cov=src/pydpeet \
             --cov-report=term \
             --cov-report=html:coverage_html \
@@ -124,4 +129,5 @@ jobs:
             report.xml
             coverage.xml
             coverage_html/
+            benchmark.json
           retention-days: 14

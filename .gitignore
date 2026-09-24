@@ -4,3 +4,4 @@ __pycache__/
 /docs/_build/
 _autogen/
 *_autosummary/
+/.venv/
