@@ -8,6 +8,6 @@ Fig. \ref{fig:Design_Overview} shows PyDPEET's general workflow. It uses a strai
 
 ![Overview of the structure and functionalities of the PyDPEET package\label{fig:Design_Overview}](./src/PyDPEET_Overview.svg)
 
-In addition to its functionality, a strong focus of the project is maintainability: PyDPEET already contains a test suite which is currently used for basic unit tests. Each commit triggers these tests as well as a linting and formatting stage which uses Ruff and mypy to enforce formal code quality. The merge pipeline adds stages to build and deploy GitHub Pages for the latest state. Releases produce release-specific GitHub Pages and accompanying PyPI version updates.
+In addition to its functionality, a strong focus of the project is maintainability: Each commit triggers unit tests as well as a linting and formatting stage which uses Ruff and mypy to enforce formal code quality. The merge pipeline adds stages to build and deploy GitHub Pages for the latest state. Releases produce release-specific GitHub Pages and accompanying PyPI version updates.
 
 The project integrates `citeme` [] to allow users to automatically aggregate scientific citations needed for their PyDPEET-based Python scripts. Required citations can be added at the function level to ensure that references only cover the functionality actually used in a script.
