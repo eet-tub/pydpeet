@@ -1,0 +1,30 @@
+﻿pydpeet.PrimitiveConfig
+=======================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: PrimitiveConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PrimitiveConfig.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PrimitiveConfig.DEFAULT
+      ~PrimitiveConfig.FALLBACK
+      ~PrimitiveConfig.OCV_ANALYSIS_DEFAULT
+   
+   

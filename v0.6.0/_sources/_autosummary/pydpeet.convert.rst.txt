@@ -1,0 +1,6 @@
+﻿pydpeet.convert
+===============
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: convert

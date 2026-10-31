@@ -1,0 +1,6 @@
+﻿pydpeet.add\_soh
+================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_soh

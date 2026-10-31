@@ -1,0 +1,6 @@
+﻿pydpeet.print\_references
+=========================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: print_references

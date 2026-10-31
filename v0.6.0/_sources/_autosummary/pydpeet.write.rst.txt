@@ -1,0 +1,6 @@
+﻿pydpeet.write
+=============
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: write

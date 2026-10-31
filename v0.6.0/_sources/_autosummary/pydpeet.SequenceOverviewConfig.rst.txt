@@ -1,0 +1,31 @@
+﻿pydpeet.SequenceOverviewConfig
+==============================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: SequenceOverviewConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SequenceOverviewConfig.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SequenceOverviewConfig.DEFAULT
+      ~SequenceOverviewConfig.GENERATE_INSTRUCTIONS
+      ~SequenceOverviewConfig.OCV
+      ~SequenceOverviewConfig.STEP_ANALYZER
+   
+   

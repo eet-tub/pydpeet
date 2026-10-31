@@ -1,0 +1,29 @@
+﻿pydpeet.DeviceConfig
+====================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: DeviceConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DeviceConfig.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DeviceConfig.BASYTEC_CTS
+      ~DeviceConfig.NEWARE_CT_4008Q_5V12A_S1
+   
+   

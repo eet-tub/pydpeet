@@ -1,0 +1,6 @@
+﻿pydpeet.write\_to\_bibtex
+=========================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: write_to_bibtex

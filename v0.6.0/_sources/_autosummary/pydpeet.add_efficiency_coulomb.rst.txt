@@ -1,0 +1,6 @@
+﻿pydpeet.add\_efficiency\_coulomb
+================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_efficiency_coulomb

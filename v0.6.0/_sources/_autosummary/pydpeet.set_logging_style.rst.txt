@@ -1,0 +1,6 @@
+﻿pydpeet.set\_logging\_style
+===========================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: set_logging_style

@@ -1,0 +1,6 @@
+﻿pydpeet.visualization\_config\_wrapper
+======================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: visualization_config_wrapper

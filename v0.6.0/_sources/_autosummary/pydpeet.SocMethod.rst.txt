@@ -1,0 +1,25 @@
+﻿pydpeet.SocMethod
+=================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: SocMethod
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SocMethod.WITHOUT_RESET
+      ~SocMethod.WITH_RESET_WHEN_FULL
+      ~SocMethod.WITH_RESET_WHEN_EMPTY
+      ~SocMethod.WITH_RESET_WHEN_FULL_AND_EMPTY
+   
+   

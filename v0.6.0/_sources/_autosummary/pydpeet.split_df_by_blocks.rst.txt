@@ -1,0 +1,6 @@
+﻿pydpeet.split\_df\_by\_blocks
+=============================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: split_df_by_blocks

@@ -1,0 +1,6 @@
+﻿pydpeet.add\_capacity
+=====================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_capacity

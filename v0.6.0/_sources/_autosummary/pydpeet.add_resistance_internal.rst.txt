@@ -1,0 +1,6 @@
+﻿pydpeet.add\_resistance\_internal
+=================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_resistance_internal

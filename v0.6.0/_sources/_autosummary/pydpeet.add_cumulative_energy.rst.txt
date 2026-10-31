@@ -1,0 +1,6 @@
+﻿pydpeet.add\_cumulative\_energy
+===============================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_cumulative_energy

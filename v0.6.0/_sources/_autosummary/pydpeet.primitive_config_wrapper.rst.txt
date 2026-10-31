@@ -1,0 +1,6 @@
+﻿pydpeet.primitive\_config\_wrapper
+==================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: primitive_config_wrapper

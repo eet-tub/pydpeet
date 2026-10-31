@@ -1,0 +1,6 @@
+﻿pydpeet.add\_power
+==================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_power

@@ -1,0 +1,6 @@
+﻿pydpeet.visualize\_phases
+=========================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: visualize_phases

@@ -1,0 +1,6 @@
+﻿pydpeet.add\_soc
+================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_soc

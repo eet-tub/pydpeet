@@ -1,0 +1,30 @@
+﻿pydpeet.BatteryConfig
+=====================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: BatteryConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BatteryConfig.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BatteryConfig.DEFAULT
+      ~BatteryConfig.HAKADI_NMC_1500
+      ~BatteryConfig.LGM50LT_NMC_4800
+   
+   

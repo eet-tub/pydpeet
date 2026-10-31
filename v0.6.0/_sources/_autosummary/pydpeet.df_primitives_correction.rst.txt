@@ -1,0 +1,6 @@
+﻿pydpeet.df\_primitives\_correction
+==================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: df_primitives_correction

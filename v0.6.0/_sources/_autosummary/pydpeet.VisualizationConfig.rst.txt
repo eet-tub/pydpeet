@@ -1,0 +1,28 @@
+﻿pydpeet.VisualizationConfig
+===========================
+
+.. currentmodule:: pydpeet
+
+.. autoclass:: VisualizationConfig
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~VisualizationConfig.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VisualizationConfig.DEFAULT
+   
+   

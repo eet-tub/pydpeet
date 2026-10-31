@@ -1,0 +1,6 @@
+﻿pydpeet.calculate\_minimum\_definitive\_differences
+===================================================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: calculate_minimum_definitive_differences

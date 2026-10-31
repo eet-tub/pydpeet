@@ -1,0 +1,6 @@
+﻿pydpeet.add\_charge\_throughput
+===============================
+
+.. currentmodule:: pydpeet
+
+.. autofunction:: add_charge_throughput
