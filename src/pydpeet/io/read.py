@@ -12,7 +12,11 @@ from pydpeet.io.convert import (
     _convert_file,
     _convert_files_in_directory,
 )
-from pydpeet.utils.guardrails import _guardrail_boolean
+from pydpeet.utils.guardrails import (
+    _FILETYPE_BLACKLIST,
+    _guardrail_blacklisted_filetype,
+    _guardrail_boolean,
+)
 
 ConfigLike: TypeAlias = ReadConfig | str
 PathLike: TypeAlias = str | Path
@@ -92,6 +96,7 @@ def convert(
         - the provided input path does not exist
         - an input path has an invalid type
         - a list contains unsupported entries
+        - an explicitly provided file has a blacklisted filetype
 
     Notes
     -----
@@ -161,6 +166,16 @@ def convert(
     # ----------
     # """
 
+    # Reject blacklisted filetypes for explicitly provided files.
+    # Directories are handled later so only the blacklisted files inside them get skipped.
+    if isinstance(input_path, str):
+        if os.path.isfile(input_path):
+            _guardrail_blacklisted_filetype(input_path)
+    elif isinstance(input_path, list):
+        for item in input_path:
+            if isinstance(item, str) and os.path.isfile(item):
+                _guardrail_blacklisted_filetype(item)
+
     _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)
 
     if isinstance(config, str):
@@ -219,7 +234,11 @@ def convert(
 
     results = []
     for fp in all_files:
-        group = _EXTENSION_GROUPS.get(Path(fp).suffix.lower())
+        suffix = Path(fp).suffix.lower()
+        if suffix in _FILETYPE_BLACKLIST:
+            _guardrail_blacklisted_filetype(fp, hard_fail=False)
+            continue
+        group = _EXTENSION_GROUPS.get(suffix)
         if group is None:
             logging.warning("Could not detect filetype for '%s', skipping", fp)
             continue

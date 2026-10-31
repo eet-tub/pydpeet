@@ -193,6 +193,9 @@ class Mocks:
         output_path = None
         keep_all_additional_data = False
         custom_folder_path = None
+        blacklisted_input_path = str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")
+        blacklisted_input_path_in_list = [input_path, str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")]
+        folder_input_path = str(BASE_DIR / "blacklist_folder")
         required_columns = [
             "Meta_Data",
             "Step_Count",
@@ -425,6 +428,9 @@ class Mocks:
         input_path = str(BASE_DIR / "basytec_6_3_1_0-TC23LFP09_CU_25deg.txt")
         keep_all_additional_data = False
         custom_folder_path = None
+        blacklisted_input_path = str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")
+        blacklisted_input_path_in_list = [input_path, str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")]
+        folder_input_path = str(BASE_DIR / "blacklist_folder")
         df_expected_without_additional_data = DF.copy()
         df_expected_with_additional_data = DF_WITH_ADDITIONAL.copy()
 

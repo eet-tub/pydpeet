@@ -1,8 +1,24 @@
 import logging
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+
+_FILETYPE_BLACKLIST: frozenset[str] = frozenset(
+    {
+        ".eps",
+        ".pdf",
+        ".svg",
+        ".bmp",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".raw",
+        ".tiff",
+        ".gif",
+    }
+)
 
 
 def _handle_failure(message: str, hard_fail: bool) -> None:
@@ -144,3 +160,17 @@ def _guardrail_float(
 
     if float_ == 0.0:
         _handle_failure(f"Input float_ {float_} is zero", hard_fail_zero)
+
+
+def _guardrail_blacklisted_filetype(
+    file_path: Any,
+    hard_fail: bool = True,
+) -> None:
+    """Reject files whose extension is part of the blacklisted filetypes."""
+    if file_path is None:
+        return
+
+    suffix = Path(str(file_path)).suffix.lower()
+    if suffix in _FILETYPE_BLACKLIST:
+        blacklist_str = "{" + ", ".join(sorted(_FILETYPE_BLACKLIST)) + "}"
+        _handle_failure(f"File type is in blacklist : {blacklist_str}", hard_fail)
