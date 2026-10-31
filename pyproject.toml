@@ -60,6 +60,7 @@ test = [
     "pytest-cov",
     "pytest-xdist",
     "pytest-rerunfailures",
+    "pytest-benchmark>=5.3.0",
 ]
 mypy = [
     "mypy>=1.0",

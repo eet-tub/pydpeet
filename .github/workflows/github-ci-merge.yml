@@ -59,6 +59,48 @@ jobs:
           name: docs-latest
           path: docs/_public/
           retention-days: 14
+  #-----------------#
+  #--- BENCHMARK ---#
+  #-----------------#
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: init
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+      - name: python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - name: uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: tk
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk
+      - name: uv_sync
+        run: uv sync --frozen --group test
+      - name: run_tests
+        run: |
+          uv run pytest -v test/api_accessible \
+            -n 0 \
+            --benchmark-json=benchmark.json \
+            --benchmark-quiet \
+            --reruns 2 \
+            --only-rerun numpy._core._exceptions._ArrayMemoryError
+      - name: benchmark
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: pytest
+          output-file-path: benchmark.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: dev/bench
+          fail-on-alert: false
   #--------------#
   #--- DEPLOY ---#
   #--------------#

@@ -34,26 +34,38 @@ class Test_read_input_path:
 
 
 class Test_read_keep_all_additional_data:
-    def test_true(self, base_args):
-        base_args["keep_all_additional_data"] = True
-        result = read(**base_args)
-        expected = Mocks.Mock_read.df_expected_with_additional_data
-        assert pd.DataFrame.equals(result, expected)
+    def test_true(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = True
+            result = read(**base_args)
+            expected = Mocks.Mock_read.df_expected_with_additional_data
+            assert pd.DataFrame.equals(result, expected)
 
-    def test_false(self, base_args):
-        base_args["keep_all_additional_data"] = False
-        result = read(**base_args)
-        expected = Mocks.Mock_read.df_expected_without_additional_data
-        assert pd.DataFrame.equals(result, expected)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
-    def test_none(self, base_args):
-        base_args["keep_all_additional_data"] = None
-        _assert_raises_and_print(ValueError, read, **base_args)
+    def test_false(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = False
+            result = read(**base_args)
+            expected = Mocks.Mock_read.df_expected_without_additional_data
+            assert pd.DataFrame.equals(result, expected)
 
-    def test_wrong_type(self, base_args):
-        base_args["keep_all_additional_data"] = "wrong type"
-        assert not isinstance(base_args["keep_all_additional_data"], bool)
-        _assert_raises_and_print(ValueError, read, **base_args)
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_none(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = None
+            _assert_raises_and_print(ValueError, read, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
+
+    def test_wrong_type(self, base_args, benchmark):
+        def _run():
+            base_args["keep_all_additional_data"] = "wrong type"
+            assert not isinstance(base_args["keep_all_additional_data"], bool)
+            _assert_raises_and_print(ValueError, read, **base_args)
+
+        benchmark.pedantic(_run, rounds=1, warmup_rounds=0, iterations=1)
 
 
 class Test_read_custom_folder_path:
