@@ -645,7 +645,11 @@
         <span class="c1"># We first write data to a temporary file, and then use os.replace() to</span>
         <span class="c1"># perform an atomic rename.</span>
         <span class="k">with</span> <span class="n">_io</span><span class="o">.</span><span class="n">FileIO</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">bytes_written</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bytes_written</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="c1"># Raise an OSError so the &#39;except&#39; below cleans up the partially</span>
+            <span class="c1"># written file.</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;os.write() didn&#39;t write the full pyc file&quot;</span><span class="p">)</span>
         <span class="n">_os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">path_tmp</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
