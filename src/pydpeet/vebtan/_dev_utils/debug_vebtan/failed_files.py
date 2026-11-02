@@ -29,13 +29,13 @@ FOLDER_SIZE_LIMIT = 10 * 1024**3  # 10 GB
 
 # Failure reasons that are considered an acceptable, expected outcome, tagged as such in the report.
 FAILED_SUCCESSFULLY = [
-    # "File type must be TXT or CSV.",
-    # "Input Data_Frame is empty",
+    "File type must be TXT or CSV.",  # Placeholder examples
+    "Input Data_Frame is empty",
 ]
 
 # Failure reasons caused by a bug in pydpeet, tagged as such in the report.
 SHOULD_ALREADY_BE_FIXED = [
-    # "pop from empty list",
+    "pop from empty list",  # Placeholder examples
 ]
 
 
