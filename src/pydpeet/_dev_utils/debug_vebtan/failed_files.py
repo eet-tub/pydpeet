@@ -16,6 +16,7 @@ import json
 import re
 from collections import defaultdict
 from collections.abc import Hashable
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 from urllib.error import URLError
@@ -23,13 +24,18 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "http://130.149.179.21/database/failedFiles?rows=1000&page={page}"
 DOWNLOAD_API_URL = "http://130.149.179.21/api/download"
-REPORT_PATH = Path(__file__).resolve().parent / "failed_files.txt"
 DOWNLOAD_DIR = Path(__file__).resolve().parent / "failed_files"
 FOLDER_SIZE_LIMIT = 10 * 1024**3  # 10 GB
 
 # Failure reasons that are considered an acceptable, expected outcome, tagged as such in the report.
 FAILED_SUCCESSFULLY = [
-    "File type must be TXT or CSV.",
+    # "File type must be TXT or CSV.",
+    # "Input Data_Frame is empty",
+]
+
+# Failure reasons caused by a bug in pydpeet, tagged as such in the report.
+SHOULD_ALREADY_BE_FIXED = [
+    # "pop from empty list",
 ]
 
 
@@ -106,7 +112,13 @@ def group_by_reason(entries: list[dict[str, Any]]) -> dict[str, list[dict[str, A
     return groups
 
 
-def write_report(entries: list[dict[str, Any]], path: Path = REPORT_PATH) -> Path:
+def report_path() -> Path:
+    """Return the path of the report file, timestamped so every run gets a fresh file."""
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    return Path(__file__).resolve().parent / f"failed_files_{timestamp}.txt"
+
+
+def write_report(entries: list[dict[str, Any]], custom_path: Path | None = None) -> Path:
     """Print and store the failures grouped by reason in a plain-text report."""
     groups = group_by_reason(entries)
 
@@ -115,7 +127,12 @@ def write_report(entries: list[dict[str, Any]], path: Path = REPORT_PATH) -> Pat
         first = records[0]
         raw_files = first.get("rawFiles") or []
         first_file = str(raw_files[0]) if raw_files else ""
-        tag = "Tag: failed successfully\n" if reason in FAILED_SUCCESSFULLY else ""
+        if reason in FAILED_SUCCESSFULLY:
+            tag = "Tag: failed successfully\n"
+        elif reason in SHOULD_ALREADY_BE_FIXED:
+            tag = "Tag: should already be fixed\n"
+        else:
+            tag = ""
         blocks.append(
             f"Error: {reason}\n"
             f"{tag}"
@@ -124,9 +141,10 @@ def write_report(entries: list[dict[str, Any]], path: Path = REPORT_PATH) -> Pat
         )
     text = "\n\n".join(blocks) + "\n"
     print(text, end="")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
-    return path
+    report_file = custom_path or report_path()
+    report_file.parent.mkdir(parents=True, exist_ok=True)
+    report_file.write_text(text, encoding="utf-8")
+    return report_file
 
 
 def download_file(record_id: Any) -> tuple[str, bytes]:
