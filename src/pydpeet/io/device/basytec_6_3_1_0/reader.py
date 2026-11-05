@@ -1,3 +1,4 @@
+import logging
 from io import StringIO
 
 import pandas as pd
@@ -51,5 +52,9 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
 
     # Use StringIO to read the CSV content into a DataFrame.
     df = pd.read_csv(StringIO(csv_content))
+
+    if "T1[°C]" not in df.columns:
+        df["T1[°C]"] = None
+        logging.warning("Column 'T1[°C]' not found in the data. Filling with None values.")
 
     return df, metadata_str
