@@ -26,11 +26,34 @@ class Test_read_config:
 
 
 class Test_read_input_path:
-    """Placeholder failing test for variable 'input_path' of 'read'."""
+    def test_blacklisted_file(self, base_args):
+        base_args["input_path"] = Mocks.Mock_read.blacklisted_input_path
+        _assert_raises_and_print(ValueError, read, **base_args)
 
-    @pytest.mark.skip(reason="Placeholder test")
-    def test_placeholder(self):
-        raise NotImplementedError("Test not implemented for variable: input_path of read")
+    def test_blacklisted_file_without_config(self, base_args):
+        base_args["config"] = None
+        base_args["input_path"] = Mocks.Mock_read.blacklisted_input_path
+        _assert_raises_and_print(ValueError, read, **base_args)
+
+    def test_blacklisted_file_in_list(self, base_args):
+        base_args["input_path"] = Mocks.Mock_read.blacklisted_input_path_in_list
+        _assert_raises_and_print(ValueError, read, **base_args)
+
+    def test_folder_skips_blacklisted_files(self, base_args):
+        base_args["config"] = "digatron_4_20_6_236"
+        base_args["input_path"] = Mocks.Mock_read.folder_input_path
+        result = read(**base_args)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], pd.DataFrame)
+
+    def test_folder_without_config_skips_blacklisted_files(self, base_args):
+        base_args["config"] = None
+        base_args["input_path"] = Mocks.Mock_read.folder_input_path
+        result = read(**base_args)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], pd.DataFrame)
 
 
 class Test_read_keep_all_additional_data:

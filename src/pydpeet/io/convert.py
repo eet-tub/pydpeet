@@ -22,6 +22,7 @@ from pydpeet.io.map import _mapping
 from pydpeet.io.utils.ext_path import _ExtPath
 from pydpeet.io.utils.load_custom_module import load_custom_module
 from pydpeet.io.write import write
+from pydpeet.utils.guardrails import _FILETYPE_BLACKLIST, _guardrail_blacklisted_filetype
 from pydpeet.utils.log_time import _log_time
 
 ConfigLike: TypeAlias = ReadConfig | str
@@ -137,6 +138,17 @@ def _convert_files_in_directory(
             files = _find_main_files(input_path)
         else:
             files = os.listdir(input_path)
+
+        # read.py cannot check directory contents (the listing happens here), so blacklisted
+        # files are skipped per file here. Without this they would reach _process_file and
+        # fail in the reader, leaving None entries in the returned list.
+        kept_files = []
+        for f in files:
+            if Path(f).suffix.lower() in _FILETYPE_BLACKLIST:
+                _guardrail_blacklisted_filetype(f, hard_fail=False)
+            else:
+                kept_files.append(f)
+        files = kept_files
 
         if output_path is None:
             dfs = []
