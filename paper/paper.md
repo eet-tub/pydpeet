@@ -35,7 +35,7 @@ affiliations:
   - name: TU Berlin, Institute of Energy and Automation, Electrical Energy Storage Technology (EET), Einsteinufer 11, D-10587 Berlin, Germany
     index: 1
     ror: 03v4gjf40
-date: 04.09.2026
+date: 2026-10-31
 bibliography: paper.bib
 ---
 
