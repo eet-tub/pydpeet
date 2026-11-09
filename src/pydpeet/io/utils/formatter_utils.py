@@ -444,3 +444,65 @@ def _absolute_time_timedate_typecast(df: pd.DataFrame) -> pd.DataFrame:
         logging.warning("Error typecasting Date_Time")
 
     return df
+
+
+def _unix_time_to_datetime(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert the "Date_Time" column from Unix time (seconds since
+    1970-01-01T00:00:00 UTC) to pandas datetime objects.
+    Fills empty parts with pandas.NaT.
+
+    Parameters
+    ----------
+    data_frame : pandas.DataFrame
+        DataFrame containing the column to be modified.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Modified DataFrame with the "Date_Time" column converted to datetime objects.
+    """
+    try:
+        if df is None:
+            raise ValueError("data_frame is None")
+        if "Date_Time" not in df.columns:
+            raise ValueError("Date_Time Column doesn't exsist")
+        df["Date_Time"] = pd.to_datetime(df["Date_Time"], unit="s", errors="coerce").astype("datetime64[ns]")
+    except Exception:
+        logging.warning("Error fixing Date_Time (converting Unix time to datetime)")
+
+    return df
+
+
+def _to_numeric_if_possible(
+    df: pd.DataFrame,
+    column_name: str,
+) -> pd.DataFrame:
+    """
+    Convert the values in the given column to numeric if possible,
+    otherwise replace them with NaN.
+
+    Parameters
+    ----------
+    data_frame : pandas.DataFrame
+        DataFrame containing the column to be modified.
+    column_name : str
+        Name of the column to be converted.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Modified DataFrame with the column converted to numeric.
+    """
+    try:
+        if df is None:
+            raise ValueError("dataFrame is None")
+        if column_name is None:
+            raise ValueError("column_name is None")
+        if column_name not in df.columns:
+            raise ValueError(f"{column_name} is not in {df.columns}")
+        df[column_name] = pd.to_numeric(df[column_name], errors="coerce")
+    except Exception:
+        logging.warning(f"Error converting column:{column_name} to numeric")
+
+    return df
