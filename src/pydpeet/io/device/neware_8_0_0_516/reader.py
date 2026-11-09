@@ -318,6 +318,10 @@ def _handle_record_auxvol_auxtemp(
         logging.info("merging record_auxvol and auxtemp...")
         df_result = pd.merge(df_result, df_auxtemp, left_on="DataPoint", right_on="DataPoint - auxTemp", how="left")
 
+    if "T1" not in df_result.columns:
+        df_result["T1"] = None
+        logging.warning("Column 'T1' not found in the data (no auxTemp sheet). Filling with None values.")
+
     return df_result
 
 
