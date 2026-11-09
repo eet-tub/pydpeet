@@ -453,7 +453,11 @@
     <span class="n">_convert_file</span><span class="p">,</span>
     <span class="n">_convert_files_in_directory</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.utils.guardrails</span><span class="w"> </span><span class="kn">import</span> <span class="n">_guardrail_boolean</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydpeet.utils.guardrails</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_FILETYPE_BLACKLIST</span><span class="p">,</span>
+    <span class="n">_guardrail_blacklisted_filetype</span><span class="p">,</span>
+    <span class="n">_guardrail_boolean</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">ConfigLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">ReadConfig</span> <span class="o">|</span> <span class="nb">str</span>
 <span class="n">PathLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span>
@@ -535,6 +539,7 @@
 <span class="sd">        - the provided input path does not exist</span>
 <span class="sd">        - an input path has an invalid type</span>
 <span class="sd">        - a list contains unsupported entries</span>
+<span class="sd">        - an explicitly provided file has a blacklisted filetype</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -604,6 +609,16 @@
     <span class="c1"># ----------</span>
     <span class="c1"># &quot;&quot;&quot;</span>
 
+    <span class="c1"># Reject blacklisted filetypes for explicitly provided files.</span>
+    <span class="c1"># Directories are handled later so only the blacklisted files inside them get skipped.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+            <span class="n">_guardrail_blacklisted_filetype</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">input_path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="n">_guardrail_blacklisted_filetype</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
     <span class="n">_guardrail_boolean</span><span class="p">(</span><span class="n">keep_all_additional_data</span><span class="p">,</span> <span class="n">hard_fail_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hard_fail_wrong_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -662,7 +677,11 @@
 
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">all_files</span><span class="p">:</span>
-        <span class="n">group</span> <span class="o">=</span> <span class="n">_EXTENSION_GROUPS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">_FILETYPE_BLACKLIST</span><span class="p">:</span>
+            <span class="n">_guardrail_blacklisted_filetype</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">hard_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">_EXTENSION_GROUPS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not detect filetype for &#39;</span><span class="si">%s</span><span class="s2">&#39;, skipping&quot;</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
             <span class="k">continue</span>
