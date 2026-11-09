@@ -48,11 +48,11 @@ Processed data can be exported to highly efficient Parquet files to be stored an
 
 ### GitHub Pages
 
-* [PyDPEET homepage](https://eet-tub.github.io/pydpeet/)
-* [Installation](https://eet-tub.github.io/pydpeet/installation.html)
-* [API reference](https://eet-tub.github.io/pydpeet/api/index.html)
-* [Examples](https://eet-tub.github.io/pydpeet/examples/index.html)
-* [Developer Guide](https://eet-tub.github.io/pydpeet/developer.html)
+* [PyDPEET homepage](https://eet-tub.github.io/pydpeet/latest/)
+* [Installation](https://eet-tub.github.io/pydpeet/latest/installation.html)
+* [API reference](https://eet-tub.github.io/pydpeet/latest/api/index.html)
+* [Examples](https://eet-tub.github.io/pydpeet/latest/examples/index.html)
+* [Developer Guide](https://eet-tub.github.io/pydpeet/latest/developer.html)
 
 ## Installation
 
@@ -70,11 +70,11 @@ or
 pip install pydpeet
 ```
 
-For detailed installation instructions, see the [installation guide](https://eet-tub.github.io/pydpeet/installation.html) at our GitHub Pages.
+For detailed installation instructions, see the [installation guide](https://eet-tub.github.io/pydpeet/latest/installation.html) at our GitHub Pages.
 
 ### For Developers
 
-Please refer to the [developer guide](https://eet-tub.github.io/pydpeet/developer.html) at our GitHub Pages.
+Please refer to the [developer guide](https://eet-tub.github.io/pydpeet/latest/developer.html) at our GitHub Pages.
 
 <!-- ## Current Status -->
 
@@ -110,4 +110,4 @@ If PyDPEET cannot read or convert your data, please open an issue or send us sam
 
 Contributions are always welcome! If you would like to add a new feature, we recommend discussing your idea in a GitHub issue before starting implementation. This helps avoid duplicate work and ensures that the proposed functionality aligns with the project's goals.
 
-Please refer to the [Developer Guide](https://eet-tub.github.io/pydpeet/developer.html) for information on setting up a development environment, coding standards, testing, documentation, and the pull request workflow.
+Please refer to the [Developer Guide](https://eet-tub.github.io/pydpeet/latest/developer.html) for information on setting up a development environment, coding standards, testing, documentation, and the pull request workflow.

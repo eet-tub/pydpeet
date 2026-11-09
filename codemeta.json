@@ -1,0 +1,65 @@
+{
+    "@context": "https://w3id.org/codemeta/3.0",
+    "type": "SoftwareSourceCode",
+    "applicationCategory": "Battery Research",
+    "author": [
+        {
+            "id": "https://orcid.org/0009-0004-3794-0079",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "TU Berlin, Institute of Energy and Automation, Electrical Energy Storage Technology (EET), Einsteinufer 11, D-10587 Berlin, Germany"
+            },
+            "email": "a.schloesser@tu-berlin.de",
+            "familyName": "Schlösser",
+            "givenName": "Anton"
+        },
+        {
+            "id": "https://orcid.org/0009-0006-5262-6429",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "TU Berlin, Institute of Energy and Automation, Electrical Energy Storage Technology (EET), Einsteinufer 11, D-10587 Berlin, Germany"
+            },
+            "email": "m.otto.1@tu-berlin.de",
+            "familyName": "Otto",
+            "givenName": "Martin"
+        },
+        {
+            "id": "_:author_3",
+            "type": "Person",
+            "affiliation": {
+                "type": "Organization",
+                "name": "TU Berlin, Institute of Energy and Automation, Electrical Energy Storage Technology (EET), Einsteinufer 11, D-10587 Berlin, Germany"
+            },
+            "email": "pydpeet@eet.tu-berlin.de",
+            "familyName": "Schröder",
+            "givenName": "Daniel"
+        }
+    ],
+    "codeRepository": "https://github.com/eet-tub/pydpeet",
+    "dateCreated": "2024-10-01",
+    "dateModified": "2026-10-31",
+    "datePublished": "2026-05-13",
+    "description": "Python package to read, unify, and convert battery measurement data from arbitrary battery cyclers to Parquet files. Converted data can be automatically split into segments (CC, CV, etc.) or complex sequences (e.g., GITT). A wide range of analysis functions for battery research is provided (SOC, capacity, resistance, iOCV exctraction, and more).",
+    "downloadUrl": "https://github.com/eet-tub/pydpeet/releases",
+    "keywords": [
+        "battery",
+        "battery-health",
+        "battery-level",
+        "battery-life",
+        "battery-state-estimation",
+        "data-analysis",
+        "data-analytics",
+        "data-preprocessing",
+        "data-processing"
+    ],
+    "license": "https://spdx.org/licenses/BSD-3-Clause",
+    "name": "PyDPEET",
+    "programmingLanguage": "Python 3",
+    "relatedLink": "https://eet-tub.github.io/pydpeet/latest/",
+    "releaseNotes": "https://github.com/eet-tub/pydpeet/blob/main/CHANGELOG.md",
+    "version": "0.6.0",
+    "developmentStatus": "active",
+    "issueTracker": "https://github.com/eet-tub/pydpeet/issues"
+}

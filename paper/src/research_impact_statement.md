@@ -1,0 +1,5 @@
+# Research Impact Statement
+
+PyDPEET has already been successfully adopted at the department of Electrical Energy Storage Technology (EET) at TU Berlin and is currently being used to process all existing experimental datasets of the department. It has also been used in several student theses, where it facilitated data analysis, produced reusable results, and was extended to fit the scope of certain thesis topics (see [Acknowledgments](#acknowledgements)).
+
+The project was also presented as a poster at the Advanced Battery Power 2026 conference [@otto_pydpeet_2026] and used to process and analyse the data used in another poster for the same conference [@schlosser_automated_2026], which were both met with great interest. The former was also shown at the offical opening of the Berlin Battery Lab to discuss cross-institutional usage within the alliance. Additionally, there are discussions with other research groups and within on-going projects to use PyDPEET for data handling and analysis. New algorithms resulting from these collaborations will be integrated into the PyDPEET ecosystem to further improve usage for all users.

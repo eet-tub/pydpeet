@@ -4,3 +4,6 @@ __pycache__/
 /docs/_build/
 _autogen/
 *_autosummary/
+
+/paper/jats/*
+/paper/res/*

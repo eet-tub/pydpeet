@@ -1,3 +1,27 @@
+# 0.6.0
+
+Contributions from:
+- Martin Otto (MAtahualpa)
+- Anton Schlösser (schlanto)
+- Daniel Schröder (daniel_shr)
+- Max Thorn (northmaybe)
+
+Features:
+- Add support for "battery data format" (BDF; see: https://github.com/battery-data-alliance/battery-data-format) [[!36](https://github.com/eet-tub/pydpeet/pull/36)]
+
+Bugfixes:
+- Fix regression in package version requirements for Python 3.14 users (`python-calamine` package) [[!40](https://github.com/eet-tub/pydpeet/pull/40)]
+
+Tasks:
+- Add issues templates for bugs reports and feature requests [[!27](https://github.com/eet-tub/pydpeet/pull/27)], [[!44](https://github.com/eet-tub/pydpeet/pull/44)]
+- Add PR template [[!27](https://github.com/eet-tub/pydpeet/pull/27)], [[!44](https://github.com/eet-tub/pydpeet/pull/44)]
+- Update links in `README.md` to point to the latest version of our documentation [[!41](https://github.com/eet-tub/pydpeet/pull/41)]
+- Prepare repo for JOSS paper submission [[#1](https://github.com/eet-tub/pydpeet/issues/1)]
+- Add all content files for JOSS paper submission [[#2](https://github.com/eet-tub/pydpeet/issues/2)]
+
+Misc:
+- Add helper functions for VEBTAN exports [[!35](https://github.com/eet-tub/pydpeet/pull/35)]
+
 # 0.5.0
 
 Contributions from:
@@ -5,17 +29,17 @@ Contributions from:
 - Daniel Schröder (daniel_shr)
 
 Features:
-- automatic reader selection - if no config is given in read() or convert() it'll go through all available ReadConfigs till the first works without errors [[#32](https://github.com/eet-tub/pydpeet/issues/32)]
-- added file creation capability to convert() if an output_path is given [[#33](https://github.com/eet-tub/pydpeet/issues/33)]
+- Automatic reader selection - if no config is given in read() or convert() it'll go through all available ReadConfigs till the first works without errors [[#32](https://github.com/eet-tub/pydpeet/issues/32)]
+- Added file creation capability to convert() if an output_path is given [[#33](https://github.com/eet-tub/pydpeet/issues/33)]
 
 Bugfixes:
-- updated API to use correct function name extract_instructions
-- loosened up dependencies too major version (e.g. 3.X.Y) if dependency is over version 1.0 to increase compatibility [[#34](https://github.com/eet-tub/pydpeet/issues/34)]
+- Updated API to use correct function name extract_instructions
+- Loosened up dependencies too major version (e.g. 3.X.Y) if dependency is over version 1.0 to increase compatibility [[#34](https://github.com/eet-tub/pydpeet/issues/34)]
 
 Tasks:
 - Added Contributor Covenant Code of Conduct
-- updated CI to check if project is installable on python 3.12-3.14
-- updated CI to check test coverage (now fails on missing tests for a variable, duplicates, deprecations)
+- Updated CI to check if project is installable on python 3.12-3.14
+- Updated CI to check test coverage (now fails on missing tests for a variable, duplicates, deprecations)
 
 # 0.4.0
 

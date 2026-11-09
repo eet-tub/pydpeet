@@ -30,6 +30,17 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
         headers = line.strip().split(",")
         data_lines = [row.strip().split(",") for row in file if row.strip()]
 
+        # Strip trailing empty fields (e.g. caused by trailing commas) to fix:
+        # Error: 98 columns passed, passed data had 99 columns
+        def _strip_trailing_empty_fields(fields: list[str]) -> list[str]:
+            fields = list(fields)
+            while fields and fields[-1] == "":
+                fields.pop()
+            return fields
+
+        headers = _strip_trailing_empty_fields(headers)
+        data_lines = [_strip_trailing_empty_fields(row) for row in data_lines]
+
         # appending first string from datalines
         metadata.append(",".join(data_lines.pop(0)))
 
