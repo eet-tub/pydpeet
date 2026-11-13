@@ -16,6 +16,7 @@ from pydpeet.utils.guardrails import (
     _FILETYPE_BLACKLIST,
     _guardrail_blacklisted_filetype,
     _guardrail_boolean,
+    _guardrail_unknown_filetype,
 )
 
 ConfigLike: TypeAlias = ReadConfig | str
@@ -79,6 +80,10 @@ def convert(
         Optional custom folder path used by specific device configurations
         that require additional external metadata or lookup files.
 
+        If provided, the builtin filetype blacklist and unknown filetype checks are
+        bypassed (a warning is logged), so custom reader/mapper/formatter implementations
+        can be used without being rejected.
+
     Returns
     -------
     pandas.DataFrame | list[pandas.DataFrame] | None
@@ -97,6 +102,7 @@ def convert(
         - an input path has an invalid type
         - a list contains unsupported entries
         - an explicitly provided file has a blacklisted filetype
+        - an explicitly provided file has a filetype that is neither blacklisted nor supported yet
 
     Notes
     -----
@@ -166,15 +172,31 @@ def convert(
     # ----------
     # """
 
+    # If a custom folder path is provided, the builtin filetype protections are bypassed so
+    # users can apply their own implementations for arbitrary filetypes. A warning is still logged.
+    # Both the blacklist and the not-yet-known/unsupported filetype checks are skipped then.
+    bypass_filetype_checks = custom_folder_path is not None
+    if bypass_filetype_checks:
+        logging.warning(
+            "Custom folder path '%s' provided - bypassing filetype blacklist and unknown filetype checks",
+            custom_folder_path,
+        )
+
     # Reject blacklisted filetypes for explicitly provided files.
     # Directories are handled later so only the blacklisted files inside them get skipped.
-    if isinstance(input_path, str):
-        if os.path.isfile(input_path):
-            _guardrail_blacklisted_filetype(input_path)
-    elif isinstance(input_path, list):
-        for item in input_path:
-            if isinstance(item, str) and os.path.isfile(item):
-                _guardrail_blacklisted_filetype(item)
+    # Blacklisted filetypes keep their dedicated behaviour (hard fail for explicit files).
+    # Filetypes that are not blacklisted but also not known yet get a distinct error message.
+    # Both protections are skipped when a custom folder path overrides them.
+    if not bypass_filetype_checks:
+        if isinstance(input_path, str):
+            if os.path.isfile(input_path):
+                _guardrail_blacklisted_filetype(input_path)
+                _guardrail_unknown_filetype(input_path)
+        elif isinstance(input_path, list):
+            for item in input_path:
+                if isinstance(item, str) and os.path.isfile(item):
+                    _guardrail_blacklisted_filetype(item)
+                    _guardrail_unknown_filetype(item)
 
     _guardrail_boolean(keep_all_additional_data, hard_fail_none=True, hard_fail_wrong_type=True)
 
@@ -235,12 +257,15 @@ def convert(
     results = []
     for fp in all_files:
         suffix = Path(fp).suffix.lower()
-        if suffix in _FILETYPE_BLACKLIST:
+        if suffix in _FILETYPE_BLACKLIST and not bypass_filetype_checks:
             _guardrail_blacklisted_filetype(fp, hard_fail=False)
             continue
         group = _EXTENSION_GROUPS.get(suffix)
         if group is None:
-            logging.warning("Could not detect filetype for '%s', skipping", fp)
+            if not bypass_filetype_checks:
+                # The filetype is not blacklisted, but also not a known/supported filetype yet,
+                # so we use a distinct error message to separate it from intentionally unsupported filetypes.
+                _guardrail_unknown_filetype(fp, hard_fail=False)
             continue
         for cfg in group:
             try:

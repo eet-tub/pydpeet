@@ -195,6 +195,8 @@ class Mocks:
         custom_folder_path = None
         blacklisted_input_path = str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")
         blacklisted_input_path_in_list = [input_path, str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")]
+        unknown_input_path = str(BASE_DIR / "blacklist_folder" / "unknown_file.xyz")
+        unknown_input_path_in_list = [input_path, str(BASE_DIR / "blacklist_folder" / "unknown_file.xyz")]
         folder_input_path = str(BASE_DIR / "blacklist_folder")
         required_columns = [
             "Meta_Data",
@@ -430,6 +432,8 @@ class Mocks:
         custom_folder_path = None
         blacklisted_input_path = str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")
         blacklisted_input_path_in_list = [input_path, str(BASE_DIR / "blacklist_folder" / "blacklisted_file.png")]
+        unknown_input_path = str(BASE_DIR / "blacklist_folder" / "unknown_file.xyz")
+        unknown_input_path_in_list = [input_path, str(BASE_DIR / "blacklist_folder" / "unknown_file.xyz")]
         folder_input_path = str(BASE_DIR / "blacklist_folder")
         df_expected_without_additional_data = DF.copy()
         df_expected_with_additional_data = DF_WITH_ADDITIONAL.copy()
