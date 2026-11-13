@@ -10,6 +10,7 @@ import pandas as pd
 from pandas import Index
 
 from pydpeet.io.configs.config import (
+    _EXTENSION_GROUPS,
     _FORMATTER_CONFIGS,
     _MAPPER_CONFIGS,
     _READER_CONFIGS,
@@ -22,7 +23,7 @@ from pydpeet.io.map import _mapping
 from pydpeet.io.utils.ext_path import _ExtPath
 from pydpeet.io.utils.load_custom_module import load_custom_module
 from pydpeet.io.write import write
-from pydpeet.utils.guardrails import _FILETYPE_BLACKLIST, _guardrail_blacklisted_filetype
+from pydpeet.utils.guardrails import _FILETYPE_BLACKLIST, _guardrail_blacklisted_filetype, _guardrail_unknown_filetype
 from pydpeet.utils.log_time import _log_time
 
 ConfigLike: TypeAlias = ReadConfig | str
@@ -142,13 +143,22 @@ def _convert_files_in_directory(
         # read.py cannot check directory contents (the listing happens here), so blacklisted
         # files are skipped per file here. Without this they would reach _process_file and
         # fail in the reader, leaving None entries in the returned list.
-        kept_files = []
-        for f in files:
-            if Path(f).suffix.lower() in _FILETYPE_BLACKLIST:
-                _guardrail_blacklisted_filetype(f, hard_fail=False)
-            else:
+        # Filetypes that are neither blacklisted nor known yet are skipped with a distinct
+        # warning message, so intentionally unsupported filetypes and not yet implemented ones
+        # can be clearly separated. Both are skipped when a custom folder path bypasses the checks.
+        if custom_folder_path is None:
+            kept_files = []
+            for f in files:
+                f_path = Path(input_path) / f
+                if f_path.is_file():
+                    if f_path.suffix.lower() in _FILETYPE_BLACKLIST:
+                        _guardrail_blacklisted_filetype(f, hard_fail=False)
+                        continue
+                    if f_path.suffix.lower() not in _EXTENSION_GROUPS:
+                        _guardrail_unknown_filetype(f, hard_fail=False)
+                        continue
                 kept_files.append(f)
-        files = kept_files
+            files = kept_files
 
         if output_path is None:
             dfs = []

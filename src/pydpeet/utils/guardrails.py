@@ -5,6 +5,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from pydpeet.io.configs.config import _EXTENSION_GROUPS
+
 _FILETYPE_BLACKLIST: frozenset[str] = frozenset(
     {
         ".eps",
@@ -174,3 +176,49 @@ def _guardrail_blacklisted_filetype(
     if suffix in _FILETYPE_BLACKLIST:
         blacklist_str = "{" + ", ".join(sorted(_FILETYPE_BLACKLIST)) + "}"
         _handle_failure(f"File type is in blacklist : {blacklist_str}", hard_fail)
+
+
+def _guardrail_unknown_filetype(
+    file_path: Any,
+    hard_fail: bool = True,
+) -> bool:
+    """
+    Reject files whose extension is not blacklisted and also not a known filetype.
+
+    Intentionally unsupported filetypes are expected to be handled via the filetype
+    blacklist, which keeps its dedicated behaviour. Filetypes that are not part of the
+    blacklist and additionally not part of the list of currently supported filetypes
+    (``_EXTENSION_GROUPS``) are not yet known or implemented and are therefore rejected
+    with a distinct error message.
+
+    Args:
+        file_path (any): The file path to check.
+        hard_fail (bool, optional): Whether the unknown filetype should hard fail
+            (raise a ValueError) or only log a warning. Defaults to True.
+
+    Returns:
+        bool: True if the file type is blacklisted or known, False if it is unknown.
+
+    Raises:
+        ValueError
+            If the filetype is neither blacklisted nor known and ``hard_fail`` is True.
+    """
+    if file_path is None:
+        return True
+
+    suffix = Path(str(file_path)).suffix.lower()
+    if suffix in _FILETYPE_BLACKLIST:
+        # Intentionally unsupported filetypes are handled by the dedicated blacklist guardrail.
+        return True
+
+    if suffix in _EXTENSION_GROUPS:
+        return True
+
+    blacklist_str = "{" + ", ".join(sorted(_FILETYPE_BLACKLIST)) + "}"
+    supported_str = "{" + ", ".join(sorted(_EXTENSION_GROUPS.keys())) + "}"
+    message = (
+        f"Filetype {suffix} is not in blacklist {blacklist_str}, "
+        f"but is also not in the list of currently supported filetypes {supported_str}"
+    )
+    _handle_failure(message, hard_fail)
+    return False
