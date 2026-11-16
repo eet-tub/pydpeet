@@ -17,8 +17,11 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     impedance_spectrum_data = []
 
     # Read the input file
-    with open(input_path, encoding="us-ascii") as f:
-        lines = f.readlines()
+    try:
+        with open(input_path, encoding="us-ascii") as f:
+            lines = f.readlines()
+    except UnicodeDecodeError as e:
+        raise ValueError("File could not be decoded") from e
 
     # Temporary variables to store data for each segment
     current_segment = None
