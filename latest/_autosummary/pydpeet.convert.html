@@ -545,8 +545,12 @@ When <code class="docutils literal notranslate"><span class="pre">None</span></c
 PyDPEET format are preserved in the returned dataframe.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only standardized PyDPEET columns are kept.</p>
 </p></li>
-<li><p><strong>custom_folder_path</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em><em>, </em><em>default=None</em>) – Optional custom folder path used by specific device configurations
-that require additional external metadata or lookup files.</p></li>
+<li><p><strong>custom_folder_path</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em><em>, </em><em>default=None</em>) – <p>Optional custom folder path used by specific device configurations
+that require additional external metadata or lookup files.</p>
+<p>If provided, the builtin filetype blacklist and unknown filetype checks are
+bypassed (a warning is logged), so custom reader/mapper/formatter implementations
+can be used without being rejected.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -567,7 +571,8 @@ that require additional external metadata or lookup files.</p></li>
     - the provided input path does not exist
     - an input path has an invalid type
     - a list contains unsupported entries
-    - an explicitly provided file has a blacklisted filetype</p>
+    - an explicitly provided file has a blacklisted filetype
+    - an explicitly provided file has a filetype that is neither blacklisted nor supported yet</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
