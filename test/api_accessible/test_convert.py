@@ -40,6 +40,33 @@ class Test_convert_input_path:
         base_args["input_path"] = Mocks.Mock_convert.blacklisted_input_path_in_list
         _assert_raises_and_print(ValueError, convert, **base_args)
 
+    def test_unknown_filetype(self, base_args):
+        base_args["input_path"] = Mocks.Mock_convert.unknown_input_path
+        _assert_raises_and_print(ValueError, convert, **base_args)
+
+    def test_unknown_filetype_without_config(self, base_args):
+        base_args["config"] = None
+        base_args["input_path"] = Mocks.Mock_convert.unknown_input_path
+        _assert_raises_and_print(ValueError, convert, **base_args)
+
+    def test_unknown_filetype_in_list(self, base_args):
+        base_args["input_path"] = Mocks.Mock_convert.unknown_input_path_in_list
+        _assert_raises_and_print(ValueError, convert, **base_args)
+
+    def test_custom_folder_path_bypasses_blacklist(self, base_args):
+        base_args["custom_folder_path"] = "custom_folder_for_testing"
+        base_args["input_path"] = Mocks.Mock_convert.blacklisted_input_path
+        with pytest.raises(ValueError) as excinfo:
+            convert(**base_args)
+        assert "is in blacklist" not in str(excinfo.value)
+
+    def test_custom_folder_path_bypasses_unknown_filetype(self, base_args):
+        base_args["custom_folder_path"] = "custom_folder_for_testing"
+        base_args["input_path"] = Mocks.Mock_convert.unknown_input_path
+        with pytest.raises(ValueError) as excinfo:
+            convert(**base_args)
+        assert "is not in blacklist" not in str(excinfo.value)
+
     def test_folder_skips_blacklisted_files(self, base_args):
         base_args["config"] = "digatron_4_20_6_236"
         base_args["input_path"] = Mocks.Mock_convert.folder_input_path
