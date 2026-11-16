@@ -1,5 +1,7 @@
 import pandas as pd
 
+from pydpeet.utils.guardrails import _guardrail_empty_file
+
 
 def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
@@ -11,6 +13,8 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     Returns:
     (pandas.DataFrame, str): A tuple containing the DataFrame with data and metadata as a string.
     """
+    _guardrail_empty_file(input_path)
+
     metadata = []
 
     # Open the file and process lines

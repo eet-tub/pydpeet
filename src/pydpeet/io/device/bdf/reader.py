@@ -3,6 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from pydpeet.utils.guardrails import _guardrail_empty_file
+
 # Required quantities of the standardized format,
 # named following the BDF naming convention (preferred labels).
 # Note: EIS_DC[A] has no equivalent quantity in the BDF specification.
@@ -37,6 +39,8 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     Returns:
         (pd.DataFrame, str): A tuple containing the DataFrame with the data and metadata as a string.
     """
+    _guardrail_empty_file(input_path)
+
     path = Path(input_path)
 
     if path.suffix == ".parquet":
