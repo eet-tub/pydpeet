@@ -31,19 +31,22 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     metadata = []
 
     # Open the file and process lines
-    with open(input_path, encoding="us-ascii") as file:
-        # Read metadata until the header line is found
-        line = file.readline()
-        while line and (("Potential" not in line) or ("Zre" not in line) or ("|Z|" not in line)):
-            metadata.append(line.strip())
+    try:
+        with open(input_path, encoding="us-ascii") as file:
+            # Read metadata until the header line is found
             line = file.readline()
+            while line and (("Potential" not in line) or ("Zre" not in line) or ("|Z|" not in line)):
+                metadata.append(line.strip())
+                line = file.readline()
 
-        if not line:
-            raise ValueError("Header was not found or is not valid.")
+            if not line:
+                raise ValueError("Header was not found or is not valid.")
 
-        # Extract headers and remaining data
-        headers = [h.strip() for h in line.split(separator)]
-        data_lines = [[v.strip() for v in row.split(separator)] for row in file if row.strip()]
+            # Extract headers and remaining data
+            headers = [h.strip() for h in line.split(separator)]
+            data_lines = [[v.strip() for v in row.split(separator)] for row in file if row.strip()]
+    except UnicodeDecodeError as e:
+        raise ValueError("File could not be decoded") from e
 
     # Join metadata into a single string
     metadata_str = "\n".join(metadata)

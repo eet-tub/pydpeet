@@ -26,7 +26,7 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
             line = file.readline()
 
         if not line:
-            raise ValueError(f"Header line starting with 'Zeitstempel' not found in {input_path}")
+            raise ValueError("Header line starting with 'Zeitstempel' not found")
 
         # Extract headers and remaining data
         headers = line.strip().split(",")
