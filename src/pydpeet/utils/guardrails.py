@@ -5,8 +5,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from pydpeet.io.configs.config import _EXTENSION_GROUPS
-
 _FILETYPE_BLACKLIST: frozenset[str] = frozenset(
     {
         ".eps",
@@ -178,6 +176,33 @@ def _guardrail_blacklisted_filetype(
         _handle_failure(f"File type is in blacklist : {blacklist_str}", hard_fail)
 
 
+def _guardrail_empty_file(file_path: str | Path) -> None:
+    """Reject files that contain no data.
+
+    The file is read in 8 KiB binary chunks and accepted as soon as a chunk
+    contains a non-whitespace byte (``bytes.strip()`` removes spaces, tabs and
+    line breaks). Real data files therefore need only one chunk read, no matter
+    how large they are; only a file consisting entirely of whitespace has to be
+    scanned to the end. All readers raise the same message so failures can be
+    grouped.
+
+    Parameters
+    ----------
+    file_path : str | Path
+        Path to the file to check.
+
+    Raises
+    ------
+    ValueError
+        If the file is empty or contains only whitespace.
+    """
+    with Path(file_path).open("rb") as file:
+        while chunk := file.read(8192):
+            if chunk.strip():
+                return
+    raise ValueError("file is empty and can't be read")
+
+
 def _guardrail_unknown_filetype(
     file_path: Any,
     hard_fail: bool = True,
@@ -203,6 +228,8 @@ def _guardrail_unknown_filetype(
         ValueError
             If the filetype is neither blacklisted nor known and ``hard_fail`` is True.
     """
+    from pydpeet.io.configs.config import _EXTENSION_GROUPS  # put here cause it else causes a cycle
+
     if file_path is None:
         return True
 
