@@ -42,7 +42,7 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
         # No '~' metadata block: some BaSyTec exports write the column header
         # directly as the first line. Use it as the header and start the data
         # on the following line.
-        if data_start_idx >= len(lines):
+        if not lines:
             raise ValueError("The file is empty. Cannot determine column headers.")
         header_line = lines[data_start_idx].lstrip("~").strip()
         data_start_idx += 1
