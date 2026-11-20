@@ -9,6 +9,7 @@ from plistlib import InvalidFileException
 import pandas as pd
 
 from pydpeet.io.configs.const import PANDAS_EXCEL_ENGINE
+from pydpeet.utils.guardrails import _guardrail_empty_file
 
 _BASE_CHILD_FILE_PATTERN = r"_(\d+).(xlsx|xls)"
 
@@ -26,6 +27,8 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     Returns:
     (DataFrame, str): A tuple containing the merged DataFrame with processed data and metadata as a string.
     """
+
+    _guardrail_empty_file(input_path)
 
     sheets = _read_sheets(input_path)
     if sheets is None:

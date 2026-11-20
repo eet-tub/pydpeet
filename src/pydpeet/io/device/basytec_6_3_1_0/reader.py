@@ -3,6 +3,8 @@ from io import StringIO
 
 import pandas as pd
 
+from pydpeet.utils.guardrails import _guardrail_empty_file
+
 
 def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     """
@@ -15,6 +17,8 @@ def _to_dataframe(input_path: str) -> tuple[pd.DataFrame, str]:
     Returns:
         (pd.DataFrame, str): A tuple containing the DataFrame with the data and metadata as a string.
     """
+    _guardrail_empty_file(input_path)
+
     with open(input_path, encoding="iso-8859-1") as file:
         lines = file.readlines()
 
