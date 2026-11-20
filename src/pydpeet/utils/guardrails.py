@@ -17,6 +17,13 @@ _FILETYPE_BLACKLIST: frozenset[str] = frozenset(
         ".raw",
         ".tiff",
         ".gif",
+        ".psbd",
+        ".ffs_db",
+        ".lnk",
+        ".ffs_batch",
+        ".ffs_gui",
+        ".md",
+        ".db",
     }
 )
 
