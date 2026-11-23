@@ -24,6 +24,7 @@ _FILETYPE_BLACKLIST: frozenset[str] = frozenset(
         ".ffs_gui",
         ".md",
         ".db",
+        ".zip",
     }
 )
 
