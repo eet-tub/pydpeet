@@ -432,10 +432,19 @@ def _add_metadata_to_dataframe(
     if df is None:
         raise ValueError("Data frame is None.")
 
+    original_row_count = len(df)
     df["Meta_Data"] = None  # NO, this is faster then .loc
     df.loc[0, "Meta_Data"] = str(meta_data)
     df.loc[1, "Meta_Data"] = config.name if isinstance(config, ReadConfig) else str(config)
     df["Meta_Data"] = df["Meta_Data"].astype("str")
+
+    if len(df) != original_row_count:
+        logging.warning(
+            "Adding metadata changed row count from %d to %d - empty rows were appended.",
+            original_row_count,
+            len(df),
+        )
+
     return df
 
 

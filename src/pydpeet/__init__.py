@@ -7,6 +7,7 @@ Created: 2026-03-06 15:11:49
 
 from pydpeet.citations.citeme import print_references, write_to_bibtex
 from pydpeet.io.configs.config import DataOutputFiletype, ReadConfig
+from pydpeet.io.metadata import Metadata, extract_metadata
 from pydpeet.io.read import convert, read
 from pydpeet.io.utils import load_custom_module
 from pydpeet.io.write import write
@@ -49,6 +50,8 @@ __all__ = [
     # Tutorial 01
     "ReadConfig",
     "read",
+    "Metadata",
+    "extract_metadata",
     "DataOutputFiletype",
     "load_custom_module",
     "merge_into_series",
