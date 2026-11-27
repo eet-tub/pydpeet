@@ -14,3 +14,10 @@ class Test__add_metadata_to_dataframe_df:
 
     def test_placeholder(self):
         raise NotImplementedError("Test not implemented for variable: df of _add_metadata_to_dataframe")
+
+
+class Test__add_metadata_to_dataframe_config:
+    """Placeholder failing test for variable 'config' of '_add_metadata_to_dataframe'."""
+
+    def test_placeholder(self):
+        raise NotImplementedError("Test not implemented for variable: config of _add_metadata_to_dataframe")

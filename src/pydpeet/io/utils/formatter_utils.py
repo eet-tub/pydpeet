@@ -353,7 +353,8 @@ def _move_strings_from_column_to_metadata(
             raise ValueError("Meta_Data Column doesn't exsist")
 
         strings = df[column_name].apply(lambda x: x if isinstance(x, str) else None)
-        concatenated_string = concatenated_string.join(filter(None, strings))
+        # NaN is truthy, so filter(None, ...) would keep it and break the join.
+        concatenated_string = concatenated_string.join(x for x in strings if isinstance(x, str) and x)  # pyright: ignore[reportUnknownVariableType]
 
         df.loc[0, "Meta_Data"] = str(df.loc[0, "Meta_Data"]) + "\n\n" + concatenated_string
         df[column_name] = df[column_name].apply(lambda x: None if isinstance(x, str) else x).astype(object)

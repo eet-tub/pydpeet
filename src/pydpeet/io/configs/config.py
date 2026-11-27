@@ -45,7 +45,12 @@ import pydpeet.io.device.neware_8_0_0_516.formatter as neware_8_0_0_516_formatte
 import pydpeet.io.device.neware_8_0_0_516.mapper as neware_8_0_0_516_mapper
 import pydpeet.io.device.neware_8_0_0_516.reader as neware_8_0_0_516_reader
 
-# Parstat VersaStudio
+# Parstat VersaStudio .par files
+import pydpeet.io.device.par.formatter as par_formatter
+import pydpeet.io.device.par.mapper as par_mapper
+import pydpeet.io.device.par.reader as par_reader
+
+# Parstat VersaStudio text/CSV exports
 # v2.63.3, firmware version 2.63.1
 import pydpeet.io.device.parstat_2_63_3.formatter as parstat_2_63_3_formatter
 import pydpeet.io.device.parstat_2_63_3.mapper as parstat_2_63_3_mapper
@@ -94,6 +99,7 @@ class ReadConfig(Enum):
     Zahner_new_2 = auto()  # .txt / .csv
     Zahner_new_3 = auto()  # .txt / .csv
     Safion_1_9 = auto()  # .txt
+    Par = auto()  # .par
     Parstat_2_63_3 = auto()  # .txt / .csv
     Neware_8_0_0_516 = auto()  # .xls / .xlsx
     Digatron_4_20_6_236 = auto()  # .csv
@@ -111,6 +117,10 @@ class ReadConfig(Enum):
     @nonmember
     class BdfFile(metaclass=_FiletypeIterable):  # not just BDF to fix naming collision
         """ReadConfigs for BDF files (.bdf/.parquet)."""
+
+    @nonmember
+    class ParFile(metaclass=_FiletypeIterable):
+        """ReadConfigs for VersaStudio PAR files (.par)."""
 
     @nonmember
     class Csv(metaclass=_FiletypeIterable):
@@ -135,6 +145,7 @@ class ReadConfig(Enum):
             "digatron_4_20_6_236": cls.Digatron_4_20_6_236,
             "digatron_eis_4_20_6_236": cls.Digatron_EIS_4_20_6_236,
             "neware_8_0_0_516": cls.Neware_8_0_0_516,
+            "par": cls.Par,
             "parstat_2_63_3": cls.Parstat_2_63_3,
             "safion_1_9": cls.Safion_1_9,
             "zahner1": cls.Zahner_1,
@@ -184,6 +195,7 @@ class ReadConfig(Enum):
 _EXTENSION_GROUPS: dict[str, Iterable[ReadConfig]] = {
     ".bdf": ReadConfig.BdfFile,
     ".parquet": ReadConfig.BdfFile,
+    ".par": ReadConfig.ParFile,
     ".xls": ReadConfig.Excel,
     ".xlsx": ReadConfig.Excel,
     ".csv": ReadConfig.Csv,
@@ -197,6 +209,7 @@ ReadConfig.Excel._ALL = (
     ReadConfig.Neware_8_0_0_516,
 )
 ReadConfig.BdfFile._ALL = (ReadConfig.BDF,)
+ReadConfig.ParFile._ALL = (ReadConfig.Par,)
 ReadConfig.Csv._ALL = (
     ReadConfig.Digatron_4_20_6_236,
     ReadConfig.Digatron_EIS_4_20_6_236,
@@ -237,6 +250,7 @@ _READER_CONFIGS: dict[ReadConfig, Callable[[str], DataFrame]] = {
     ReadConfig.Zahner_new_3: zahner_new_reader._to_dataframe,
     # Other readers
     ReadConfig.Safion_1_9: safion_1_9_reader._to_dataframe,
+    ReadConfig.Par: par_reader._to_dataframe,
     ReadConfig.Parstat_2_63_3: parstat_2_63_3_reader._to_dataframe,
     ReadConfig.Neware_8_0_0_516: neware_8_0_0_516_reader._to_dataframe,
     ReadConfig.Digatron_4_20_6_236: digatron_4_20_6_236_reader._to_dataframe,
@@ -257,6 +271,7 @@ _MAPPER_CONFIGS: dict[ReadConfig, tuple[dict[str, str], list[str]]] = {
     ReadConfig.Zahner_new_3: (zahner_new_mapper._COLUMN_MAP_3, zahner_new_mapper._MISSING_REQUIRED_COLUMNS_3),
     # Other mappers
     ReadConfig.Safion_1_9: (safion_1_9_mapper._COLUMN_MAP, safion_1_9_mapper._MISSING_REQUIRED_COLUMNS),
+    ReadConfig.Par: (par_mapper._COLUMN_MAP, par_mapper._MISSING_REQUIRED_COLUMNS),
     ReadConfig.Parstat_2_63_3: (parstat_2_63_3_mapper._COLUMN_MAP, parstat_2_63_3_mapper._MISSING_REQUIRED_COLUMNS),
     ReadConfig.Neware_8_0_0_516: (
         neware_8_0_0_516_mapper._COLUMN_MAP,
@@ -292,6 +307,7 @@ _FORMATTER_CONFIGS: dict[ReadConfig, Callable[[DataFrame], DataFrame]] = {
     ReadConfig.Zahner_new_3: zahner_new_formatter._get_data_into_format_zahner_3,
     # Other formatters
     ReadConfig.Safion_1_9: safion_1_9_formatter._get_data_into_format,
+    ReadConfig.Par: par_formatter._get_data_into_format,
     ReadConfig.Parstat_2_63_3: parstat_2_63_3_formatter._get_data_into_format,
     ReadConfig.Neware_8_0_0_516: neware_8_0_0_516_formatter._get_data_into_format,
     ReadConfig.Digatron_4_20_6_236: digatron_4_20_6_236_formatter._get_data_into_format,

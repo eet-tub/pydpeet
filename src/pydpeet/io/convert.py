@@ -74,7 +74,7 @@ def _convert_file(
         df = _column_mapping(df, config, custom_folder_path)
         if not keep_all_additional_data:
             df = _drop_additional_data(df)
-        df = _add_metadata_to_dataframe(df, meta_data)
+        df = _add_metadata_to_dataframe(df, meta_data, config)
         df = _reorder_columns(df)
         df = _get_data_into_format(df, config, custom_folder_path)
 
@@ -402,12 +402,15 @@ def _drop_additional_data(df: pd.DataFrame) -> pd.DataFrame:
 def _add_metadata_to_dataframe(
     df: pd.DataFrame,
     meta_data: str,
+    config: ReadConfig,
 ) -> pd.DataFrame:
     """
     Add the given meta data as a column in the DataFrame.
 
-    The first row of the "Meta_Data" column is set to the given meta data. All
-    other rows are set to None.
+    The first row of the "Meta_Data" column is set to the given meta data and
+    the second row is set to the name of the ReadConfig that was used to read
+    the file. This makes it possible to tell which reader was selected when
+    automatic reader selection was used. All other rows are set to None.
 
     Parameters
     ----------
@@ -415,6 +418,9 @@ def _add_metadata_to_dataframe(
         The DataFrame to add the meta data to.
     meta_data : str
         The meta data to add as a column.
+    config : ReadConfig
+        The configuration that was used to read the file. Its name is stored
+        in the second row of the "Meta_Data" column.
 
     Returns
     -------
@@ -426,9 +432,19 @@ def _add_metadata_to_dataframe(
     if df is None:
         raise ValueError("Data frame is None.")
 
+    original_row_count = len(df)
     df["Meta_Data"] = None  # NO, this is faster then .loc
     df.loc[0, "Meta_Data"] = str(meta_data)
+    df.loc[1, "Meta_Data"] = config.name if isinstance(config, ReadConfig) else str(config)
     df["Meta_Data"] = df["Meta_Data"].astype("str")
+
+    if len(df) != original_row_count:
+        logging.warning(
+            "Adding metadata changed row count from %d to %d - empty rows were appended.",
+            original_row_count,
+            len(df),
+        )
+
     return df
 
 
