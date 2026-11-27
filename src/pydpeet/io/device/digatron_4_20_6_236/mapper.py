@@ -1,6 +1,6 @@
 # Map raw-data column names (left) to standardized column names (right)
 _COLUMN_MAP = {
-    "Schritt Zeit": "Test_Time[s]",
+    "Progr. Zeit": "Test_Time[s]",
     "Spannung": "Voltage[V]",
     "Strom": "Current[A]",
     "Schritt Nr.": "Step_Count",
